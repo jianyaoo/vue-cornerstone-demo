@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <nav><router-link to="/">Home</router-link></nav>
+    <nav>
+      <router-link to="/">基础栈图像</router-link>
+      <router-link to="/baseVolume">基础Volume</router-link>
+    </nav>
     <router-view />
   </div>
 </template>
@@ -27,3 +30,4 @@ nav {
   }
 }
 </style>
+<script setup></script>

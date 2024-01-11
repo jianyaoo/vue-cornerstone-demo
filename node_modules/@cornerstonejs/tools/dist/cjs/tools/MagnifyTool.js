@@ -1,0 +1,180 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const base_1 = require("./base");
+const enums_1 = require("../enums");
+const core_1 = require("@cornerstonejs/core");
+const viewportFilters_1 = require("../utilities/viewportFilters");
+const triggerAnnotationRenderForViewportIds_1 = __importDefault(require("../utilities/triggerAnnotationRenderForViewportIds"));
+const store_1 = require("../store");
+const core_2 = require("@cornerstonejs/core");
+const elementCursor_1 = require("../cursors/elementCursor");
+const MAGNIFY_VIEWPORT_ID = 'magnify-viewport';
+class MagnifyTool extends base_1.BaseTool {
+    constructor(toolProps = {}, defaultToolProps = {
+        supportedInteractionTypes: ['Mouse', 'Touch'],
+        configuration: {
+            magnifySize: 10,
+            magnifyWidth: 250,
+            magnifyHeight: 250,
+        },
+    }) {
+        super(toolProps, defaultToolProps);
+        this.preMouseDownCallback = (evt) => {
+            const eventDetail = evt.detail;
+            const { element, currentPoints } = eventDetail;
+            const enabledElement = (0, core_1.getEnabledElement)(element);
+            const { viewport, renderingEngine } = enabledElement;
+            if (!(viewport instanceof core_1.StackViewport)) {
+                throw new Error('MagnifyTool only works on StackViewports');
+            }
+            const referencedImageId = this._getReferencedImageId(viewport);
+            if (!referencedImageId) {
+                throw new Error('MagnifyTool: No referenced image id found, reconstructed planes not supported yet');
+            }
+            const viewportIdsToRender = (0, viewportFilters_1.getViewportIdsWithToolToRender)(element, this.getToolName());
+            this.editData = {
+                referencedImageId,
+                viewportIdsToRender,
+                enabledElement,
+                renderingEngine,
+                currentPoints,
+            };
+            this._createMagnificationViewport();
+            this._activateDraw(element);
+            (0, elementCursor_1.hideElementCursor)(element);
+            evt.preventDefault();
+            (0, triggerAnnotationRenderForViewportIds_1.default)(renderingEngine, viewportIdsToRender);
+            return true;
+        };
+        this.preTouchStartCallback = (evt) => {
+            this.preMouseDownCallback(evt);
+        };
+        this._createMagnificationViewport = () => {
+            const { enabledElement, referencedImageId, viewportIdsToRender, renderingEngine, currentPoints, } = this.editData;
+            const { viewport } = enabledElement;
+            const { element } = viewport;
+            const viewportProperties = viewport.getProperties();
+            const { canvas: canvasPos, world: worldPos } = currentPoints;
+            let magnifyToolElement;
+            magnifyToolElement = element.querySelector('.magnifyTool');
+            if (magnifyToolElement === null) {
+                const magnifyElement = document.createElement('div');
+                magnifyElement.classList.add('magnifyTool');
+                magnifyElement.style.display = 'block';
+                magnifyElement.style.width = `${this.configuration.magnifyWidth}px`;
+                magnifyElement.style.height = `${this.configuration.magnifyHeight}px`;
+                magnifyElement.style.position = 'absolute';
+                magnifyToolElement = magnifyElement;
+                const viewportElement = element.querySelector('.viewport-element');
+                viewportElement.appendChild(magnifyElement);
+                const viewportInput = {
+                    viewportId: MAGNIFY_VIEWPORT_ID,
+                    type: core_2.Enums.ViewportType.STACK,
+                    element: magnifyToolElement,
+                };
+                renderingEngine.enableElement(viewportInput);
+            }
+            magnifyToolElement.style.top = `${canvasPos[1] - this.configuration.magnifyHeight / 2}px`;
+            magnifyToolElement.style.left = `${canvasPos[0] - this.configuration.magnifyWidth / 2}px`;
+            const magnifyViewport = renderingEngine.getViewport(MAGNIFY_VIEWPORT_ID);
+            magnifyViewport.setStack([referencedImageId]).then(() => {
+                magnifyViewport.setProperties(viewportProperties);
+                const { parallelScale } = viewport.getCamera();
+                const { focalPoint, position, viewPlaneNormal } = magnifyViewport.getCamera();
+                const distance = Math.sqrt(Math.pow(focalPoint[0] - position[0], 2) +
+                    Math.pow(focalPoint[1] - position[1], 2) +
+                    Math.pow(focalPoint[2] - position[2], 2));
+                const updatedFocalPoint = [
+                    worldPos[0],
+                    worldPos[1],
+                    worldPos[2],
+                ];
+                const updatedPosition = [
+                    updatedFocalPoint[0] + distance * viewPlaneNormal[0],
+                    updatedFocalPoint[1] + distance * viewPlaneNormal[1],
+                    updatedFocalPoint[2] + distance * viewPlaneNormal[2],
+                ];
+                magnifyViewport.setCamera({
+                    parallelScale: parallelScale * (1 / this.configuration.magnifySize),
+                    focalPoint: updatedFocalPoint,
+                    position: updatedPosition,
+                });
+                magnifyViewport.render();
+            });
+            magnifyToolElement.style.display = 'block';
+            (0, triggerAnnotationRenderForViewportIds_1.default)(renderingEngine, viewportIdsToRender);
+        };
+        this._dragCallback = (evt) => {
+            const eventDetail = evt.detail;
+            const { deltaPoints, element, currentPoints } = eventDetail;
+            const deltaPointsWorld = deltaPoints.world;
+            const canvasPos = currentPoints.canvas;
+            const enabledElement = (0, core_1.getEnabledElement)(element);
+            const { renderingEngine } = enabledElement;
+            const magnifyViewport = renderingEngine.getViewport(MAGNIFY_VIEWPORT_ID);
+            const magnifyElement = element.querySelector('.magnifyTool');
+            if (!magnifyElement) {
+                return;
+            }
+            magnifyElement.style.top = `${canvasPos[1] - this.configuration.magnifyHeight / 2}px`;
+            magnifyElement.style.left = `${canvasPos[0] - this.configuration.magnifyWidth / 2}px`;
+            const { focalPoint, position } = magnifyViewport.getCamera();
+            const updatedPosition = [
+                position[0] + deltaPointsWorld[0],
+                position[1] + deltaPointsWorld[1],
+                position[2] + deltaPointsWorld[2],
+            ];
+            const updatedFocalPoint = [
+                focalPoint[0] + deltaPointsWorld[0],
+                focalPoint[1] + deltaPointsWorld[1],
+                focalPoint[2] + deltaPointsWorld[2],
+            ];
+            magnifyViewport.setCamera({
+                focalPoint: updatedFocalPoint,
+                position: updatedPosition,
+            });
+            magnifyViewport.render();
+        };
+        this._dragEndCallback = (evt) => {
+            const { element } = evt.detail;
+            const enabledElement = (0, core_1.getEnabledElement)(element);
+            const { renderingEngine } = enabledElement;
+            renderingEngine.disableElement(MAGNIFY_VIEWPORT_ID);
+            const viewportElement = element.querySelector('.viewport-element');
+            const magnifyToolElement = viewportElement.querySelector('.magnifyTool');
+            viewportElement.removeChild(magnifyToolElement);
+            this._deactivateDraw(element);
+            (0, elementCursor_1.resetElementCursor)(element);
+        };
+        this._activateDraw = (element) => {
+            store_1.state.isInteractingWithTool = true;
+            element.addEventListener(enums_1.Events.MOUSE_UP, this._dragEndCallback);
+            element.addEventListener(enums_1.Events.MOUSE_DRAG, this._dragCallback);
+            element.addEventListener(enums_1.Events.MOUSE_CLICK, this._dragEndCallback);
+            element.addEventListener(enums_1.Events.TOUCH_END, this._dragEndCallback);
+            element.addEventListener(enums_1.Events.TOUCH_DRAG, this._dragCallback);
+        };
+        this._deactivateDraw = (element) => {
+            store_1.state.isInteractingWithTool = false;
+            element.removeEventListener(enums_1.Events.MOUSE_UP, this._dragEndCallback);
+            element.removeEventListener(enums_1.Events.MOUSE_DRAG, this._dragCallback);
+            element.removeEventListener(enums_1.Events.MOUSE_CLICK, this._dragEndCallback);
+            element.removeEventListener(enums_1.Events.TOUCH_END, this._dragEndCallback);
+            element.removeEventListener(enums_1.Events.TOUCH_DRAG, this._dragCallback);
+        };
+    }
+    _getReferencedImageId(viewport) {
+        const targetId = this.getTargetId(viewport);
+        let referencedImageId;
+        if (viewport instanceof core_1.StackViewport) {
+            referencedImageId = targetId.split('imageId:')[1];
+        }
+        return referencedImageId;
+    }
+}
+MagnifyTool.toolName = 'Magnify';
+exports.default = MagnifyTool;
+//# sourceMappingURL=MagnifyTool.js.map

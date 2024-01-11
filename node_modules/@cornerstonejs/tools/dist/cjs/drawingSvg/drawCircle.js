@@ -1,0 +1,48 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const _getHash_1 = __importDefault(require("./_getHash"));
+const setAttributesIfNecessary_1 = __importDefault(require("./setAttributesIfNecessary"));
+const setNewAttributesIfValid_1 = __importDefault(require("./setNewAttributesIfValid"));
+function drawCircle(svgDrawingHelper, annotationUID, circleUID, center, radius, options = {}, dataId = '') {
+    const { color, fill, width, lineWidth, lineDash, fillOpacity, strokeOpacity, } = Object.assign({
+        color: 'dodgerblue',
+        fill: 'transparent',
+        width: '2',
+        lineDash: undefined,
+        lineWidth: undefined,
+        strokeOpacity: 1,
+        fillOpacity: 1,
+    }, options);
+    const strokeWidth = lineWidth || width;
+    const svgns = 'http://www.w3.org/2000/svg';
+    const svgNodeHash = (0, _getHash_1.default)(annotationUID, 'circle', circleUID);
+    const existingCircleElement = svgDrawingHelper.getSvgNode(svgNodeHash);
+    const attributes = {
+        cx: `${center[0]}`,
+        cy: `${center[1]}`,
+        r: `${radius}`,
+        stroke: color,
+        fill,
+        'stroke-width': strokeWidth,
+        'stroke-dasharray': lineDash,
+        'fill-opacity': fillOpacity,
+        'stroke-opacity': strokeOpacity,
+    };
+    if (existingCircleElement) {
+        (0, setAttributesIfNecessary_1.default)(attributes, existingCircleElement);
+        svgDrawingHelper.setNodeTouched(svgNodeHash);
+    }
+    else {
+        const newCircleElement = document.createElementNS(svgns, 'circle');
+        if (dataId !== '') {
+            newCircleElement.setAttribute('data-id', dataId);
+        }
+        (0, setNewAttributesIfValid_1.default)(attributes, newCircleElement);
+        svgDrawingHelper.appendNode(newCircleElement, svgNodeHash);
+    }
+}
+exports.default = drawCircle;
+//# sourceMappingURL=drawCircle.js.map

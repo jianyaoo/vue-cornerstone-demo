@@ -1,0 +1,1 @@
+{"version":3,"file":"setDefaultViewport.d.ts","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/setDefaultViewport.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AAExD,QAAA,MAAM,KAAK;;CAEV,CAAC;AAQF,MAAM,CAAC,OAAO,WAAW,QAAQ,EAAE,mBAAmB,GAAG,IAAI,CAE5D;AAED,OAAO,EAAE,KAAK,EAAE,CAAC"}

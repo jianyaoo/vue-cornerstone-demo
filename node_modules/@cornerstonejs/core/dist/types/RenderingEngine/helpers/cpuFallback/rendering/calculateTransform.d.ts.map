@@ -1,0 +1,1 @@
+{"version":3,"file":"calculateTransform.d.ts","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/calculateTransform.ts"],"names":[],"mappings":"AACA,OAAO,EACL,yBAAyB,EACzB,oBAAoB,EACrB,MAAM,mBAAmB,CAAC;AAS3B,MAAM,CAAC,OAAO,WACZ,cAAc,EAAE,yBAAyB,EACzC,KAAK,CAAC,EAAE,MAAM,GACb,oBAAoB,CAuHtB"}

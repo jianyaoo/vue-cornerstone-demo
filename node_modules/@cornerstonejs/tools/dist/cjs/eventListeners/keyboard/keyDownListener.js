@@ -1,0 +1,74 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.resetModifierKey = exports.getModifierKey = void 0;
+const lodash_clonedeep_1 = __importDefault(require("lodash.clonedeep"));
+const core_1 = require("@cornerstonejs/core");
+const Events_1 = __importDefault(require("../../enums/Events"));
+const defaultState = {
+    renderingEngineId: undefined,
+    viewportId: undefined,
+    key: undefined,
+    keyCode: undefined,
+    element: null,
+};
+let state = {
+    renderingEngineId: undefined,
+    viewportId: undefined,
+    key: undefined,
+    keyCode: undefined,
+    element: null,
+};
+function keyListener(evt) {
+    state.element = evt.currentTarget;
+    const enabledElement = (0, core_1.getEnabledElement)(state.element);
+    const { renderingEngineId, viewportId } = enabledElement;
+    state.renderingEngineId = renderingEngineId;
+    state.viewportId = viewportId;
+    state.key = evt.key;
+    state.keyCode = evt.keyCode;
+    evt.preventDefault();
+    const eventDetail = {
+        renderingEngineId: state.renderingEngineId,
+        viewportId: state.viewportId,
+        element: state.element,
+        key: state.key,
+        keyCode: state.keyCode,
+    };
+    (0, core_1.triggerEvent)(eventDetail.element, Events_1.default.KEY_DOWN, eventDetail);
+    document.addEventListener('keyup', _onKeyUp);
+    document.addEventListener('visibilitychange', _onVisibilityChange);
+    state.element.removeEventListener('keydown', keyListener);
+}
+function _onVisibilityChange() {
+    document.removeEventListener('visibilitychange', _onVisibilityChange);
+    if (document.visibilityState === 'hidden') {
+        resetModifierKey();
+    }
+}
+function _onKeyUp(evt) {
+    const eventDetail = {
+        renderingEngineId: state.renderingEngineId,
+        viewportId: state.viewportId,
+        element: state.element,
+        key: state.key,
+        keyCode: state.keyCode,
+    };
+    document.removeEventListener('keyup', _onKeyUp);
+    document.removeEventListener('visibilitychange', _onVisibilityChange);
+    state.element.addEventListener('keydown', keyListener);
+    state = (0, lodash_clonedeep_1.default)(defaultState);
+    (0, core_1.triggerEvent)(eventDetail.element, Events_1.default.KEY_UP, eventDetail);
+}
+function getModifierKey() {
+    return state.keyCode;
+}
+exports.getModifierKey = getModifierKey;
+function resetModifierKey() {
+    state.keyCode = undefined;
+}
+exports.resetModifierKey = resetModifierKey;
+exports.default = keyListener;
+//# sourceMappingURL=keyDownListener.js.map

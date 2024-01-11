@@ -1,0 +1,13 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const splitImageIdsBy4DTags_1 = __importDefault(require("./splitImageIdsBy4DTags"));
+function getDynamicVolumeInfo(imageIds) {
+    const timePoints = (0, splitImageIdsBy4DTags_1.default)(imageIds);
+    const isDynamicVolume = timePoints.length > 1;
+    return { isDynamicVolume, timePoints };
+}
+exports.default = getDynamicVolumeInfo;
+//# sourceMappingURL=getDynamicVolumeInfo.js.map

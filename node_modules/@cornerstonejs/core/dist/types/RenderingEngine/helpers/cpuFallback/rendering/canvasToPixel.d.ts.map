@@ -1,0 +1,1 @@
+{"version":3,"file":"canvasToPixel.d.ts","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/canvasToPixel.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,MAAM,EAAE,yBAAyB,EAAE,MAAM,mBAAmB,CAAC;AAatE,MAAM,CAAC,OAAO,WACZ,cAAc,EAAE,yBAAyB,EACzC,EAAE,EAAE,MAAM,GACT,MAAM,CAMR"}

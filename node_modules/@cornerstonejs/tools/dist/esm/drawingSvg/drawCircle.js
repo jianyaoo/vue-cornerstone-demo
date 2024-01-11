@@ -1,0 +1,43 @@
+import _getHash from './_getHash';
+import setAttributesIfNecessary from './setAttributesIfNecessary';
+import setNewAttributesIfValid from './setNewAttributesIfValid';
+function drawCircle(svgDrawingHelper, annotationUID, circleUID, center, radius, options = {}, dataId = '') {
+    const { color, fill, width, lineWidth, lineDash, fillOpacity, strokeOpacity, } = Object.assign({
+        color: 'dodgerblue',
+        fill: 'transparent',
+        width: '2',
+        lineDash: undefined,
+        lineWidth: undefined,
+        strokeOpacity: 1,
+        fillOpacity: 1,
+    }, options);
+    const strokeWidth = lineWidth || width;
+    const svgns = 'http://www.w3.org/2000/svg';
+    const svgNodeHash = _getHash(annotationUID, 'circle', circleUID);
+    const existingCircleElement = svgDrawingHelper.getSvgNode(svgNodeHash);
+    const attributes = {
+        cx: `${center[0]}`,
+        cy: `${center[1]}`,
+        r: `${radius}`,
+        stroke: color,
+        fill,
+        'stroke-width': strokeWidth,
+        'stroke-dasharray': lineDash,
+        'fill-opacity': fillOpacity,
+        'stroke-opacity': strokeOpacity,
+    };
+    if (existingCircleElement) {
+        setAttributesIfNecessary(attributes, existingCircleElement);
+        svgDrawingHelper.setNodeTouched(svgNodeHash);
+    }
+    else {
+        const newCircleElement = document.createElementNS(svgns, 'circle');
+        if (dataId !== '') {
+            newCircleElement.setAttribute('data-id', dataId);
+        }
+        setNewAttributesIfValid(attributes, newCircleElement);
+        svgDrawingHelper.appendNode(newCircleElement, svgNodeHash);
+    }
+}
+export default drawCircle;
+//# sourceMappingURL=drawCircle.js.map

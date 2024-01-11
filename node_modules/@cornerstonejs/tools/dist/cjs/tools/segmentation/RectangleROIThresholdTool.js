@@ -1,0 +1,157 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@cornerstonejs/core");
+const stateManagement_1 = require("../../stateManagement");
+const annotationLocking_1 = require("../../stateManagement/annotation/annotationLocking");
+const enums_1 = require("../../enums");
+const drawingSvg_1 = require("../../drawingSvg");
+const viewportFilters_1 = require("../../utilities/viewportFilters");
+const elementCursor_1 = require("../../cursors/elementCursor");
+const triggerAnnotationRenderForViewportIds_1 = __importDefault(require("../../utilities/triggerAnnotationRenderForViewportIds"));
+const annotationVisibility_1 = require("../../stateManagement/annotation/annotationVisibility");
+const RectangleROITool_1 = __importDefault(require("../annotation/RectangleROITool"));
+class RectangleROIThresholdTool extends RectangleROITool_1.default {
+    constructor(toolProps = {}, defaultToolProps = {
+        supportedInteractionTypes: ['Mouse', 'Touch'],
+        configuration: {
+            shadow: true,
+            preventHandleOutsideImage: false,
+        },
+    }) {
+        super(toolProps, defaultToolProps);
+        this.addNewAnnotation = (evt) => {
+            const eventDetail = evt.detail;
+            const { currentPoints, element } = eventDetail;
+            const worldPos = currentPoints.world;
+            const enabledElement = (0, core_1.getEnabledElement)(element);
+            const { viewport, renderingEngine } = enabledElement;
+            this.isDrawing = true;
+            const camera = viewport.getCamera();
+            const { viewPlaneNormal, viewUp } = camera;
+            const targetId = this.getTargetId(viewport);
+            let referencedImageId, volumeId;
+            if (viewport instanceof core_1.StackViewport) {
+                referencedImageId = targetId.split('imageId:')[1];
+            }
+            else {
+                volumeId = targetId.split('volumeId:')[1];
+                const imageVolume = core_1.cache.getVolume(volumeId);
+                referencedImageId = core_1.utilities.getClosestImageId(imageVolume, worldPos, viewPlaneNormal);
+            }
+            const FrameOfReferenceUID = viewport.getFrameOfReferenceUID();
+            const annotation = {
+                highlighted: true,
+                invalidated: true,
+                metadata: {
+                    viewPlaneNormal: [...viewPlaneNormal],
+                    enabledElement,
+                    viewUp: [...viewUp],
+                    FrameOfReferenceUID,
+                    referencedImageId,
+                    toolName: this.getToolName(),
+                    volumeId,
+                },
+                data: {
+                    label: '',
+                    handles: {
+                        textBox: {
+                            hasMoved: false,
+                            worldPosition: null,
+                            worldBoundingBox: null,
+                        },
+                        points: [
+                            [...worldPos],
+                            [...worldPos],
+                            [...worldPos],
+                            [...worldPos],
+                        ],
+                        activeHandleIndex: null,
+                    },
+                    segmentationId: null,
+                },
+            };
+            (0, stateManagement_1.addAnnotation)(annotation, element);
+            const viewportIdsToRender = (0, viewportFilters_1.getViewportIdsWithToolToRender)(element, this.getToolName());
+            this.editData = {
+                annotation,
+                viewportIdsToRender,
+                handleIndex: 3,
+                newAnnotation: true,
+                hasMoved: false,
+            };
+            this._activateDraw(element);
+            (0, elementCursor_1.hideElementCursor)(element);
+            evt.preventDefault();
+            (0, triggerAnnotationRenderForViewportIds_1.default)(renderingEngine, viewportIdsToRender);
+            return annotation;
+        };
+        this.renderAnnotation = (enabledElement, svgDrawingHelper) => {
+            let renderStatus = false;
+            const { viewport, renderingEngineId } = enabledElement;
+            const { element } = viewport;
+            let annotations = (0, stateManagement_1.getAnnotations)(this.getToolName(), element);
+            if (!(annotations === null || annotations === void 0 ? void 0 : annotations.length)) {
+                return renderStatus;
+            }
+            annotations = this.filterInteractableAnnotationsForElement(element, annotations);
+            if (!(annotations === null || annotations === void 0 ? void 0 : annotations.length)) {
+                return renderStatus;
+            }
+            const styleSpecifier = {
+                toolGroupId: this.toolGroupId,
+                toolName: this.getToolName(),
+                viewportId: enabledElement.viewport.id,
+            };
+            for (let i = 0; i < annotations.length; i++) {
+                const annotation = annotations[i];
+                const { annotationUID, data } = annotation;
+                const { points, activeHandleIndex } = data.handles;
+                const canvasCoordinates = points.map((p) => viewport.worldToCanvas(p));
+                styleSpecifier.annotationUID = annotationUID;
+                const lineWidth = this.getStyle('lineWidth', styleSpecifier, annotation);
+                const lineDash = this.getStyle('lineDash', styleSpecifier, annotation);
+                const color = this.getStyle('color', styleSpecifier, annotation);
+                if (!viewport.getRenderingEngine()) {
+                    console.warn('Rendering Engine has been destroyed');
+                    return renderStatus;
+                }
+                const eventType = enums_1.Events.ANNOTATION_MODIFIED;
+                const eventDetail = {
+                    annotation,
+                    viewportId: viewport.id,
+                    renderingEngineId,
+                };
+                (0, core_1.triggerEvent)(core_1.eventTarget, eventType, eventDetail);
+                let activeHandleCanvasCoords;
+                if (!(0, annotationVisibility_1.isAnnotationVisible)(annotationUID)) {
+                    continue;
+                }
+                if (!(0, annotationLocking_1.isAnnotationLocked)(annotation) &&
+                    !this.editData &&
+                    activeHandleIndex !== null) {
+                    activeHandleCanvasCoords = [canvasCoordinates[activeHandleIndex]];
+                }
+                if (activeHandleCanvasCoords) {
+                    const handleGroupUID = '0';
+                    (0, drawingSvg_1.drawHandles)(svgDrawingHelper, annotationUID, handleGroupUID, activeHandleCanvasCoords, {
+                        color,
+                    });
+                }
+                const rectangleUID = '0';
+                (0, drawingSvg_1.drawRect)(svgDrawingHelper, annotationUID, rectangleUID, canvasCoordinates[0], canvasCoordinates[3], {
+                    color,
+                    lineDash,
+                    lineWidth,
+                });
+                renderStatus = true;
+            }
+            return renderStatus;
+        };
+    }
+}
+RectangleROIThresholdTool.toolName = 'RectangleROIThreshold';
+exports.default = RectangleROIThresholdTool;
+//# sourceMappingURL=RectangleROIThresholdTool.js.map

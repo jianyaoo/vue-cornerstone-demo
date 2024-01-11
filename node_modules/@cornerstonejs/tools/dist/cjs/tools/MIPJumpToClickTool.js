@@ -1,0 +1,63 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const base_1 = require("./base");
+const core_1 = require("@cornerstonejs/core");
+const planar_1 = require("../utilities/planar");
+const jumpToWorld_1 = __importDefault(require("../utilities/viewport/jumpToWorld"));
+const ToolGroupManager_1 = require("../store/ToolGroupManager");
+class MIPJumpToClickTool extends base_1.BaseTool {
+    constructor(toolProps = {}, defaultToolProps = {
+        supportedInteractionTypes: ['Mouse', 'Touch'],
+        configuration: {
+            targetViewportIds: [],
+        },
+    }) {
+        super(toolProps, defaultToolProps);
+    }
+    mouseClickCallback(evt) {
+        const { element, currentPoints } = evt.detail;
+        const enabledElement = (0, core_1.getEnabledElement)(element);
+        const { viewport, renderingEngine } = enabledElement;
+        const targetId = this.getTargetId(viewport);
+        if (!targetId.startsWith('volumeId')) {
+            throw new Error(`MIPJumpToClickTool: targetId is not a volumeId, you should only use MIPJumpToClickTool with a volumeId as the targetId`);
+        }
+        const volumeId = targetId.split('volumeId:')[1];
+        let maxIntensity = -Infinity;
+        const maxFn = (intensity, point) => {
+            if (intensity > maxIntensity) {
+                maxIntensity = intensity;
+                return point;
+            }
+        };
+        const brightestPoint = (0, planar_1.getPointInLineOfSightWithCriteria)(viewport, currentPoints.world, volumeId, maxFn);
+        if (!brightestPoint || !brightestPoint.length) {
+            return;
+        }
+        const { targetViewportIds, toolGroupId } = this.configuration;
+        const viewports = renderingEngine.getViewports().filter((vp) => {
+            if ((targetViewportIds === null || targetViewportIds === void 0 ? void 0 : targetViewportIds.indexOf(vp.id)) >= 0) {
+                return true;
+            }
+            const foundToolGroup = (0, ToolGroupManager_1.getToolGroupForViewport)(vp.id, renderingEngine.id);
+            if (toolGroupId && toolGroupId === (foundToolGroup === null || foundToolGroup === void 0 ? void 0 : foundToolGroup.id)) {
+                return true;
+            }
+            return false;
+        });
+        viewports.forEach((viewport) => {
+            if (viewport instanceof core_1.VolumeViewport) {
+                (0, jumpToWorld_1.default)(viewport, brightestPoint);
+            }
+            else {
+                console.warn('Cannot jump to specified world coordinates for a viewport that is not a VolumeViewport');
+            }
+        });
+    }
+}
+MIPJumpToClickTool.toolName = 'MIPJumpToClickTool';
+exports.default = MIPJumpToClickTool;
+//# sourceMappingURL=MIPJumpToClickTool.js.map

@@ -1,0 +1,58 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getPolyDataPoints = exports.getPolyDataPointIndexes = exports.getPoint = void 0;
+function getPoint(points, idx) {
+    if (idx < points.length / 3) {
+        return [points[idx * 3], points[idx * 3 + 1], points[idx * 3 + 2]];
+    }
+}
+exports.getPoint = getPoint;
+function getPolyDataPointIndexes(polyData) {
+    const linesData = polyData.getLines().getData();
+    let idx = 0;
+    const lineSegments = new Map();
+    while (idx < linesData.length) {
+        const segmentSize = linesData[idx++];
+        const segment = [];
+        for (let i = 0; i < segmentSize; i++) {
+            segment.push(linesData[idx + i]);
+        }
+        lineSegments.set(segment[0], segment);
+        idx += segmentSize;
+    }
+    const contours = [];
+    const findStartingPoint = (map) => {
+        for (const [key, value] of map.entries()) {
+            if (value !== undefined) {
+                return key;
+            }
+        }
+        return -1;
+    };
+    let startPoint = findStartingPoint(lineSegments);
+    while (startPoint !== -1) {
+        const contour = [startPoint];
+        while (lineSegments.has(startPoint)) {
+            const nextPoint = lineSegments.get(startPoint)[1];
+            if (lineSegments.has(nextPoint)) {
+                contour.push(nextPoint);
+            }
+            lineSegments.delete(startPoint);
+            startPoint = nextPoint;
+        }
+        contours.push(contour);
+        startPoint = findStartingPoint(lineSegments);
+    }
+    return contours.length ? contours : undefined;
+}
+exports.getPolyDataPointIndexes = getPolyDataPointIndexes;
+function getPolyDataPoints(polyData) {
+    const contoursIndexes = getPolyDataPointIndexes(polyData);
+    if (!contoursIndexes) {
+        return;
+    }
+    const rawPointsData = polyData.getPoints().getData();
+    return contoursIndexes.map((contourIndexes) => contourIndexes.map((index) => getPoint(rawPointsData, index)));
+}
+exports.getPolyDataPoints = getPolyDataPoints;
+//# sourceMappingURL=utils.js.map

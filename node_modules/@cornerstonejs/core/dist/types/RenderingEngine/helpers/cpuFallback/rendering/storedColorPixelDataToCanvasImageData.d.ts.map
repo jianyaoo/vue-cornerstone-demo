@@ -1,0 +1,1 @@
+{"version":3,"file":"storedColorPixelDataToCanvasImageData.d.ts","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/storedColorPixelDataToCanvasImageData.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,MAAM,EAAE,MAAM,mBAAmB,CAAC;AAc3C,MAAM,CAAC,OAAO,WACZ,KAAK,EAAE,MAAM,EACb,GAAG,EAAE,iBAAiB,EACtB,mBAAmB,EAAE,iBAAiB,GACrC,IAAI,CAsCN"}

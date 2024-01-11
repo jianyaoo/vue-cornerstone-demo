@@ -1,0 +1,1 @@
+{"version":3,"file":"IRegisterImageLoader.d.ts","sourceRoot":"","sources":["../../../src/types/IRegisterImageLoader.ts"],"names":[],"mappings":"AAAA,OAAO,aAAa,MAAM,iBAAiB,CAAC;AAK5C,UAAU,oBAAoB;IAC5B,mBAAmB,EAAE,CAAC,MAAM,EAAE,MAAM,EAAE,WAAW,EAAE,aAAa,KAAK,IAAI,CAAC;CAC3E;AAED,eAAe,oBAAoB,CAAC"}

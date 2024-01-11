@@ -1,0 +1,1 @@
+{"version":3,"file":"now.js","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/now.ts"],"names":[],"mappings":"AAMA,MAAM,CAAC,OAAO;IACZ,IAAI,MAAM,CAAC,WAAW,EAAE;QACtB,OAAO,WAAW,CAAC,GAAG,EAAE,CAAC;KAC1B;IAED,OAAO,IAAI,CAAC,GAAG,EAAE,CAAC;AACpB,CAAC"}

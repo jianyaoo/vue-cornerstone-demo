@@ -1,0 +1,48 @@
+const antiGhostDelay = 2000, pointerType = {
+    mouse: 0,
+    touch: 1,
+};
+let lastInteractionType, lastInteractionTime;
+function handleTap(type, e) {
+    const now = Date.now();
+    if (type !== lastInteractionType) {
+        if (now - lastInteractionTime <= antiGhostDelay) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return false;
+        }
+        lastInteractionType = type;
+    }
+    lastInteractionTime = now;
+}
+const handleTapMouse = handleTap.bind(null, pointerType.mouse);
+const handleTapTouch = handleTap.bind(null, pointerType.touch);
+function attachEvents(element, eventList, interactionType) {
+    const tapHandler = interactionType ? handleTapMouse : handleTapTouch;
+    eventList.forEach(function (eventName) {
+        element.addEventListener(eventName, tapHandler, { passive: false });
+    });
+}
+function removeEvents(element, eventList, interactionType) {
+    const tapHandler = interactionType ? handleTapMouse : handleTapTouch;
+    eventList.forEach(function (eventName) {
+        element.removeEventListener(eventName, tapHandler);
+    });
+}
+const mouseEvents = ['mousedown', 'mouseup', 'mousemove'];
+const touchEvents = ['touchstart', 'touchend'];
+function disable(element) {
+    removeEvents(element, mouseEvents, pointerType.mouse);
+    removeEvents(element, touchEvents, pointerType.touch);
+}
+function enable(element) {
+    disable(element);
+    attachEvents(element, mouseEvents, pointerType.mouse);
+    attachEvents(element, touchEvents, pointerType.touch);
+}
+export default {
+    enable,
+    disable,
+};
+//# sourceMappingURL=preventGhostClick.js.map

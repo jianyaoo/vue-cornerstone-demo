@@ -1,0 +1,54 @@
+{
+  "name": "@cornerstonejs/codec-charls",
+  "version": "1.2.3",
+  "description": "WASM Build of CharLS",
+  "main": "dist/charlsjs.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "package.json",
+    "README.md",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=0.14"
+  },
+  "exports": {
+    ".": "./dist/charlsjs.js",
+    "./wasm": "./dist/charlswasm.wasm",
+    "./wasmjs": "./dist/charlswasm.js",
+    "./decode": "./dist/charlsjs_decode.js",
+    "./decodewasm": "./dist/charlswasm_decode.wasm",
+    "./decodewasmjs": "./dist/charlswasm_decode.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "cd test/node; npm run test",
+    "test:benchmark": "cd test/node; node index.js -- --iterations=200",
+    "test:ci": "yarn run test",
+    "build": "bash build.sh",
+    "build:ci": "yarn run build",
+    "prepublishOnly": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chafey/charls-js.git"
+  },
+  "keywords": [
+    "JPEG",
+    "JPEGLS",
+    "CharLS",
+    "JPEG-LS",
+    "DICOM"
+  ],
+  "author": "Chris Hafey <chafey@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chafey/charls-js/issues"
+  },
+  "homepage": "https://github.com/chafey/charls-js#readme",
+  "gitHead": "b81e87e64c792648ae267c2a090f888896bb5823"
+}

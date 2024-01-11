@@ -1,0 +1,60 @@
+import type { Types } from '@cornerstonejs/core';
+import { SetToolBindingsType, ToolOptionsType } from './ISetToolModeOptions';
+import { MouseBindings } from '../enums';
+import { ToolConfiguration } from '../types';
+export default interface IToolGroup {
+    _toolInstances: Record<string, any>;
+    id: string;
+    viewportsInfo: Array<Types.IViewportId>;
+    toolOptions: Record<string, any>;
+    getViewportIds: () => string[];
+    getViewportsInfo: () => Array<Types.IViewportId>;
+    getToolInstance: {
+        (toolName: string): any;
+    };
+    addTool: {
+        (toolName: string, toolConfiguration?: ToolConfiguration): void;
+    };
+    addToolInstance: {
+        (ttoolName: string, parentClassName: string, configuration?: any): void;
+    };
+    addViewport: {
+        (viewportId: string, renderingEngineId?: string): void;
+    };
+    removeViewports: {
+        (renderingEngineId: string, viewportId?: string): void;
+    };
+    setToolActive: {
+        (toolName: string, toolBindingsOption?: SetToolBindingsType): void;
+    };
+    setToolPassive: {
+        (toolName: string): void;
+    };
+    setToolEnabled: {
+        (toolName: string): void;
+    };
+    setToolDisabled: {
+        (toolName: string): void;
+    };
+    getToolOptions: {
+        (toolName: string): ToolOptionsType;
+    };
+    getActivePrimaryMouseButtonTool: {
+        (): undefined | string;
+    };
+    setViewportsCursorByToolName: {
+        (toolName: string, strategyName?: string): void;
+    };
+    setToolConfiguration: {
+        (toolName: string, configuration: ToolConfiguration, overwrite?: boolean): void;
+    };
+    getToolConfiguration: {
+        (toolName: string, configurationPath: string): any;
+    };
+    getDefaultMousePrimary: {
+        (): MouseBindings;
+    };
+    clone: {
+        (newToolGroupId: string, fnToolFilter: (toolName: string) => boolean): IToolGroup;
+    };
+}

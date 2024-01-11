@@ -1,0 +1,4 @@
+import type Point2 from './Point3';
+declare type BoundsLPS = [Point2, Point2, Point2];
+export default BoundsLPS;
+//# sourceMappingURL=BoundsLPS.d.ts.map

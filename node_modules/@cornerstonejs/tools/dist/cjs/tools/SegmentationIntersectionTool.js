@@ -1,0 +1,184 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@cornerstonejs/core");
+const annotationState_1 = require("../stateManagement/annotation/annotationState");
+const drawingSvg_1 = require("../drawingSvg");
+const ToolGroupManager_1 = require("../store/ToolGroupManager");
+const triggerAnnotationRenderForViewportIds_1 = __importDefault(require("../utilities/triggerAnnotationRenderForViewportIds"));
+const AnnotationDisplayTool_1 = __importDefault(require("./base/AnnotationDisplayTool"));
+const point_1 = require("../utilities/math/point");
+const pointToString_1 = require("../utilities/pointToString");
+const utilities_1 = require("../utilities");
+class SegmentationIntersectionTool extends AnnotationDisplayTool_1.default {
+    constructor(toolProps = {}, defaultToolProps = {
+        configuration: {
+            opacity: 0.5,
+        },
+    }) {
+        super(toolProps, defaultToolProps);
+        this._init = () => {
+            var _a;
+            const viewportsInfo = (0, ToolGroupManager_1.getToolGroup)(this.toolGroupId).viewportsInfo;
+            if (!(viewportsInfo === null || viewportsInfo === void 0 ? void 0 : viewportsInfo.length)) {
+                console.warn(this.getToolName() + 'Tool: No viewports found');
+                return;
+            }
+            const firstViewport = (_a = (0, core_1.getRenderingEngine)(viewportsInfo[0].renderingEngineId)) === null || _a === void 0 ? void 0 : _a.getViewport(viewportsInfo[0].viewportId);
+            if (!firstViewport) {
+                return;
+            }
+            const frameOfReferenceUID = firstViewport.getFrameOfReferenceUID();
+            const annotations = (0, annotationState_1.getAnnotations)(this.getToolName(), frameOfReferenceUID);
+            if (!(annotations === null || annotations === void 0 ? void 0 : annotations.length)) {
+                const actorsWorldPointsMap = new Map();
+                calculateSurfaceSegmentationIntersections(actorsWorldPointsMap, viewportsInfo);
+                const newAnnotation = {
+                    highlighted: true,
+                    invalidated: true,
+                    metadata: {
+                        toolName: this.getToolName(),
+                        FrameOfReferenceUID: frameOfReferenceUID,
+                        referencedImageId: null,
+                    },
+                    data: {
+                        actorsWorldPointsMap,
+                    },
+                };
+                (0, annotationState_1.addAnnotation)(newAnnotation, frameOfReferenceUID);
+            }
+            (0, triggerAnnotationRenderForViewportIds_1.default)((0, core_1.getRenderingEngine)(viewportsInfo[0].renderingEngineId), viewportsInfo.map(({ viewportId }) => viewportId));
+        };
+        this.onSetToolEnabled = () => {
+            this._init();
+        };
+        this.onCameraModified = (evt) => {
+            this._init();
+        };
+        this.renderAnnotation = (enabledElement, svgDrawingHelper) => {
+            const { viewport, FrameOfReferenceUID } = enabledElement;
+            let renderStatus = false;
+            const annotations = (0, annotationState_1.getAnnotations)(this.getToolName(), FrameOfReferenceUID);
+            if (!(annotations === null || annotations === void 0 ? void 0 : annotations.length)) {
+                return renderStatus;
+            }
+            const annotation = annotations[0];
+            const { annotationUID } = annotation;
+            const actorsWorldPointsMap = annotation.data.actorsWorldPointsMap;
+            calculateSurfaceSegmentationIntersectionsForViewport(actorsWorldPointsMap, viewport);
+            const actorEntries = viewport.getActors();
+            const cacheId = getCacheId(viewport);
+            actorEntries.forEach((actorEntry) => {
+                if (!(actorEntry === null || actorEntry === void 0 ? void 0 : actorEntry.clippingFilter)) {
+                    return;
+                }
+                const actorWorldPointMap = actorsWorldPointsMap.get(actorEntry.uid);
+                if (!actorWorldPointMap) {
+                    return;
+                }
+                if (!actorWorldPointMap.get(cacheId)) {
+                    return;
+                }
+                let polyLineIdx = 1;
+                const { worldPointsSet, color } = actorWorldPointMap.get(cacheId);
+                for (let i = 0; i < worldPointsSet.length; i++) {
+                    const worldPoints = worldPointsSet[i];
+                    const canvasPoints = worldPoints.map((point) => viewport.worldToCanvas(point));
+                    const options = {
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: this.configuration.opacity,
+                        connectLastToFirst: true,
+                    };
+                    const polyLineUID = actorEntry.uid + '#' + polyLineIdx;
+                    (0, drawingSvg_1.drawPolyline)(svgDrawingHelper, annotationUID, polyLineUID, canvasPoints, options);
+                    polyLineIdx++;
+                }
+            });
+            renderStatus = true;
+            return renderStatus;
+        };
+    }
+}
+function calculateSurfaceSegmentationIntersections(actorsWorldPointsMap, viewportsInfo) {
+    viewportsInfo.forEach(({ viewportId, renderingEngineId }) => {
+        var _a;
+        const viewport = (_a = (0, core_1.getRenderingEngine)(renderingEngineId)) === null || _a === void 0 ? void 0 : _a.getViewport(viewportId);
+        calculateSurfaceSegmentationIntersectionsForViewport(actorsWorldPointsMap, viewport);
+    });
+}
+function calculateSurfaceSegmentationIntersectionsForViewport(actorsWorldPointsMap, viewport) {
+    const actorEntries = viewport.getActors();
+    const cacheId = getCacheId(viewport);
+    actorEntries.forEach((actorEntry) => {
+        if (!(actorEntry === null || actorEntry === void 0 ? void 0 : actorEntry.clippingFilter)) {
+            return;
+        }
+        let actorWorldPointsMap = actorsWorldPointsMap.get(actorEntry.uid);
+        if (!actorWorldPointsMap) {
+            actorWorldPointsMap = new Map();
+            actorsWorldPointsMap.set(actorEntry.uid, actorWorldPointsMap);
+        }
+        if (!actorWorldPointsMap.get(cacheId)) {
+            const polyData = actorEntry.clippingFilter.getOutputData();
+            const worldPointsSet = utilities_1.polyDataUtils.getPolyDataPoints(polyData);
+            if (!worldPointsSet) {
+                return;
+            }
+            const colorArray = actorEntry.actor.getProperty().getColor();
+            const color = colorToString(colorArray);
+            actorWorldPointsMap.set(cacheId, { worldPointsSet, color });
+        }
+    });
+}
+function getCacheId(viewport) {
+    const { viewPlaneNormal } = viewport.getCamera();
+    const imageIndex = viewport.getCurrentImageIdIndex();
+    return `${viewport.id}-${(0, pointToString_1.pointToString)(viewPlaneNormal)}-${imageIndex}`;
+}
+function colorToString(colorArray) {
+    function colorComponentToString(component) {
+        let componentString = Math.floor(component * 255).toString(16);
+        if (componentString.length === 1) {
+            componentString = '0' + componentString;
+        }
+        return componentString;
+    }
+    return ('#' +
+        colorComponentToString(colorArray[0]) +
+        colorComponentToString(colorArray[1]) +
+        colorComponentToString(colorArray[2]));
+}
+function removeExtraPoints(viewport, worldPointsSet) {
+    return worldPointsSet.map((worldPoints) => {
+        const canvasPoints = worldPoints.map((point) => {
+            const canvasPoint = viewport.worldToCanvas(point);
+            return [Math.floor(canvasPoint[0]), Math.floor(canvasPoint[1])];
+        });
+        let lastPoint;
+        const newWorldPoints = [];
+        let newCanvasPoints = [];
+        for (let i = 0; i < worldPoints.length; i++) {
+            if (lastPoint) {
+                if ((0, point_1.distanceToPoint)(lastPoint, canvasPoints[i]) > 0) {
+                    newWorldPoints.push(worldPoints[i]);
+                    newCanvasPoints.push(canvasPoints[i]);
+                }
+            }
+            lastPoint = canvasPoints[i];
+        }
+        const firstPoint = newCanvasPoints[0];
+        for (let j = Math.min(30, newCanvasPoints.length); j < newCanvasPoints.length; j++) {
+            if ((0, point_1.distanceToPoint)(firstPoint, newCanvasPoints[j]) < 0.5) {
+                newCanvasPoints = newCanvasPoints.slice(0, j);
+                return newWorldPoints.slice(0, j);
+            }
+        }
+        return newWorldPoints;
+    });
+}
+SegmentationIntersectionTool.toolName = 'SegmentationIntersection';
+exports.default = SegmentationIntersectionTool;
+//# sourceMappingURL=SegmentationIntersectionTool.js.map

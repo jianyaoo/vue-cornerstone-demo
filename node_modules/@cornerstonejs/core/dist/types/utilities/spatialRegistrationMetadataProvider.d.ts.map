@@ -1,0 +1,1 @@
+{"version":3,"file":"spatialRegistrationMetadataProvider.d.ts","sourceRoot":"","sources":["../../../src/utilities/spatialRegistrationMetadataProvider.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,MAAM,WAAW,CAAC;AAQjC,QAAA,MAAM,mCAAmC;iBAE1B,MAAM,EAAE,WAAW,IAAI,KAAG,IAAI;gBAW/B,MAAM,eAAe,MAAM,eAAe,MAAM,KAAG,IAAI;CAkBpE,CAAC;AAQF,eAAe,mCAAmC,CAAC"}

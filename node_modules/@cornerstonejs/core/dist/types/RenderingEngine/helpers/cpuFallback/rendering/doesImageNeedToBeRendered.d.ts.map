@@ -1,0 +1,1 @@
+{"version":3,"file":"doesImageNeedToBeRendered.d.ts","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/doesImageNeedToBeRendered.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,yBAAyB,EAAE,MAAM,EAAE,MAAM,mBAAmB,CAAC;AAYtE,MAAM,CAAC,OAAO,UAAU,yBAAyB,CAC/C,cAAc,EAAE,yBAAyB,EACzC,KAAK,EAAE,MAAM,GACZ,OAAO,CAoBT"}

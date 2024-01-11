@@ -1,0 +1,1 @@
+{"version":3,"file":"createSigmoidRGBTransferFunction.d.ts","sourceRoot":"","sources":["../../../src/utilities/createSigmoidRGBTransferFunction.ts"],"names":[],"mappings":"AAAA,OAAO,wBAAwB,MAAM,sDAAsD,CAAC;AAE5F,OAAO,EAAE,QAAQ,EAAE,MAAM,UAAU,CAAC;AAqBpC,MAAM,CAAC,OAAO,UAAU,gCAAgC,CACtD,QAAQ,EAAE,QAAQ,EAClB,kBAAkB,SAAO,GACxB,wBAAwB,CAoC1B"}

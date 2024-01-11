@@ -1,0 +1,1 @@
+{"version":3,"file":"CustomEventType.d.ts","sourceRoot":"","sources":["../../../src/types/CustomEventType.ts"],"names":[],"mappings":"AAAA,UAAU,WAAW,CAAC,CAAC,GAAG,GAAG,CAAE,SAAQ,KAAK;IAI1C,QAAQ,CAAC,MAAM,EAAE,CAAC,CAAC;IACnB,eAAe,CACb,OAAO,EAAE,MAAM,EACf,YAAY,EAAE,OAAO,EACrB,aAAa,EAAE,OAAO,EACtB,SAAS,EAAE,CAAC,GACX,IAAI,CAAC;CACT;AAED,eAAe,WAAW,CAAC"}

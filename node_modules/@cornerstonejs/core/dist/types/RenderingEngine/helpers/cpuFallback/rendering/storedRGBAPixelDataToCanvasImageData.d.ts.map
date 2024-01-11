@@ -1,0 +1,1 @@
+{"version":3,"file":"storedRGBAPixelDataToCanvasImageData.d.ts","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/storedRGBAPixelDataToCanvasImageData.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,MAAM,EAAE,MAAM,mBAAmB,CAAC;AAY3C,MAAM,CAAC,OAAO,WACZ,KAAK,EAAE,MAAM,EACb,GAAG,EAAE,iBAAiB,EACtB,mBAAmB,EAAE,iBAAiB,GACrC,IAAI,CAsCN"}

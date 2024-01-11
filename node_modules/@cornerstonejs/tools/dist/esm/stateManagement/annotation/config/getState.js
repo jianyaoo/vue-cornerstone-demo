@@ -1,0 +1,19 @@
+import { isAnnotationLocked } from '../annotationLocking';
+import { isAnnotationSelected } from '../annotationSelection';
+import { AnnotationStyleStates } from '../../../enums';
+function getState(annotation) {
+    if (annotation) {
+        if (annotation.data && annotation.highlighted) {
+            return AnnotationStyleStates.Highlighted;
+        }
+        if (isAnnotationSelected(annotation.annotationUID)) {
+            return AnnotationStyleStates.Selected;
+        }
+        if (isAnnotationLocked(annotation)) {
+            return AnnotationStyleStates.Locked;
+        }
+    }
+    return AnnotationStyleStates.Default;
+}
+export default getState;
+//# sourceMappingURL=getState.js.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"saveLastRendered.d.ts","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/saveLastRendered.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,yBAAyB,EACzB,yBAAyB,EAC1B,MAAM,mBAAmB,CAAC;AAU3B,MAAM,CAAC,OAAO,WACZ,cAAc,EAAE,yBAAyB,GACxC,yBAAyB,CAoB3B"}

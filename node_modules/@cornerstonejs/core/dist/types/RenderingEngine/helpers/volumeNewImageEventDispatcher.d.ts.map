@@ -1,0 +1,1 @@
+{"version":3,"file":"volumeNewImageEventDispatcher.d.ts","sourceRoot":"","sources":["../../../../src/RenderingEngine/helpers/volumeNewImageEventDispatcher.ts"],"names":[],"mappings":"AAIA,OAAO,EAAE,UAAU,EAAE,MAAM,aAAa,CAAC;AAUzC,wBAAgB,wBAAwB,CAAC,UAAU,EAAE,MAAM,GAAG,IAAI,CAIjE;AAYD,iBAAS,6BAA6B,CACpC,WAAW,EAAE,UAAU,CAAC,mBAAmB,GAC1C,IAAI,CAwCN;AAED,eAAe,6BAA6B,CAAC"}

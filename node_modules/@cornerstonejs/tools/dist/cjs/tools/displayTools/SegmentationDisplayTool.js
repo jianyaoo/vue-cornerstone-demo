@@ -1,0 +1,90 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@cornerstonejs/core");
+const SegmentationRepresentations_1 = __importDefault(require("../../enums/SegmentationRepresentations"));
+const segmentation_1 = require("../../stateManagement/segmentation");
+const segmentationVisibility_1 = require("../../stateManagement/segmentation/config/segmentationVisibility");
+const segmentationState_1 = require("../../stateManagement/segmentation/segmentationState");
+const ToolGroupManager_1 = require("../../store/ToolGroupManager");
+const base_1 = require("../base");
+const Surface_1 = require("./Surface");
+const Contour_1 = require("./Contour");
+const Labelmap_1 = require("./Labelmap");
+class SegmentationDisplayTool extends base_1.BaseTool {
+    constructor(toolProps = {}, defaultToolProps = {
+        configuration: {},
+    }) {
+        super(toolProps, defaultToolProps);
+        this.renderSegmentation = (toolGroupId) => {
+            const toolGroup = (0, ToolGroupManager_1.getToolGroup)(toolGroupId);
+            if (!toolGroup) {
+                return;
+            }
+            const toolGroupSegmentationRepresentations = (0, segmentationState_1.getSegmentationRepresentations)(toolGroupId);
+            if (!toolGroupSegmentationRepresentations ||
+                toolGroupSegmentationRepresentations.length === 0) {
+                return;
+            }
+            const toolGroupViewports = toolGroup.viewportsInfo.map(({ renderingEngineId, viewportId }) => {
+                const enabledElement = (0, core_1.getEnabledElementByIds)(viewportId, renderingEngineId);
+                if (enabledElement) {
+                    return enabledElement.viewport;
+                }
+            });
+            const segmentationRenderList = toolGroupSegmentationRepresentations.map((representation) => {
+                const config = this._getMergedRepresentationsConfig(toolGroupId);
+                const viewportsRenderList = [];
+                const renderers = {
+                    [SegmentationRepresentations_1.default.Labelmap]: Labelmap_1.labelmapDisplay,
+                    [SegmentationRepresentations_1.default.Contour]: Contour_1.contourDisplay,
+                    [SegmentationRepresentations_1.default.Surface]: Surface_1.surfaceDisplay,
+                };
+                const display = renderers[representation.type];
+                for (const viewport of toolGroupViewports) {
+                    const renderedViewport = display.render(viewport, representation, config);
+                    viewportsRenderList.push(renderedViewport);
+                }
+                return viewportsRenderList;
+            });
+            Promise.allSettled(segmentationRenderList).then(() => {
+                toolGroupViewports.forEach((viewport) => {
+                    viewport.render();
+                });
+            });
+        };
+    }
+    onSetToolEnabled() {
+        const toolGroupId = this.toolGroupId;
+        const toolGroupSegmentationRepresentations = (0, segmentationState_1.getSegmentationRepresentations)(toolGroupId);
+        if (!toolGroupSegmentationRepresentations ||
+            toolGroupSegmentationRepresentations.length === 0) {
+            return;
+        }
+        toolGroupSegmentationRepresentations.forEach((segmentationRepresentation) => {
+            (0, segmentationVisibility_1.setSegmentationVisibility)(toolGroupId, segmentationRepresentation.segmentationRepresentationUID, true);
+        });
+    }
+    onSetToolDisabled() {
+        const toolGroupId = this.toolGroupId;
+        const toolGroupSegmentationRepresentations = (0, segmentationState_1.getSegmentationRepresentations)(toolGroupId);
+        if (!toolGroupSegmentationRepresentations ||
+            toolGroupSegmentationRepresentations.length === 0) {
+            return;
+        }
+        toolGroupSegmentationRepresentations.forEach((segmentationRepresentation) => {
+            (0, segmentationVisibility_1.setSegmentationVisibility)(toolGroupId, segmentationRepresentation.segmentationRepresentationUID, false);
+        });
+    }
+    _getMergedRepresentationsConfig(toolGroupId) {
+        const toolGroupConfig = segmentation_1.config.getToolGroupSpecificConfig(toolGroupId);
+        const globalConfig = segmentation_1.config.getGlobalConfig();
+        const mergedConfig = core_1.utilities.deepMerge(globalConfig, toolGroupConfig);
+        return mergedConfig;
+    }
+}
+SegmentationDisplayTool.toolName = 'SegmentationDisplay';
+exports.default = SegmentationDisplayTool;
+//# sourceMappingURL=SegmentationDisplayTool.js.map

@@ -1,0 +1,12 @@
+import { Annotations, Annotation } from '../../types/AnnotationTypes';
+import { AnnotationGroupSelector } from '../../types';
+declare function getAnnotationManager(): import("./FrameOfReferenceSpecificAnnotationManager").default;
+declare function setAnnotationManager(annotationManager: any): void;
+declare function resetAnnotationManager(): void;
+declare function getAnnotations(toolName: string, annotationGroupSelector: AnnotationGroupSelector): Annotations;
+declare function addAnnotation(annotation: Annotation, annotationGroupSelector: AnnotationGroupSelector): string;
+declare function getNumberOfAnnotations(toolName: string, annotationGroupSelector: AnnotationGroupSelector): number;
+declare function removeAnnotation(annotationUID: string): void;
+declare function getAnnotation(annotationUID: string): Annotation;
+declare function removeAllAnnotations(): void;
+export { getAnnotations, getNumberOfAnnotations, addAnnotation, getAnnotation, removeAnnotation, removeAllAnnotations, setAnnotationManager, getAnnotationManager, resetAnnotationManager, };

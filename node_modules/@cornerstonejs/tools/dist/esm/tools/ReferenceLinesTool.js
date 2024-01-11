@@ -1,0 +1,216 @@
+import { vec3 } from 'gl-matrix';
+import { getRenderingEngines, CONSTANTS, utilities as csUtils, } from '@cornerstonejs/core';
+import { addAnnotation } from '../stateManagement/annotation/annotationState';
+import { drawLine as drawLineSvg } from '../drawingSvg';
+import { filterViewportsWithToolEnabled } from '../utilities/viewportFilters';
+import triggerAnnotationRenderForViewportIds from '../utilities/triggerAnnotationRenderForViewportIds';
+import AnnotationDisplayTool from './base/AnnotationDisplayTool';
+const { EPSILON } = CONSTANTS;
+class ReferenceLines extends AnnotationDisplayTool {
+    constructor(toolProps = {}, defaultToolProps = {
+        supportedInteractionTypes: ['Mouse', 'Touch'],
+        configuration: {
+            sourceViewportId: '',
+            showFullDimension: false,
+        },
+    }) {
+        super(toolProps, defaultToolProps);
+        this.editData = {};
+        this._init = () => {
+            const renderingEngines = getRenderingEngines();
+            const renderingEngine = renderingEngines[0];
+            if (!renderingEngine) {
+                return;
+            }
+            let viewports = renderingEngine.getViewports();
+            viewports = filterViewportsWithToolEnabled(viewports, this.getToolName());
+            const sourceViewport = renderingEngine.getViewport(this.configuration.sourceViewportId);
+            if (!sourceViewport || !sourceViewport.getImageData()) {
+                return;
+            }
+            const { element } = sourceViewport;
+            const { viewUp, viewPlaneNormal } = sourceViewport.getCamera();
+            const sourceViewportCanvasCornersInWorld = csUtils.getViewportImageCornersInWorld(sourceViewport);
+            let annotation = this.editData.annotation;
+            const FrameOfReferenceUID = sourceViewport.getFrameOfReferenceUID();
+            if (!annotation) {
+                const newAnnotation = {
+                    highlighted: true,
+                    invalidated: true,
+                    metadata: {
+                        toolName: this.getToolName(),
+                        viewPlaneNormal: [...viewPlaneNormal],
+                        viewUp: [...viewUp],
+                        FrameOfReferenceUID,
+                        referencedImageId: null,
+                    },
+                    data: {
+                        handles: {
+                            points: sourceViewportCanvasCornersInWorld,
+                        },
+                    },
+                };
+                addAnnotation(newAnnotation, element);
+                annotation = newAnnotation;
+            }
+            else {
+                this.editData.annotation.data.handles.points =
+                    sourceViewportCanvasCornersInWorld;
+            }
+            this.editData = {
+                sourceViewport,
+                renderingEngine,
+                annotation,
+            };
+            triggerAnnotationRenderForViewportIds(renderingEngine, viewports
+                .filter((viewport) => viewport.id !== sourceViewport.id)
+                .map((viewport) => viewport.id));
+        };
+        this.onSetToolEnabled = () => {
+            this._init();
+        };
+        this.onCameraModified = (evt) => {
+            this._init();
+        };
+        this.renderAnnotation = (enabledElement, svgDrawingHelper) => {
+            const { viewport: targetViewport } = enabledElement;
+            const { annotation, sourceViewport } = this.editData;
+            let renderStatus = false;
+            if (!sourceViewport) {
+                return renderStatus;
+            }
+            if (sourceViewport.id === targetViewport.id) {
+                return renderStatus;
+            }
+            if (!annotation || !annotation?.data?.handles?.points) {
+                return renderStatus;
+            }
+            const styleSpecifier = {
+                toolGroupId: this.toolGroupId,
+                toolName: this.getToolName(),
+                viewportId: enabledElement.viewport.id,
+            };
+            const topLeft = annotation.data.handles.points[0];
+            const topRight = annotation.data.handles.points[1];
+            const bottomLeft = annotation.data.handles.points[2];
+            const bottomRight = annotation.data.handles.points[3];
+            const { focalPoint, viewPlaneNormal, viewUp } = targetViewport.getCamera();
+            const { viewPlaneNormal: sourceViewPlaneNormal } = sourceViewport.getCamera();
+            if (this.isParallel(viewPlaneNormal, sourceViewPlaneNormal)) {
+                return renderStatus;
+            }
+            const targetViewportPlane = csUtils.planar.planeEquation(viewPlaneNormal, focalPoint);
+            const pointSet1 = [topLeft, bottomLeft, topRight, bottomRight];
+            const pointSet2 = [topLeft, topRight, bottomLeft, bottomRight];
+            let pointSetToUse = pointSet1;
+            let topBottomVec = vec3.subtract(vec3.create(), pointSet1[0], pointSet1[1]);
+            topBottomVec = vec3.normalize(vec3.create(), topBottomVec);
+            let topRightVec = vec3.subtract(vec3.create(), pointSet1[2], pointSet1[0]);
+            topRightVec = vec3.normalize(vec3.create(), topRightVec);
+            const newNormal = vec3.cross(vec3.create(), topBottomVec, topRightVec);
+            if (this.isParallel(newNormal, viewPlaneNormal)) {
+                return renderStatus;
+            }
+            if (this.isPerpendicular(topBottomVec, viewPlaneNormal)) {
+                pointSetToUse = pointSet2;
+            }
+            const lineStartWorld = csUtils.planar.linePlaneIntersection(pointSetToUse[0], pointSetToUse[1], targetViewportPlane);
+            const lineEndWorld = csUtils.planar.linePlaneIntersection(pointSetToUse[2], pointSetToUse[3], targetViewportPlane);
+            const { annotationUID } = annotation;
+            styleSpecifier.annotationUID = annotationUID;
+            const lineWidth = this.getStyle('lineWidth', styleSpecifier, annotation);
+            const lineDash = this.getStyle('lineDash', styleSpecifier, annotation);
+            const color = this.getStyle('color', styleSpecifier, annotation);
+            const shadow = this.getStyle('shadow', styleSpecifier, annotation);
+            let canvasCoordinates = [lineStartWorld, lineEndWorld].map((world) => targetViewport.worldToCanvas(world));
+            if (this.configuration.showFullDimension) {
+                canvasCoordinates = this.handleFullDimension(targetViewport, lineStartWorld, viewPlaneNormal, viewUp, lineEndWorld, canvasCoordinates);
+            }
+            const dataId = `${annotationUID}-line`;
+            const lineUID = '1';
+            drawLineSvg(svgDrawingHelper, annotationUID, lineUID, canvasCoordinates[0], canvasCoordinates[1], {
+                color,
+                width: lineWidth,
+                lineDash,
+                shadow,
+            }, dataId);
+            renderStatus = true;
+            return renderStatus;
+        };
+        this.isPerpendicular = (vec1, vec2) => {
+            const dot = vec3.dot(vec1, vec2);
+            return Math.abs(dot) < EPSILON;
+        };
+    }
+    handleFullDimension(targetViewport, lineStartWorld, viewPlaneNormal, viewUp, lineEndWorld, canvasCoordinates) {
+        const renderingEngine = targetViewport.getRenderingEngine();
+        const targetId = this.getTargetId(targetViewport);
+        const targetImage = this.getTargetIdImage(targetId, renderingEngine);
+        const referencedImageId = this.getReferencedImageId(targetViewport, lineStartWorld, viewPlaneNormal, viewUp);
+        if (referencedImageId && targetImage) {
+            try {
+                const { imageData, dimensions } = targetImage;
+                const [topLeftImageCoord, topRightImageCoord, bottomRightImageCoord, bottomLeftImageCoord,] = [
+                    imageData.indexToWorld([0, 0, 0]),
+                    imageData.indexToWorld([dimensions[0] - 1, 0, 0]),
+                    imageData.indexToWorld([
+                        dimensions[0] - 1,
+                        dimensions[1] - 1,
+                        0,
+                    ]),
+                    imageData.indexToWorld([0, dimensions[1] - 1, 0]),
+                ].map((world) => csUtils.worldToImageCoords(referencedImageId, world));
+                const [lineStartImageCoord, lineEndImageCoord] = [
+                    lineStartWorld,
+                    lineEndWorld,
+                ].map((world) => csUtils.worldToImageCoords(referencedImageId, world));
+                canvasCoordinates = [
+                    [topLeftImageCoord, topRightImageCoord],
+                    [topRightImageCoord, bottomRightImageCoord],
+                    [bottomLeftImageCoord, bottomRightImageCoord],
+                    [topLeftImageCoord, bottomLeftImageCoord],
+                ]
+                    .map(([start, end]) => this.intersectInfiniteLines(start, end, lineStartImageCoord, lineEndImageCoord))
+                    .filter((point) => point && this.isInBound(point, dimensions))
+                    .map((point) => {
+                    const world = csUtils.imageToWorldCoords(referencedImageId, point);
+                    return targetViewport.worldToCanvas(world);
+                });
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }
+        return canvasCoordinates;
+    }
+    intersectInfiniteLines(line1Start, line1End, line2Start, line2End) {
+        const [x1, y1] = line1Start;
+        const [x2, y2] = line1End;
+        const [x3, y3] = line2Start;
+        const [x4, y4] = line2End;
+        const a1 = y2 - y1;
+        const b1 = x1 - x2;
+        const c1 = x2 * y1 - x1 * y2;
+        const a2 = y4 - y3;
+        const b2 = x3 - x4;
+        const c2 = x4 * y3 - x3 * y4;
+        if (Math.abs(a1 * b2 - a2 * b1) < EPSILON) {
+            return;
+        }
+        const x = (b1 * c2 - b2 * c1) / (a1 * b2 - a2 * b1);
+        const y = (a2 * c1 - a1 * c2) / (a1 * b2 - a2 * b1);
+        return [x, y];
+    }
+    isParallel(vec1, vec2) {
+        return Math.abs(vec3.dot(vec1, vec2)) > 1 - EPSILON;
+    }
+    isInBound(point, dimensions) {
+        return (point[0] >= 0 &&
+            point[0] <= dimensions[0] &&
+            point[1] >= 0 &&
+            point[1] <= dimensions[1]);
+    }
+}
+ReferenceLines.toolName = 'ReferenceLines';
+export default ReferenceLines;
+//# sourceMappingURL=ReferenceLinesTool.js.map

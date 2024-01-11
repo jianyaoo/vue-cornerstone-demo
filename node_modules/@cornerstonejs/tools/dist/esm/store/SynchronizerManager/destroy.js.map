@@ -1,0 +1,1 @@
+{"version":3,"file":"destroy.js","sourceRoot":"","sources":["../../../../src/store/SynchronizerManager/destroy.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,UAAU,CAAC;AAKjC,SAAS,OAAO;IACd,OAAO,KAAK,CAAC,aAAa,CAAC,MAAM,GAAG,CAAC,EAAE;QACrC,MAAM,YAAY,GAAG,KAAK,CAAC,aAAa,CAAC,GAAG,EAAE,CAAC;QAE/C,YAAY,CAAC,OAAO,EAAE,CAAC;KACxB;AACH,CAAC;AAED,eAAe,OAAO,CAAC"}

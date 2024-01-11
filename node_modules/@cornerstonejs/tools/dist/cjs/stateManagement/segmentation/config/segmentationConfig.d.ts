@@ -1,0 +1,13 @@
+import SegmentationRepresentations from '../../../enums/SegmentationRepresentations';
+import { RepresentationConfig, SegmentationRepresentationConfig, SegmentSpecificRepresentationConfig } from '../../../types/SegmentationStateTypes';
+declare function getGlobalConfig(): SegmentationRepresentationConfig;
+declare function setGlobalConfig(segmentationConfig: SegmentationRepresentationConfig): void;
+declare function getGlobalRepresentationConfig(representationType: SegmentationRepresentations): RepresentationConfig['LABELMAP'];
+declare function setGlobalRepresentationConfig(representationType: SegmentationRepresentations, config: RepresentationConfig['LABELMAP']): void;
+declare function getToolGroupSpecificConfig(toolGroupId: string): SegmentationRepresentationConfig;
+declare function setToolGroupSpecificConfig(toolGroupId: string, segmentationRepresentationConfig: SegmentationRepresentationConfig): void;
+declare function getSegmentationRepresentationSpecificConfig(toolGroupId: string, segmentationRepresentationUID: string): RepresentationConfig;
+declare function setSegmentationRepresentationSpecificConfig(toolGroupId: string, segmentationRepresentationUID: string, config: RepresentationConfig): void;
+declare function getSegmentSpecificConfig(toolGroupId: string, segmentationRepresentationUID: string, segmentIndex: number): RepresentationConfig;
+declare function setSegmentSpecificConfig(toolGroupId: string, segmentationRepresentationUID: string, config: SegmentSpecificRepresentationConfig): void;
+export { getGlobalConfig, setGlobalConfig, getGlobalRepresentationConfig, setGlobalRepresentationConfig, getToolGroupSpecificConfig, setToolGroupSpecificConfig, getSegmentationRepresentationSpecificConfig, setSegmentationRepresentationSpecificConfig, getSegmentSpecificConfig, setSegmentSpecificConfig, };

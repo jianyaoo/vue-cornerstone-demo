@@ -1,0 +1,51 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const _getHash_1 = __importDefault(require("./_getHash"));
+const setNewAttributesIfValid_1 = __importDefault(require("./setNewAttributesIfValid"));
+const setAttributesIfNecessary_1 = __importDefault(require("./setAttributesIfNecessary"));
+function drawLine(svgDrawingHelper, annotationUID, lineUID, start, end, options = {}, dataId = '') {
+    if (isNaN(start[0]) || isNaN(start[1]) || isNaN(end[0]) || isNaN(end[1])) {
+        return;
+    }
+    const { color, width, lineWidth, lineDash, shadow } = Object.assign({
+        color: 'dodgerblue',
+        width: '2',
+        lineWidth: undefined,
+        lineDash: undefined,
+        shadow: undefined,
+    }, options);
+    const strokeWidth = lineWidth || width;
+    const svgns = 'http://www.w3.org/2000/svg';
+    const svgNodeHash = (0, _getHash_1.default)(annotationUID, 'line', lineUID);
+    const existingLine = svgDrawingHelper.getSvgNode(svgNodeHash);
+    const dropShadowStyle = shadow
+        ? `filter:url(#shadow-${svgDrawingHelper.svgLayerElement.id});`
+        : '';
+    const attributes = {
+        x1: `${start[0]}`,
+        y1: `${start[1]}`,
+        x2: `${end[0]}`,
+        y2: `${end[1]}`,
+        stroke: color,
+        style: dropShadowStyle,
+        'stroke-width': strokeWidth,
+        'stroke-dasharray': lineDash,
+    };
+    if (existingLine) {
+        (0, setAttributesIfNecessary_1.default)(attributes, existingLine);
+        svgDrawingHelper.setNodeTouched(svgNodeHash);
+    }
+    else {
+        const newLine = document.createElementNS(svgns, 'line');
+        if (dataId !== '') {
+            newLine.setAttribute('data-id', dataId);
+        }
+        (0, setNewAttributesIfValid_1.default)(attributes, newLine);
+        svgDrawingHelper.appendNode(newLine, svgNodeHash);
+    }
+}
+exports.default = drawLine;
+//# sourceMappingURL=drawLine.js.map

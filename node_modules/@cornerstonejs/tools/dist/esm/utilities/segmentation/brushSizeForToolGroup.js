@@ -1,0 +1,41 @@
+import { getToolGroup } from '../../store/ToolGroupManager';
+import triggerAnnotationRenderForViewportIds from '../triggerAnnotationRenderForViewportIds';
+import { getRenderingEngine } from '@cornerstonejs/core';
+import getBrushToolInstances from './utilities';
+export function setBrushSizeForToolGroup(toolGroupId, brushSize, toolName) {
+    const toolGroup = getToolGroup(toolGroupId);
+    if (toolGroup === undefined) {
+        return;
+    }
+    const brushBasedToolInstances = getBrushToolInstances(toolGroupId, toolName);
+    brushBasedToolInstances.forEach((tool) => {
+        tool.configuration.brushSize = brushSize;
+        tool.invalidateBrushCursor();
+    });
+    const viewportsInfo = toolGroup.getViewportsInfo();
+    const viewportsInfoArray = Object.keys(viewportsInfo).map((key) => viewportsInfo[key]);
+    if (!viewportsInfoArray.length) {
+        return;
+    }
+    const { renderingEngineId } = viewportsInfoArray[0];
+    const viewportIds = toolGroup.getViewportIds();
+    const renderingEngine = getRenderingEngine(renderingEngineId);
+    triggerAnnotationRenderForViewportIds(renderingEngine, viewportIds);
+}
+export function getBrushSizeForToolGroup(toolGroupId, toolName) {
+    const toolGroup = getToolGroup(toolGroupId);
+    if (toolGroup === undefined) {
+        return;
+    }
+    const toolInstances = toolGroup._toolInstances;
+    if (!Object.keys(toolInstances).length) {
+        return;
+    }
+    const brushBasedToolInstances = getBrushToolInstances(toolGroupId, toolName);
+    const brushToolInstance = brushBasedToolInstances[0];
+    if (!brushToolInstance) {
+        return;
+    }
+    return brushToolInstance.configuration.brushSize;
+}
+//# sourceMappingURL=brushSizeForToolGroup.js.map

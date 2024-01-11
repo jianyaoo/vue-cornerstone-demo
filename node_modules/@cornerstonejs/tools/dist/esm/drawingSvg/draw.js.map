@@ -1,0 +1,1 @@
+{"version":3,"file":"draw.js","sourceRoot":"","sources":["../../../src/drawingSvg/draw.ts"],"names":[],"mappings":"AAAA,OAAO,mBAAmB,MAAM,uBAAuB,CAAC;AAExD,SAAS,IAAI,CACX,OAAuB,EACvB,EAAmC;IAEnC,MAAM,gBAAgB,GAAG,mBAAmB,CAAC,OAAO,CAAC,CAAC;IAGtD,EAAE,CAAC,gBAAgB,CAAC,CAAC;IAGrB,gBAAgB,CAAC,cAAc,EAAE,CAAC;AACpC,CAAC;AAED,eAAe,IAAI,CAAC"}

@@ -1,0 +1,38 @@
+{
+  "name": "@cornerstonejs/codec-libjpeg-turbo-8bit",
+  "version": "1.2.2",
+  "description": "JS/WASM Build of [libjpeg-turbo](https://github.com/libjpeg-turbo)",
+  "main": "dist/libjpegturbojs.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=0.14"
+  },
+  "exports": {
+    ".": "./dist/libjpegturbojs.js",
+    "./wasm": "./dist/libjpegturbowasm.wasm",
+    "./wasmjs": "./dist/libjpegturbowasm.js",
+    "./decode": "./dist/libjpegturbojs_decode.js",
+    "./decodewasm": "./dist/libjpegturbowasm_decode.wasm",
+    "./decodewasmjs": "./dist/libjpegturbowasm_decode.js"
+  },
+  "files": [
+    "package.json",
+    "README.md",
+    "dist"
+  ],
+  "scripts": {
+    "test": "cd test/node; npm run test",
+    "test:ci": "yarn run test",
+    "build": "bash build.sh",
+    "build:ci": "yarn run build",
+    "prepublishOnly": "yarn run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "gitHead": "b81e87e64c792648ae267c2a090f888896bb5823"
+}

@@ -1,0 +1,49 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getBrushSizeForToolGroup = exports.setBrushSizeForToolGroup = void 0;
+const ToolGroupManager_1 = require("../../store/ToolGroupManager");
+const triggerAnnotationRenderForViewportIds_1 = __importDefault(require("../triggerAnnotationRenderForViewportIds"));
+const core_1 = require("@cornerstonejs/core");
+const utilities_1 = __importDefault(require("./utilities"));
+function setBrushSizeForToolGroup(toolGroupId, brushSize, toolName) {
+    const toolGroup = (0, ToolGroupManager_1.getToolGroup)(toolGroupId);
+    if (toolGroup === undefined) {
+        return;
+    }
+    const brushBasedToolInstances = (0, utilities_1.default)(toolGroupId, toolName);
+    brushBasedToolInstances.forEach((tool) => {
+        tool.configuration.brushSize = brushSize;
+        tool.invalidateBrushCursor();
+    });
+    const viewportsInfo = toolGroup.getViewportsInfo();
+    const viewportsInfoArray = Object.keys(viewportsInfo).map((key) => viewportsInfo[key]);
+    if (!viewportsInfoArray.length) {
+        return;
+    }
+    const { renderingEngineId } = viewportsInfoArray[0];
+    const viewportIds = toolGroup.getViewportIds();
+    const renderingEngine = (0, core_1.getRenderingEngine)(renderingEngineId);
+    (0, triggerAnnotationRenderForViewportIds_1.default)(renderingEngine, viewportIds);
+}
+exports.setBrushSizeForToolGroup = setBrushSizeForToolGroup;
+function getBrushSizeForToolGroup(toolGroupId, toolName) {
+    const toolGroup = (0, ToolGroupManager_1.getToolGroup)(toolGroupId);
+    if (toolGroup === undefined) {
+        return;
+    }
+    const toolInstances = toolGroup._toolInstances;
+    if (!Object.keys(toolInstances).length) {
+        return;
+    }
+    const brushBasedToolInstances = (0, utilities_1.default)(toolGroupId, toolName);
+    const brushToolInstance = brushBasedToolInstances[0];
+    if (!brushToolInstance) {
+        return;
+    }
+    return brushToolInstance.configuration.brushSize;
+}
+exports.getBrushSizeForToolGroup = getBrushSizeForToolGroup;
+//# sourceMappingURL=brushSizeForToolGroup.js.map

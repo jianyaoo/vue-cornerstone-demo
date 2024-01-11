@@ -1,0 +1,73 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const utilities_1 = require("../../utilities");
+const triggerSegmentationEvents_1 = require("../../stateManagement/segmentation/triggerSegmentationEvents");
+const utilities_2 = require("./utilities");
+function thresholdVolumeByRange(segmentationVolume, thresholdVolumeInformation, options) {
+    const { imageData: segmentationImageData } = segmentationVolume;
+    const scalarData = segmentationVolume.getScalarData();
+    const { overwrite, boundsIJK } = options;
+    const overlapType = (options === null || options === void 0 ? void 0 : options.overlapType) || 0;
+    if (overwrite) {
+        for (let i = 0; i < scalarData.length; i++) {
+            scalarData[i] = 0;
+        }
+    }
+    const { baseVolumeIdx, volumeInfoList } = (0, utilities_2.processVolumes)(segmentationVolume, thresholdVolumeInformation);
+    let overlaps, total, range;
+    const testOverlapRange = (volumeInfo, voxelSpacing, voxelCenter) => {
+        const callbackOverlap = ({ value }) => {
+            total = total + 1;
+            if (value >= range.lower && value <= range.upper) {
+                overlaps = overlaps + 1;
+            }
+        };
+        const { imageData, dimensions, lower, upper } = volumeInfo;
+        const overlapBounds = (0, utilities_2.getVoxelOverlap)(imageData, dimensions, voxelSpacing, voxelCenter);
+        total = 0;
+        overlaps = 0;
+        range = { lower, upper };
+        let overlapTest = false;
+        (0, utilities_1.pointInShapeCallback)(imageData, () => true, callbackOverlap, overlapBounds);
+        if (overlapType === 0) {
+            overlapTest = overlaps > 0;
+        }
+        else if (overlapType == 1) {
+            overlapTest = overlaps === total;
+        }
+        return overlapTest;
+    };
+    const testRange = (volumeInfo, pointIJK) => {
+        const { imageData, referenceValues, lower, upper } = volumeInfo;
+        const offset = imageData.computeOffsetIndex(pointIJK);
+        const value = referenceValues[offset];
+        if (value <= lower || value >= upper) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    };
+    const callback = ({ index, pointIJK, pointLPS }) => {
+        let insert = volumeInfoList.length > 0;
+        for (let i = 0; i < volumeInfoList.length; i++) {
+            if (volumeInfoList[i].volumeSize === scalarData.length) {
+                insert = testRange(volumeInfoList[i], pointIJK);
+            }
+            else {
+                insert = testOverlapRange(volumeInfoList[i], volumeInfoList[baseVolumeIdx].spacing, pointLPS);
+            }
+            if (!insert) {
+                break;
+            }
+        }
+        if (insert) {
+            scalarData[index] = 1;
+        }
+    };
+    (0, utilities_1.pointInShapeCallback)(segmentationImageData, () => true, callback, boundsIJK);
+    (0, triggerSegmentationEvents_1.triggerSegmentationDataModified)(segmentationVolume.volumeId);
+    return segmentationVolume;
+}
+exports.default = thresholdVolumeByRange;
+//# sourceMappingURL=thresholdVolumeByRange.js.map

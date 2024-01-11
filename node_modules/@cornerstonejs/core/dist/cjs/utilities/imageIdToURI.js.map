@@ -1,0 +1,1 @@
+{"version":3,"file":"imageIdToURI.js","sourceRoot":"","sources":["../../../src/utilities/imageIdToURI.ts"],"names":[],"mappings":";;AAMA,SAAwB,YAAY,CAAC,OAAe;IAClD,MAAM,UAAU,GAAG,OAAO,CAAC,OAAO,CAAC,GAAG,CAAC,CAAC;IACxC,OAAO,OAAO,CAAC,SAAS,CAAC,UAAU,GAAG,CAAC,CAAC,CAAC;AAC3C,CAAC;AAHD,+BAGC"}

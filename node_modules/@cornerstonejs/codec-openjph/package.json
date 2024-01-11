@@ -1,0 +1,44 @@
+{
+  "name": "@cornerstonejs/codec-openjph",
+  "version": "2.4.5",
+  "description": "JS/WebAssembly build of OpenJPH",
+  "main": "dist/openjphjs.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=0.14"
+  },
+  "exports": {
+    ".": "./dist/openjphjs.js",
+    "./wasm": "./dist/openjphjs.wasm",
+    "./wasmjs": "./dist/openjphjs.js"
+  },
+  "scripts": {
+    "build": "bash build.sh",
+    "build:ci": "yarn run build",
+    "build:ui": "webpack --config ./.webpack/webpack.config.js",
+    "start": " webpack-dev-server --config ./.webpack/webpack.config.js",
+    "prepublishOnly": "bash build.sh",
+    "postpublish": "node -p -e \"require('./package.json').version\" > success_version.txt"
+  },
+  "files": [
+    "package.json",
+    "README.md",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chafey/openjphjs.git"
+  },
+  "author": "Chris Hafey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chafey/openjphjs/issues"
+  },
+  "homepage": "https://github.com/chafey/openjphjs#readme",
+  "gitHead": "8fcc8f7c8044e4d36c0e1405c0eaa3e159ca0597"
+}

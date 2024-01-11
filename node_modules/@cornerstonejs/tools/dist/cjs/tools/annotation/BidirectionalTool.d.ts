@@ -1,0 +1,42 @@
+import type { Types } from '@cornerstonejs/core';
+import { AnnotationTool } from '../base';
+import { EventTypes, ToolHandle, PublicToolProps, ToolProps, SVGDrawingHelper } from '../../types';
+import { BidirectionalAnnotation } from '../../types/ToolSpecificAnnotationTypes';
+declare class BidirectionalTool extends AnnotationTool {
+    static toolName: any;
+    touchDragCallback: any;
+    mouseDragCallback: any;
+    _throttledCalculateCachedStats: any;
+    editData: {
+        annotation: any;
+        viewportIdsToRender: string[];
+        handleIndex?: number;
+        movingTextBox: boolean;
+        newAnnotation?: boolean;
+        hasMoved?: boolean;
+    } | null;
+    isDrawing: boolean;
+    isHandleOutsideImage: boolean;
+    preventHandleOutsideImage: boolean;
+    constructor(toolProps?: PublicToolProps, defaultToolProps?: ToolProps);
+    addNewAnnotation(evt: EventTypes.InteractionEventType): BidirectionalAnnotation;
+    isPointNearTool: (element: HTMLDivElement, annotation: BidirectionalAnnotation, canvasCoords: Types.Point2, proximity: number) => boolean;
+    toolSelectedCallback: (evt: EventTypes.InteractionEventType, annotation: BidirectionalAnnotation) => void;
+    handleSelectedCallback: (evt: EventTypes.InteractionEventType, annotation: BidirectionalAnnotation, handle: ToolHandle) => void;
+    _endCallback: (evt: EventTypes.InteractionEventType) => void;
+    _dragDrawCallback: (evt: EventTypes.InteractionEventType) => void;
+    _dragModifyCallback: (evt: EventTypes.InteractionEventType) => void;
+    _dragModifyHandle: (evt: EventTypes.InteractionEventType) => void;
+    cancel: (element: HTMLDivElement) => any;
+    _activateDraw: (element: any) => void;
+    _deactivateDraw: (element: any) => void;
+    _activateModify: (element: any) => void;
+    _deactivateModify: (element: any) => void;
+    renderAnnotation: (enabledElement: Types.IEnabledElement, svgDrawingHelper: SVGDrawingHelper) => boolean;
+    _movingLongAxisWouldPutItThroughShortAxis: (firstLineSegment: any, secondLineSegment: any) => boolean;
+    _calculateLength(pos1: any, pos2: any): number;
+    _calculateCachedStats: (annotation: any, renderingEngine: any, enabledElement: any) => any;
+    _isInsideVolume: (index1: any, index2: any, index3: any, index4: any, dimensions: any) => boolean;
+    _getSignedAngle: (vector1: any, vector2: any) => number;
+}
+export default BidirectionalTool;

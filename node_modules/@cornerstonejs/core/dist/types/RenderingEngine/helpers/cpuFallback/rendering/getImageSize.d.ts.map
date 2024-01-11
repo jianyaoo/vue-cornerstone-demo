@@ -1,0 +1,1 @@
+{"version":3,"file":"getImageSize.d.ts","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/getImageSize.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,MAAM,EAAE,MAAM,mBAAmB,CAAC;AAyB3C,MAAM,CAAC,OAAO,WACZ,KAAK,EAAE,MAAM,EACb,QAAQ,MAAO,GACd;IAAE,MAAM,EAAE,MAAM,CAAC;IAAC,KAAK,EAAE,MAAM,CAAA;CAAE,CAyBnC"}

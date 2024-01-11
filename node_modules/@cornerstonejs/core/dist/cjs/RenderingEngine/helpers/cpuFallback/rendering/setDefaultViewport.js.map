@@ -1,0 +1,1 @@
+{"version":3,"file":"setDefaultViewport.js","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/setDefaultViewport.ts"],"names":[],"mappings":";;;AAEA,MAAM,KAAK,GAAG;IACZ,QAAQ,EAAE,EAAE;CACb,CAAC;AAYO,sBAAK;AAJd,mBAAyB,QAA6B;IACpD,KAAK,CAAC,QAAQ,GAAG,QAAQ,IAAI,EAAE,CAAC;AAClC,CAAC;AAFD,4BAEC"}

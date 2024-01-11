@@ -1,0 +1,1 @@
+{"version":3,"file":"transformWorldToIndex.js","sourceRoot":"","sources":["../../../src/utilities/transformWorldToIndex.ts"],"names":[],"mappings":"AAUA,MAAM,CAAC,OAAO,UAAU,qBAAqB,CAAC,SAAS,EAAE,QAAgB;IACvE,MAAM,eAAe,GAAG,SAAS,CAAC,YAAY,CAAC,QAAQ,CAAC,CAAC;IACzD,MAAM,KAAK,GAAG,eAAe,CAAC,GAAG,CAAC,IAAI,CAAC,KAAK,CAAC,CAAC;IAE9C,OAAO,KAAK,CAAC;AACf,CAAC"}

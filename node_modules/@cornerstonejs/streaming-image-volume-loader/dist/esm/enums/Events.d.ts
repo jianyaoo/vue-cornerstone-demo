@@ -1,0 +1,4 @@
+declare enum Events {
+    DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED = "DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED"
+}
+export default Events;

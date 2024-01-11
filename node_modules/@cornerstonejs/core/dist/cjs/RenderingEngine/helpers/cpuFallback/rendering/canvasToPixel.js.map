@@ -1,0 +1,1 @@
+{"version":3,"file":"canvasToPixel.js","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/canvasToPixel.ts"],"names":[],"mappings":";;;;;AAAA,kEAA0C;AAe1C,mBACE,cAAyC,EACzC,EAAU;IAEV,MAAM,SAAS,GAAG,IAAA,sBAAY,EAAC,cAAc,CAAC,CAAC;IAE/C,SAAS,CAAC,MAAM,EAAE,CAAC;IAEnB,OAAO,SAAS,CAAC,cAAc,CAAC,EAAE,CAAC,CAAC;AACtC,CAAC;AATD,4BASC"}

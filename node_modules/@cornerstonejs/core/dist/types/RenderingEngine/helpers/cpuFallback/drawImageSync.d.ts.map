@@ -1,0 +1,1 @@
+{"version":3,"file":"drawImageSync.d.ts","sourceRoot":"","sources":["../../../../../src/RenderingEngine/helpers/cpuFallback/drawImageSync.ts"],"names":[],"mappings":"AAIA,OAAO,EAAE,yBAAyB,EAAE,MAAM,gBAAgB,CAAC;AAQ3D,MAAM,CAAC,OAAO,WACZ,cAAc,EAAE,yBAAyB,EACzC,WAAW,EAAE,OAAO,GACnB,IAAI,CA0CN"}

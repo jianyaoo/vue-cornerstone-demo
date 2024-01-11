@@ -1,0 +1,1 @@
+{"version":3,"file":"initializeRenderCanvas.d.ts","sourceRoot":"","sources":["../../../../../../src/RenderingEngine/helpers/cpuFallback/rendering/initializeRenderCanvas.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,yBAAyB,EAAE,MAAM,EAAE,MAAM,mBAAmB,CAAC;AAUtE,MAAM,CAAC,OAAO,WACZ,cAAc,EAAE,yBAAyB,EACzC,KAAK,EAAE,MAAM,GACZ,IAAI,CAuBN"}

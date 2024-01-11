@@ -1,0 +1,352 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdvancedMagnifyViewport = exports.default = void 0;
+const gl_matrix_1 = require("gl-matrix");
+const core_1 = require("@cornerstonejs/core");
+const enums_1 = require("../enums");
+const store_1 = require("../store");
+const utilities_1 = require("../utilities");
+const __1 = require("..");
+const _1 = require("./");
+const point_1 = require("../utilities/math/point");
+const MAGNIFY_CLASSNAME = 'advancedMagnifyTool';
+const MAGNIFY_VIEWPORT_INITIAL_RADIUS = 125;
+const isSegmentation = (actor) => actor.uid !== actor.referenceId;
+class AdvancedMagnifyViewport {
+    constructor({ magnifyViewportId, sourceEnabledElement, radius = MAGNIFY_VIEWPORT_INITIAL_RADIUS, position = [0, 0], zoomFactor, autoPan, }) {
+        this._enabledElement = null;
+        this._sourceToolGroup = null;
+        this._magnifyToolGroup = null;
+        this._isViewportReady = false;
+        this._radius = 0;
+        this._resized = false;
+        this._canAutoPan = false;
+        this._viewportId = magnifyViewportId !== null && magnifyViewportId !== void 0 ? magnifyViewportId : core_1.utilities.uuidv4();
+        this._sourceEnabledElement = sourceEnabledElement;
+        this._autoPan = autoPan;
+        this.radius = radius;
+        this.position = position;
+        this.zoomFactor = zoomFactor;
+        this.visible = true;
+        this._browserMouseDownCallback = this._browserMouseDownCallback.bind(this);
+        this._browserMouseUpCallback = this._browserMouseUpCallback.bind(this);
+        this._handleToolModeChanged = this._handleToolModeChanged.bind(this);
+        this._mouseDragCallback = this._mouseDragCallback.bind(this);
+        this._resizeViewportAsync = ((0, utilities_1.debounce)(this._resizeViewport.bind(this), 1));
+        this._initialize();
+    }
+    get sourceEnabledElement() {
+        return this._sourceEnabledElement;
+    }
+    get viewportId() {
+        return this._viewportId;
+    }
+    get radius() {
+        return this._radius;
+    }
+    set radius(radius) {
+        if (Math.abs(this._radius - radius) > 0.00001) {
+            this._radius = radius;
+            this._resized = true;
+        }
+    }
+    update() {
+        const { radius, position, visible } = this;
+        const { viewport } = this._enabledElement;
+        const { element } = viewport;
+        const size = 2 * radius;
+        const [x, y] = position;
+        if (this._resized) {
+            this._resizeViewportAsync();
+            this._resized = false;
+        }
+        Object.assign(element.style, {
+            display: visible ? 'block' : 'hidden',
+            width: `${size}px`,
+            height: `${size}px`,
+            left: `${-radius}px`,
+            top: `${-radius}px`,
+            transform: `translate(${x}px, ${y}px)`,
+        });
+        if (this._isViewportReady) {
+            this._syncViewports();
+            viewport.render();
+        }
+    }
+    dispose() {
+        const { viewport } = this._enabledElement;
+        const { element } = viewport;
+        const renderingEngine = viewport.getRenderingEngine();
+        this._removeEventListeners(element);
+        renderingEngine.disableElement(viewport.id);
+        if (element.parentNode) {
+            element.parentNode.removeChild(element);
+        }
+    }
+    _handleToolModeChanged(evt) {
+        var _a;
+        const { _magnifyToolGroup: magnifyToolGroup } = this;
+        const { toolGroupId, toolName, mode, toolBindingsOptions } = evt.detail;
+        if (((_a = this._sourceToolGroup) === null || _a === void 0 ? void 0 : _a.id) !== toolGroupId) {
+            return;
+        }
+        switch (mode) {
+            case enums_1.ToolModes.Active:
+                magnifyToolGroup.setToolActive(toolName, toolBindingsOptions);
+                break;
+            case enums_1.ToolModes.Passive:
+                magnifyToolGroup.setToolPassive(toolName);
+                break;
+            case enums_1.ToolModes.Enabled:
+                magnifyToolGroup.setToolEnabled(toolName);
+                break;
+            case enums_1.ToolModes.Disabled:
+                magnifyToolGroup.setToolDisabled(toolName);
+                break;
+            default:
+                throw new Error(`Unknow tool mode (${mode})`);
+        }
+    }
+    _inheritBorderRadius(magnifyElement) {
+        const viewport = magnifyElement.querySelector('.viewport-element');
+        const canvas = magnifyElement.querySelector('.cornerstone-canvas');
+        viewport.style.borderRadius = 'inherit';
+        canvas.style.borderRadius = 'inherit';
+    }
+    _createViewportNode() {
+        const magnifyElement = document.createElement('div');
+        const { radius } = this;
+        const size = radius * 2;
+        magnifyElement.classList.add(MAGNIFY_CLASSNAME);
+        Object.assign(magnifyElement.style, {
+            display: 'block',
+            width: `${size}px`,
+            height: `${size}px`,
+            position: 'absolute',
+            overflow: 'hidden',
+            borderRadius: '50%',
+            boxSizing: 'border-box',
+            left: `${-radius}px`,
+            top: `${-radius}px`,
+            transform: `translate(-1000px, -1000px)`,
+        });
+        return magnifyElement;
+    }
+    _convertZoomFactorToParalellScale(viewport, magnifyViewport, zoomFactor) {
+        const { parallelScale } = viewport.getCamera();
+        const canvasRatio = magnifyViewport.canvas.offsetWidth / viewport.canvas.offsetWidth;
+        return parallelScale * (1 / zoomFactor) * canvasRatio;
+    }
+    _isStackViewport(viewport) {
+        return 'setStack' in viewport;
+    }
+    _isVolumeViewport(viewport) {
+        return 'addVolumes' in viewport;
+    }
+    _cloneToolGroups(sourceViewport, magnifyViewport) {
+        const sourceActors = sourceViewport.getActors();
+        const magnifyToolGroupId = `${magnifyViewport.id}-toolGroup`;
+        const sourceToolGroup = store_1.ToolGroupManager.getToolGroupForViewport(sourceViewport.id, sourceViewport.renderingEngineId);
+        const magnifyToolGroup = sourceToolGroup.clone(magnifyToolGroupId, (toolName) => {
+            const toolInstance = sourceToolGroup.getToolInstance(toolName);
+            const isAnnotationTool = toolInstance instanceof _1.AnnotationTool &&
+                !(toolInstance instanceof _1.AdvancedMagnifyTool);
+            return (isAnnotationTool || toolName === _1.SegmentationDisplayTool.toolName);
+        });
+        magnifyToolGroup.addViewport(magnifyViewport.id, magnifyViewport.renderingEngineId);
+        sourceActors.filter(isSegmentation).forEach((actor) => {
+            __1.segmentation.addSegmentationRepresentations(magnifyToolGroupId, [
+                {
+                    segmentationId: actor.referenceId,
+                    type: enums_1.SegmentationRepresentations.Labelmap,
+                },
+            ]);
+        });
+        return { sourceToolGroup, magnifyToolGroup };
+    }
+    _cloneStack(sourceViewport, magnifyViewport) {
+        const imageIds = sourceViewport.getImageIds();
+        magnifyViewport.setStack(imageIds).then(() => {
+            this._isViewportReady = true;
+            this.update();
+        });
+    }
+    _cloneVolumes(sourceViewport, magnifyViewport) {
+        const actors = sourceViewport.getActors();
+        const volumeInputArray = actors
+            .filter((actor) => !isSegmentation(actor))
+            .map((actor) => ({ volumeId: actor.uid }));
+        magnifyViewport.setVolumes(volumeInputArray).then(() => {
+            this._isViewportReady = true;
+            this.update();
+        });
+        return magnifyViewport;
+    }
+    _cloneViewport(sourceViewport, magnifyElement) {
+        const { viewportId: magnifyViewportId } = this;
+        const renderingEngine = sourceViewport.getRenderingEngine();
+        const { options: sourceViewportOptions } = sourceViewport;
+        const viewportInput = {
+            element: magnifyElement,
+            viewportId: magnifyViewportId,
+            type: sourceViewport.type,
+            defaultOptions: Object.assign({}, sourceViewportOptions),
+        };
+        renderingEngine.enableElement(viewportInput);
+        const magnifyViewport = (renderingEngine.getViewport(magnifyViewportId));
+        if (this._isStackViewport(sourceViewport)) {
+            this._cloneStack(sourceViewport, magnifyViewport);
+        }
+        else if (this._isVolumeViewport(sourceViewport)) {
+            this._cloneVolumes(sourceViewport, magnifyViewport);
+        }
+        this._inheritBorderRadius(magnifyElement);
+        const toolGroups = this._cloneToolGroups(sourceViewport, magnifyViewport);
+        this._sourceToolGroup = toolGroups.sourceToolGroup;
+        this._magnifyToolGroup = toolGroups.magnifyToolGroup;
+    }
+    _cancelMouseEventCallback(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+    }
+    _browserMouseUpCallback(evt) {
+        const { element } = this._enabledElement.viewport;
+        document.removeEventListener('mouseup', this._browserMouseUpCallback);
+        element.addEventListener('mouseup', this._cancelMouseEventCallback);
+        element.addEventListener('mousemove', this._cancelMouseEventCallback);
+    }
+    _browserMouseDownCallback(evt) {
+        var _a;
+        const { element } = this._enabledElement.viewport;
+        this._canAutoPan = !!((_a = evt.target) === null || _a === void 0 ? void 0 : _a.closest('.advancedMagnifyTool'));
+        document.addEventListener('mouseup', this._browserMouseUpCallback);
+        element.removeEventListener('mouseup', this._cancelMouseEventCallback);
+        element.removeEventListener('mousemove', this._cancelMouseEventCallback);
+    }
+    _mouseDragCallback(evt) {
+        if (!store_1.state.isInteractingWithTool) {
+            return;
+        }
+        const { _autoPan: autoPan } = this;
+        if (!autoPan.enabled || !this._canAutoPan) {
+            return;
+        }
+        const { currentPoints } = evt.detail;
+        const { viewport } = this._enabledElement;
+        const { canvasToWorld } = viewport;
+        const { canvas: canvasCurrent } = currentPoints;
+        const { radius: magnifyRadius } = this;
+        const canvasCenter = [magnifyRadius, magnifyRadius];
+        const dist = (0, point_1.distanceToPoint)(canvasCenter, canvasCurrent);
+        const maxDist = magnifyRadius - autoPan.padding;
+        if (dist <= maxDist) {
+            return;
+        }
+        const panDist = dist - maxDist;
+        const canvasDeltaPos = gl_matrix_1.vec2.sub(gl_matrix_1.vec2.create(), canvasCurrent, canvasCenter);
+        gl_matrix_1.vec2.normalize(canvasDeltaPos, canvasDeltaPos);
+        gl_matrix_1.vec2.scale(canvasDeltaPos, canvasDeltaPos, panDist);
+        const newCanvasPosition = gl_matrix_1.vec2.add(gl_matrix_1.vec2.create(), this.position, canvasDeltaPos);
+        const currentWorldPos = canvasToWorld(this.position);
+        const newWorldPos = canvasToWorld(newCanvasPosition);
+        const worldDeltaPos = gl_matrix_1.vec3.sub(gl_matrix_1.vec3.create(), newWorldPos, currentWorldPos);
+        const autoPanCallbackData = {
+            points: {
+                currentPosition: {
+                    canvas: this.position,
+                    world: currentWorldPos,
+                },
+                newPosition: {
+                    canvas: newCanvasPosition,
+                    world: newWorldPos,
+                },
+            },
+            delta: {
+                canvas: canvasDeltaPos,
+                world: worldDeltaPos,
+            },
+        };
+        autoPan.callback(autoPanCallbackData);
+    }
+    _addBrowserEventListeners(element) {
+        document.addEventListener('mousedown', this._browserMouseDownCallback, true);
+        element.addEventListener('mousedown', this._cancelMouseEventCallback);
+        element.addEventListener('mouseup', this._cancelMouseEventCallback);
+        element.addEventListener('mousemove', this._cancelMouseEventCallback);
+        element.addEventListener('dblclick', this._cancelMouseEventCallback);
+    }
+    _removeBrowserEventListeners(element) {
+        document.removeEventListener('mousedown', this._browserMouseDownCallback, true);
+        document.removeEventListener('mouseup', this._browserMouseUpCallback);
+        element.removeEventListener('mousedown', this._cancelMouseEventCallback);
+        element.removeEventListener('mouseup', this._cancelMouseEventCallback);
+        element.removeEventListener('mousemove', this._cancelMouseEventCallback);
+        element.removeEventListener('dblclick', this._cancelMouseEventCallback);
+    }
+    _addEventListeners(element) {
+        core_1.eventTarget.addEventListener(enums_1.Events.TOOL_MODE_CHANGED, this._handleToolModeChanged);
+        element.addEventListener(enums_1.Events.MOUSE_MOVE, this._mouseDragCallback);
+        element.addEventListener(enums_1.Events.MOUSE_DRAG, this._mouseDragCallback);
+        this._addBrowserEventListeners(element);
+    }
+    _removeEventListeners(element) {
+        core_1.eventTarget.removeEventListener(enums_1.Events.TOOL_MODE_CHANGED, this._handleToolModeChanged);
+        element.addEventListener(enums_1.Events.MOUSE_MOVE, this._mouseDragCallback);
+        element.addEventListener(enums_1.Events.MOUSE_DRAG, this._mouseDragCallback);
+        this._removeBrowserEventListeners(element);
+    }
+    _initialize() {
+        const { _sourceEnabledElement: sourceEnabledElement } = this;
+        const { viewport: sourceViewport } = sourceEnabledElement;
+        const { canvas: sourceCanvas } = sourceViewport;
+        const magnifyElement = this._createViewportNode();
+        sourceCanvas.parentNode.appendChild(magnifyElement);
+        this._addEventListeners(magnifyElement);
+        this._cloneViewport(sourceViewport, magnifyElement);
+        this._enabledElement = (0, core_1.getEnabledElement)(magnifyElement);
+    }
+    _syncViewportsCameras(sourceViewport, magnifyViewport) {
+        const worldPos = sourceViewport.canvasToWorld(this.position);
+        const parallelScale = this._convertZoomFactorToParalellScale(sourceViewport, magnifyViewport, this.zoomFactor);
+        const { focalPoint, position, viewPlaneNormal } = magnifyViewport.getCamera();
+        const distance = Math.sqrt(Math.pow(focalPoint[0] - position[0], 2) +
+            Math.pow(focalPoint[1] - position[1], 2) +
+            Math.pow(focalPoint[2] - position[2], 2));
+        const updatedFocalPoint = [
+            worldPos[0],
+            worldPos[1],
+            worldPos[2],
+        ];
+        const updatedPosition = [
+            updatedFocalPoint[0] + distance * viewPlaneNormal[0],
+            updatedFocalPoint[1] + distance * viewPlaneNormal[1],
+            updatedFocalPoint[2] + distance * viewPlaneNormal[2],
+        ];
+        magnifyViewport.setCamera({
+            parallelScale,
+            focalPoint: updatedFocalPoint,
+            position: updatedPosition,
+        });
+    }
+    _syncStackViewports(sourceViewport, magnifyViewport) {
+        magnifyViewport.setImageIdIndex(sourceViewport.getCurrentImageIdIndex());
+    }
+    _syncViewports() {
+        const { viewport: sourceViewport } = this._sourceEnabledElement;
+        const { viewport: magnifyViewport } = this._enabledElement;
+        const sourceProperties = sourceViewport.getProperties();
+        magnifyViewport.setProperties(sourceProperties);
+        this._syncViewportsCameras(sourceViewport, magnifyViewport);
+        if (this._isStackViewport(sourceViewport)) {
+            this._syncStackViewports(sourceViewport, magnifyViewport);
+        }
+    }
+    _resizeViewport() {
+        const { viewport } = this._enabledElement;
+        const renderingEngine = viewport.getRenderingEngine();
+        renderingEngine.resize();
+    }
+}
+exports.default = AdvancedMagnifyViewport;
+exports.AdvancedMagnifyViewport = AdvancedMagnifyViewport;
+//# sourceMappingURL=AdvancedMagnifyViewport.js.map

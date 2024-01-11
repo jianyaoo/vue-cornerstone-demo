@@ -1,0 +1,160 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@cornerstonejs/core");
+const state_1 = require("./state");
+const stackPrefetchUtils_1 = require("./stackPrefetchUtils");
+let configuration = {
+    maxImagesToPrefetch: Infinity,
+    preserveExistingPool: true,
+};
+let resetPrefetchTimeout;
+const resetPrefetchDelay = 10;
+function prefetch(element) {
+    var _a, _b;
+    const stackPrefetchData = (0, state_1.getToolState)(element);
+    if (!stackPrefetchData) {
+        return;
+    }
+    const stackPrefetch = stackPrefetchData || {};
+    const stack = (0, stackPrefetchUtils_1.getStackData)(element);
+    if (!((_a = stack === null || stack === void 0 ? void 0 : stack.imageIds) === null || _a === void 0 ? void 0 : _a.length)) {
+        console.warn('CornerstoneTools.stackPrefetch: No images in stack.');
+        return;
+    }
+    const { currentImageIdIndex } = stack;
+    stackPrefetch.enabled && (stackPrefetch.enabled = (_b = stackPrefetch.indicesToRequest) === null || _b === void 0 ? void 0 : _b.length);
+    if (stackPrefetch.enabled === false) {
+        return;
+    }
+    function removeFromList(imageIdIndex) {
+        const index = stackPrefetch.indicesToRequest.indexOf(imageIdIndex);
+        if (index > -1) {
+            stackPrefetch.indicesToRequest.splice(index, 1);
+        }
+    }
+    stackPrefetchData.indicesToRequest.sort((a, b) => a - b);
+    const indicesToRequestCopy = stackPrefetch.indicesToRequest.slice();
+    indicesToRequestCopy.forEach(function (imageIdIndex) {
+        const imageId = stack.imageIds[imageIdIndex];
+        if (!imageId) {
+            return;
+        }
+        const distance = Math.abs(currentImageIdIndex - imageIdIndex);
+        const imageCached = distance < 6
+            ? core_1.cache.getImageLoadObject(imageId)
+            : core_1.cache.isLoaded(imageId);
+        if (imageCached) {
+            removeFromList(imageIdIndex);
+        }
+    });
+    if (!stackPrefetch.indicesToRequest.length) {
+        return;
+    }
+    if (!configuration.preserveExistingPool) {
+        core_1.imageLoadPoolManager.clearRequestStack(stackPrefetchUtils_1.requestType);
+    }
+    const nearest = (0, stackPrefetchUtils_1.nearestIndex)(stackPrefetch.indicesToRequest, stack.currentImageIdIndex);
+    let imageId;
+    let nextImageIdIndex;
+    const preventCache = false;
+    function doneCallback(image) {
+        console.log('prefetch done: %s', image.imageId);
+        const imageIdIndex = stack.imageIds.indexOf(image.imageId);
+        removeFromList(imageIdIndex);
+    }
+    let lowerIndex = nearest.low;
+    let higherIndex = nearest.high;
+    const imageIdsToPrefetch = [];
+    while (lowerIndex >= 0 ||
+        higherIndex < stackPrefetch.indicesToRequest.length) {
+        const currentIndex = stack.currentImageIdIndex;
+        const shouldSkipLower = currentIndex - stackPrefetch.indicesToRequest[lowerIndex] >
+            configuration.maxImagesToPrefetch;
+        const shouldSkipHigher = stackPrefetch.indicesToRequest[higherIndex] - currentIndex >
+            configuration.maxImagesToPrefetch;
+        const shouldLoadLower = !shouldSkipLower && lowerIndex >= 0;
+        const shouldLoadHigher = !shouldSkipHigher && higherIndex < stackPrefetch.indicesToRequest.length;
+        if (!shouldLoadHigher && !shouldLoadLower) {
+            break;
+        }
+        if (shouldLoadLower) {
+            nextImageIdIndex = stackPrefetch.indicesToRequest[lowerIndex--];
+            imageId = stack.imageIds[nextImageIdIndex];
+            imageIdsToPrefetch.push(imageId);
+        }
+        if (shouldLoadHigher) {
+            nextImageIdIndex = stackPrefetch.indicesToRequest[higherIndex++];
+            imageId = stack.imageIds[nextImageIdIndex];
+            imageIdsToPrefetch.push(imageId);
+        }
+    }
+    const requestFn = (imageId, options) => core_1.imageLoader.loadAndCacheImage(imageId, options);
+    const { useNorm16Texture } = (0, core_1.getConfiguration)().rendering;
+    imageIdsToPrefetch.forEach((imageId) => {
+        const options = {
+            targetBuffer: {
+                type: useNorm16Texture ? undefined : 'Float32Array',
+            },
+            preScale: {
+                enabled: true,
+            },
+            requestType: stackPrefetchUtils_1.requestType,
+        };
+        core_1.imageLoadPoolManager.addRequest(requestFn.bind(null, imageId, options), stackPrefetchUtils_1.requestType, {
+            imageId,
+        }, stackPrefetchUtils_1.priority);
+    });
+}
+function onImageUpdated(e) {
+    clearTimeout(resetPrefetchTimeout);
+    resetPrefetchTimeout = setTimeout(function () {
+        const element = e.target;
+        try {
+            prefetch(element);
+        }
+        catch (error) {
+            return;
+        }
+    }, resetPrefetchDelay);
+}
+function enable(element) {
+    const stack = (0, stackPrefetchUtils_1.getStackData)(element);
+    if (!stack || !stack.imageIds || stack.imageIds.length === 0) {
+        console.warn('CornerstoneTools.stackPrefetch: No images in stack.');
+        return;
+    }
+    const stackPrefetchData = {
+        indicesToRequest: (0, stackPrefetchUtils_1.range)(0, stack.imageIds.length - 1),
+        enabled: true,
+        direction: 1,
+    };
+    const indexOfCurrentImage = stackPrefetchData.indicesToRequest.indexOf(stack.currentImageIdIndex);
+    stackPrefetchData.indicesToRequest.splice(indexOfCurrentImage, 1);
+    (0, state_1.addToolState)(element, stackPrefetchData);
+    prefetch(element);
+    element.removeEventListener(core_1.Enums.Events.STACK_NEW_IMAGE, onImageUpdated);
+    element.addEventListener(core_1.Enums.Events.STACK_NEW_IMAGE, onImageUpdated);
+    const promiseRemovedHandler = (0, stackPrefetchUtils_1.getPromiseRemovedHandler)(element);
+    core_1.eventTarget.removeEventListener(core_1.Enums.Events.IMAGE_CACHE_IMAGE_REMOVED, promiseRemovedHandler);
+    core_1.eventTarget.addEventListener(core_1.Enums.Events.IMAGE_CACHE_IMAGE_REMOVED, promiseRemovedHandler);
+}
+function disable(element) {
+    clearTimeout(resetPrefetchTimeout);
+    element.removeEventListener(core_1.Enums.Events.STACK_NEW_IMAGE, onImageUpdated);
+    const promiseRemovedHandler = (0, stackPrefetchUtils_1.getPromiseRemovedHandler)(element);
+    core_1.eventTarget.removeEventListener(core_1.Enums.Events.IMAGE_CACHE_IMAGE_REMOVED, promiseRemovedHandler);
+    const stackPrefetchData = (0, state_1.getToolState)(element);
+    if (stackPrefetchData && stackPrefetchData.indicesToRequest.length) {
+        stackPrefetchData.enabled = false;
+        core_1.imageLoadPoolManager.clearRequestStack(stackPrefetchUtils_1.requestType);
+    }
+}
+function getConfiguration() {
+    return configuration;
+}
+function setConfiguration(config) {
+    configuration = config;
+}
+const stackPrefetch = { enable, disable, getConfiguration, setConfiguration };
+exports.default = stackPrefetch;
+//# sourceMappingURL=stackPrefetch.js.map

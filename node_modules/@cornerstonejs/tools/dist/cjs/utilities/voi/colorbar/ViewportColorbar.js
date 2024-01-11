@@ -1,0 +1,126 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ViewportColorbar = exports.default = void 0;
+const core_1 = require("@cornerstonejs/core");
+const Colorbar_1 = require("./Colorbar");
+const getVOIMultipliers_1 = require("../../getVOIMultipliers");
+const { Events } = core_1.Enums;
+const defaultImageRange = { lower: -1000, upper: 1000 };
+class ViewportColorbar extends Colorbar_1.Colorbar {
+    constructor(props) {
+        const { element, volumeId } = props;
+        const imageRange = ViewportColorbar._getImageRange(element, volumeId);
+        const voiRange = ViewportColorbar._getVOIRange(element, volumeId);
+        super(Object.assign(Object.assign({}, props), { imageRange, voiRange }));
+        this.autoHideTicks = () => {
+            if (this._hideTicksTimeoutId) {
+                return;
+            }
+            const timeLeft = this._hideTicksTime - Date.now();
+            if (timeLeft <= 0) {
+                this.hideTicks();
+            }
+            else {
+                this._hideTicksTimeoutId = window.setTimeout(() => {
+                    this._hideTicksTimeoutId = 0;
+                    this.autoHideTicks();
+                }, timeLeft);
+            }
+        };
+        this._stackNewImageCallback = () => {
+            this.imageRange = ViewportColorbar._getImageRange(this._element);
+        };
+        this._imageVolumeModifiedCallback = (evt) => {
+            const { volumeId } = evt.detail.imageVolume;
+            if (volumeId !== this._volumeId) {
+                return;
+            }
+            const { _element: element } = this;
+            this.imageRange = ViewportColorbar._getImageRange(element, volumeId);
+        };
+        this._viewportVOIModifiedCallback = (evt) => {
+            const { viewportId, volumeId, range: voiRange } = evt.detail;
+            const { viewport } = this.enabledElement;
+            if (viewportId !== viewport.id || volumeId !== this._volumeId) {
+                return;
+            }
+            this.voiRange = voiRange;
+            this.showAndAutoHideTicks();
+        };
+        this._element = element;
+        this._volumeId = volumeId;
+        this._addCornerstoneEventListener();
+    }
+    get element() {
+        return this._element;
+    }
+    get enabledElement() {
+        return (0, core_1.getEnabledElement)(this._element);
+    }
+    getVOIMultipliers() {
+        const { viewport } = this.enabledElement;
+        return (0, getVOIMultipliers_1.getVOIMultipliers)(viewport, this._volumeId);
+    }
+    onVoiChange(voiRange) {
+        super.onVoiChange(voiRange);
+        const { viewport } = this.enabledElement;
+        if (viewport instanceof core_1.StackViewport) {
+            viewport.setProperties({
+                voiRange: voiRange,
+            });
+            viewport.render();
+        }
+        else if (viewport instanceof core_1.VolumeViewport) {
+            const { _volumeId: volumeId } = this;
+            const viewportsContainingVolumeUID = core_1.utilities.getViewportsWithVolumeId(volumeId, viewport.renderingEngineId);
+            viewport.setProperties({ voiRange }, volumeId);
+            viewportsContainingVolumeUID.forEach((vp) => vp.render());
+        }
+    }
+    static _getImageRange(element, volumeId) {
+        const enabledElement = (0, core_1.getEnabledElement)(element);
+        const { viewport } = enabledElement;
+        const actor = volumeId
+            ? viewport.getActor(volumeId)
+            : viewport.getDefaultActor();
+        if (!actor) {
+            return defaultImageRange;
+        }
+        const imageData = actor.actor.getMapper().getInputData();
+        const imageRange = imageData.getPointData().getScalars().getRange();
+        return imageRange[0] === 0 && imageRange[1] === 0
+            ? defaultImageRange
+            : { lower: imageRange[0], upper: imageRange[1] };
+    }
+    static _getVOIRange(element, volumeId) {
+        const enabledElement = (0, core_1.getEnabledElement)(element);
+        const { viewport } = enabledElement;
+        const volumeActor = volumeId
+            ? viewport.getActor(volumeId)
+            : viewport.getDefaultActor();
+        if (!volumeActor || !core_1.utilities.isImageActor(volumeActor)) {
+            return defaultImageRange;
+        }
+        const voiRange = volumeActor.actor
+            .getProperty()
+            .getRGBTransferFunction(0)
+            .getRange();
+        return voiRange[0] === 0 && voiRange[1] === 0
+            ? defaultImageRange
+            : { lower: voiRange[0], upper: voiRange[1] };
+    }
+    showAndAutoHideTicks(interval = 1000) {
+        this._hideTicksTime = Date.now() + interval;
+        this.showTicks();
+        this.autoHideTicks();
+    }
+    _addCornerstoneEventListener() {
+        const { _element: element } = this;
+        core_1.eventTarget.addEventListener(Events.IMAGE_VOLUME_MODIFIED, this._imageVolumeModifiedCallback);
+        element.addEventListener(Events.STACK_NEW_IMAGE, this._stackNewImageCallback);
+        element.addEventListener(Events.VOI_MODIFIED, this._viewportVOIModifiedCallback);
+    }
+}
+exports.default = ViewportColorbar;
+exports.ViewportColorbar = ViewportColorbar;
+//# sourceMappingURL=ViewportColorbar.js.map

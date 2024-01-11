@@ -1,0 +1,128 @@
+import { vec3 } from 'gl-matrix';
+import { eventTarget, Enums, getRenderingEngine, CONSTANTS, } from '@cornerstonejs/core';
+import { Events as cstEvents } from '../enums';
+import { AdvancedMagnifyViewport, } from './AdvancedMagnifyViewport';
+const ADVANCED_MAGNIFY_TOOL_NAME = 'AdvancedMagnify';
+const PARALLEL_THRESHOLD = 1 - CONSTANTS.EPSILON;
+const { Events } = Enums;
+class AdvancedMagnifyViewportManager {
+    constructor() {
+        this.createViewport = (annotation, viewportInfo) => {
+            const { magnifyViewportId, sourceEnabledElement, position, radius, zoomFactor, autoPan, } = viewportInfo;
+            const { viewport: sourceViewport } = sourceEnabledElement;
+            const { element: sourceElement } = sourceViewport;
+            const magnifyViewport = new AdvancedMagnifyViewport({
+                magnifyViewportId,
+                sourceEnabledElement,
+                radius,
+                position,
+                zoomFactor,
+                autoPan,
+            });
+            this._addSourceElementEventListener(sourceElement);
+            this._magnifyViewportsMap.set(magnifyViewport.viewportId, {
+                annotation,
+                magnifyViewport,
+            });
+            return magnifyViewport;
+        };
+        this._annotationRemovedCallback = (evt) => {
+            const { annotation } = evt.detail;
+            if (annotation.metadata.toolName !== ADVANCED_MAGNIFY_TOOL_NAME) {
+                return;
+            }
+            this._destroyViewport(annotation.data.magnifyViewportId);
+        };
+        this._newStackImageCallback = (evt) => {
+            const { viewportId: sourceViewportId, imageId } = evt.detail;
+            const magnifyViewportsMapEntries = this._getMagnifyViewportsMapEntriesBySourceViewportId(sourceViewportId);
+            magnifyViewportsMapEntries.forEach(({ annotation }) => {
+                annotation.metadata.referencedImageId = imageId;
+                annotation.invalidated = true;
+            });
+        };
+        this._newVolumeImageCallback = (evt) => {
+            const { renderingEngineId, viewportId: sourceViewportId } = evt.detail;
+            const renderingEngine = getRenderingEngine(renderingEngineId);
+            const sourceViewport = renderingEngine.getViewport(sourceViewportId);
+            const { viewPlaneNormal: currentViewPlaneNormal } = sourceViewport.getCamera();
+            const magnifyViewportsMapEntries = this._getMagnifyViewportsMapEntriesBySourceViewportId(sourceViewportId);
+            magnifyViewportsMapEntries.forEach(({ annotation }) => {
+                const { viewPlaneNormal } = annotation.metadata;
+                const isParallel = Math.abs(vec3.dot(viewPlaneNormal, currentViewPlaneNormal)) >
+                    PARALLEL_THRESHOLD;
+                if (!isParallel) {
+                    return;
+                }
+                const { handles } = annotation.data;
+                const worldImagePlanePoint = sourceViewport.canvasToWorld([0, 0]);
+                const vecHandleToImagePlane = vec3.sub(vec3.create(), worldImagePlanePoint, handles.points[0]);
+                const worldDist = vec3.dot(vecHandleToImagePlane, currentViewPlaneNormal);
+                const worldDelta = vec3.scale(vec3.create(), currentViewPlaneNormal, worldDist);
+                for (let i = 0, len = handles.points.length; i < len; i++) {
+                    const point = handles.points[i];
+                    point[0] += worldDelta[0];
+                    point[1] += worldDelta[1];
+                    point[2] += worldDelta[2];
+                }
+                annotation.invalidated = true;
+            });
+        };
+        this._magnifyViewportsMap = new Map();
+        this._initialize();
+    }
+    static getInstance() {
+        AdvancedMagnifyViewportManager._singleton =
+            AdvancedMagnifyViewportManager._singleton ??
+                new AdvancedMagnifyViewportManager();
+        return AdvancedMagnifyViewportManager._singleton;
+    }
+    getViewport(magnifyViewportId) {
+        return this._magnifyViewportsMap.get(magnifyViewportId)?.magnifyViewport;
+    }
+    dispose() {
+        this._removeEventListeners();
+        this._destroyViewports();
+    }
+    _destroyViewport(magnifyViewportId) {
+        const magnifyViewportMapEntry = this._magnifyViewportsMap.get(magnifyViewportId);
+        if (magnifyViewportMapEntry) {
+            const { magnifyViewport } = magnifyViewportMapEntry;
+            const { viewport: sourceViewport } = magnifyViewport.sourceEnabledElement;
+            const { element: sourceElement } = sourceViewport;
+            this._removeSourceElementEventListener(sourceElement);
+            magnifyViewport.dispose();
+            this._magnifyViewportsMap.delete(magnifyViewportId);
+        }
+    }
+    _destroyViewports() {
+        const magnifyViewportIds = Array.from(this._magnifyViewportsMap.keys());
+        magnifyViewportIds.forEach((magnifyViewportId) => this._destroyViewport(magnifyViewportId));
+    }
+    _getMagnifyViewportsMapEntriesBySourceViewportId(sourceViewportId) {
+        const magnifyViewportsMapEntries = Array.from(this._magnifyViewportsMap.values());
+        return magnifyViewportsMapEntries.filter(({ magnifyViewport }) => {
+            const { viewport } = magnifyViewport.sourceEnabledElement;
+            return viewport.id === sourceViewportId;
+        });
+    }
+    _addEventListeners() {
+        eventTarget.addEventListener(cstEvents.ANNOTATION_REMOVED, this._annotationRemovedCallback);
+    }
+    _removeEventListeners() {
+        eventTarget.removeEventListener(cstEvents.ANNOTATION_REMOVED, this._annotationRemovedCallback);
+    }
+    _addSourceElementEventListener(element) {
+        element.addEventListener(Events.STACK_NEW_IMAGE, this._newStackImageCallback);
+        element.addEventListener(Events.VOLUME_NEW_IMAGE, this._newVolumeImageCallback);
+    }
+    _removeSourceElementEventListener(element) {
+        element.removeEventListener(Events.STACK_NEW_IMAGE, this._newStackImageCallback);
+        element.removeEventListener(Events.VOLUME_NEW_IMAGE, this._newVolumeImageCallback);
+    }
+    _initialize() {
+        this._addEventListeners();
+    }
+}
+export { AdvancedMagnifyViewportManager as default, AdvancedMagnifyViewportManager, };
+//# sourceMappingURL=AdvancedMagnifyViewportManager.js.map

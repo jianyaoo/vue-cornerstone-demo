@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const annotationLocking_1 = require("../annotationLocking");
+const annotationSelection_1 = require("../annotationSelection");
+const enums_1 = require("../../../enums");
+function getState(annotation) {
+    if (annotation) {
+        if (annotation.data && annotation.highlighted) {
+            return enums_1.AnnotationStyleStates.Highlighted;
+        }
+        if ((0, annotationSelection_1.isAnnotationSelected)(annotation.annotationUID)) {
+            return enums_1.AnnotationStyleStates.Selected;
+        }
+        if ((0, annotationLocking_1.isAnnotationLocked)(annotation)) {
+            return enums_1.AnnotationStyleStates.Locked;
+        }
+    }
+    return enums_1.AnnotationStyleStates.Default;
+}
+exports.default = getState;
+//# sourceMappingURL=getState.js.map

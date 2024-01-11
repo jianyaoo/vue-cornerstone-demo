@@ -1,0 +1,1 @@
+{"version":3,"file":"validateSurface.js","sourceRoot":"","sources":["../../../../../src/loaders/utils/surface/validateSurface.ts"],"names":[],"mappings":"AAEA,MAAM,UAAU,eAAe,CAAC,cAAiC;IAC/D,MAAM,EAAE,IAAI,EAAE,GAAG,cAAc,CAAC;IAEhC,IAAI,CAAC,IAAI,CAAC,MAAM,IAAI,CAAC,IAAI,CAAC,KAAK,EAAE;QAC/B,MAAM,IAAI,KAAK,CAAC,sBAAsB,CAAC,CAAC;KACzC;AACH,CAAC"}

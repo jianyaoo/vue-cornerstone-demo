@@ -1,0 +1,41 @@
+{
+    "name": "@types/webxr",
+    "version": "0.5.10",
+    "description": "TypeScript definitions for webxr",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/webxr",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Rob Rohan",
+            "githubUsername": "robrohan",
+            "url": "https://github.com/robrohan"
+        },
+        {
+            "name": "Raanan Weber",
+            "githubUsername": "RaananW",
+            "url": "https://github.com/RaananW"
+        },
+        {
+            "name": "Sean T. McBeth",
+            "githubUsername": "capnmidnight",
+            "url": "https://github.com/capnmidnight"
+        },
+        {
+            "name": "Timmy Kokke",
+            "githubUsername": "sorskoot",
+            "url": "https://github.com/sorskoot"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/webxr"
+    },
+    "scripts": {},
+    "dependencies": {},
+    "typesPublisherContentHash": "cd6b557c2fa965cb4d2a548e65436c9899671c356834c27602f4f5d799134a88",
+    "typeScriptVersion": "4.5",
+    "nonNpm": true
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"mouseDoubleClick.js","sourceRoot":"","sources":["../../../../src/eventDispatchers/mouseEventHandlers/mouseDoubleClick.ts"],"names":[],"mappings":"AAAA,OAAO,qBAAqB,MAAM,iCAAiC,CAAC;AAMpE,MAAM,gBAAgB,GAAG,qBAAqB,CAAC,IAAI,CACjD,IAAI,EACJ,OAAO,EACP,qBAAqB,CACtB,CAAC;AAEF,eAAe,gBAAgB,CAAC"}

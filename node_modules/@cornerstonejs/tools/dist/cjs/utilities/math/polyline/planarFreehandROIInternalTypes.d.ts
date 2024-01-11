@@ -1,0 +1,23 @@
+import type { Types } from '@cornerstonejs/core';
+import { PlanarFreehandROIAnnotation } from '../../../types/ToolSpecificAnnotationTypes';
+declare type PlanarFreehandROIDrawData = {
+    polylineIndex: number;
+    canvasPoints: Types.Point2[];
+};
+declare type PlanarFreehandROIEditData = {
+    prevCanvasPoints: Types.Point2[];
+    editCanvasPoints: Types.Point2[];
+    fusedCanvasPoints: Types.Point2[];
+    startCrossingIndex?: Types.Point2;
+    editIndex: number;
+    snapIndex?: number;
+};
+declare type PlanarFreehandROICommonData = {
+    annotation: PlanarFreehandROIAnnotation;
+    viewportIdsToRender: string[];
+    spacing: Types.Point2;
+    xDir: Types.Point3;
+    yDir: Types.Point3;
+    movingTextBox?: boolean;
+};
+export { PlanarFreehandROIDrawData, PlanarFreehandROIEditData, PlanarFreehandROICommonData, };

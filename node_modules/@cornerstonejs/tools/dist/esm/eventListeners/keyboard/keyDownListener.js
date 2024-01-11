@@ -1,0 +1,66 @@
+import _cloneDeep from 'lodash.clonedeep';
+import { getEnabledElement, triggerEvent } from '@cornerstonejs/core';
+import Events from '../../enums/Events';
+const defaultState = {
+    renderingEngineId: undefined,
+    viewportId: undefined,
+    key: undefined,
+    keyCode: undefined,
+    element: null,
+};
+let state = {
+    renderingEngineId: undefined,
+    viewportId: undefined,
+    key: undefined,
+    keyCode: undefined,
+    element: null,
+};
+function keyListener(evt) {
+    state.element = evt.currentTarget;
+    const enabledElement = getEnabledElement(state.element);
+    const { renderingEngineId, viewportId } = enabledElement;
+    state.renderingEngineId = renderingEngineId;
+    state.viewportId = viewportId;
+    state.key = evt.key;
+    state.keyCode = evt.keyCode;
+    evt.preventDefault();
+    const eventDetail = {
+        renderingEngineId: state.renderingEngineId,
+        viewportId: state.viewportId,
+        element: state.element,
+        key: state.key,
+        keyCode: state.keyCode,
+    };
+    triggerEvent(eventDetail.element, Events.KEY_DOWN, eventDetail);
+    document.addEventListener('keyup', _onKeyUp);
+    document.addEventListener('visibilitychange', _onVisibilityChange);
+    state.element.removeEventListener('keydown', keyListener);
+}
+function _onVisibilityChange() {
+    document.removeEventListener('visibilitychange', _onVisibilityChange);
+    if (document.visibilityState === 'hidden') {
+        resetModifierKey();
+    }
+}
+function _onKeyUp(evt) {
+    const eventDetail = {
+        renderingEngineId: state.renderingEngineId,
+        viewportId: state.viewportId,
+        element: state.element,
+        key: state.key,
+        keyCode: state.keyCode,
+    };
+    document.removeEventListener('keyup', _onKeyUp);
+    document.removeEventListener('visibilitychange', _onVisibilityChange);
+    state.element.addEventListener('keydown', keyListener);
+    state = _cloneDeep(defaultState);
+    triggerEvent(eventDetail.element, Events.KEY_UP, eventDetail);
+}
+export function getModifierKey() {
+    return state.keyCode;
+}
+export function resetModifierKey() {
+    state.keyCode = undefined;
+}
+export default keyListener;
+//# sourceMappingURL=keyDownListener.js.map

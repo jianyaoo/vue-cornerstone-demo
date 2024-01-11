@@ -1,0 +1,1 @@
+{"version":3,"file":"touchTap.js","sourceRoot":"","sources":["../../../../src/eventDispatchers/touchEventHandlers/touchTap.ts"],"names":[],"mappings":"AAAA,OAAO,qBAAqB,MAAM,iCAAiC,CAAC;AAMpE,MAAM,QAAQ,GAAG,qBAAqB,CAAC,IAAI,CAAC,IAAI,EAAE,OAAO,EAAE,kBAAkB,CAAC,CAAC;AAE/E,eAAe,QAAQ,CAAC"}

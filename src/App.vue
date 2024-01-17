@@ -3,6 +3,7 @@
     <nav>
       <router-link to="/">基础栈图像</router-link>
       <router-link to="/baseVolume">基础Volume</router-link>
+      <router-link to="/niftiFile">nifti</router-link>
     </nav>
     <router-view />
   </div>

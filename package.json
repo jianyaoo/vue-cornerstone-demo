@@ -11,6 +11,7 @@
     "@cornerstonejs/calculate-suv": "^1.1.0",
     "@cornerstonejs/core": "^1.44.0",
     "@cornerstonejs/dicom-image-loader": "^1.44.0",
+    "@cornerstonejs/nifti-volume-loader": "^1.46.0",
     "@cornerstonejs/streaming-image-volume-loader": "^1.44.0",
     "@cornerstonejs/tools": "^1.44.0",
     "core-js": "^3.8.3",

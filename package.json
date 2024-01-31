@@ -18,6 +18,7 @@
     "dcmjs": "^0.30.0",
     "dicom-parser": "^1.8.21",
     "dicomweb-client": "^0.10.4",
+    "element-ui": "^2.15.14",
     "vue": "^2.6.14",
     "vue-router": "^3.5.1",
     "vuex": "^3.6.2"

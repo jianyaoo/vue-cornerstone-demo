@@ -20,7 +20,7 @@ export default async function initCornerstone() {
 
   // 初始化 - CornerStone
   await csRenderInit({
-    gpuTier: true,
+    gpuTier: false,
   });
 
   // 初始化 - CornerStone/tool

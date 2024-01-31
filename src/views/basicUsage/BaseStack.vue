@@ -1,5 +1,10 @@
 <template>
   <div id="demo-wrap">
+    <h3>渲染栈图片</h3>
+    <el-alert
+      title="从cornerstone服务器加载演示数据源，加载较慢请稍等"
+      type="info"
+    ></el-alert>
     <div id="element1" class="cornerstone-item"></div>
   </div>
 </template>
@@ -7,15 +12,15 @@
 <script>
 import { RenderingEngine, Enums as csEnums } from "@cornerstonejs/core";
 
-import { initCornerstone, getTestImageId } from "../cornerstone/index";
+import { initCornerstone, getTestImageId } from "../../cornerstone";
 
 export default {
   name: "BaseStack",
 
   data() {
     return {
-      volumeId: "my_volume_id",
-      renderingEngineId: "my_renderingEngine",
+      volumeId: "my_volume_id_1",
+      renderingEngineId: "my_renderingEngine1",
     };
   },
 
@@ -53,5 +58,6 @@ export default {
   display: inline-block;
   width: 300px;
   height: 300px;
+  margin-top: 20px;
 }
 </style>

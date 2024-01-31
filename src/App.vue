@@ -1,34 +1,76 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">基础栈图像</router-link>
-      <router-link to="/baseVolume">基础Volume</router-link>
-      <router-link to="/niftiFile">nifti</router-link>
-    </nav>
-    <router-view />
-  </div>
+  <el-container class="page-container">
+    <el-header class="page-header">
+      <h1>cornerstone3D在线演示（基于Vue运行）</h1>
+    </el-header>
+    <el-container>
+      <el-aside width="300px">
+        <el-menu
+          default-active="1-4-1"
+          class="el-menu-vertical-demo"
+          :collapse="isCollapse"
+        >
+          <el-submenu
+            v-for="(route, routeIndex) in routes"
+            :key="`router${routeIndex}`"
+            :index="routeIndex.toString()"
+          >
+            <template v-slot:title>
+              <i :class="route.icon"></i>
+              <span slot="title">{{ route.name }}</span>
+            </template>
+            <el-menu-item
+              v-for="(routeChildren, index) in route.children"
+              :key="index"
+              :index="`${routeIndex}-${index}`"
+            >
+              <router-link :to="`${route.path}/${routeChildren.path}`">
+                {{ routeChildren.name }}
+              </router-link>
+            </el-menu-item>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
+
+      <el-main>
+        <router-view />
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+import routes from "@/router/routes";
+
+export default {
+  name: "APP",
+  data() {
+    return {
+      routes,
+      isCollapse: false,
+    };
+  },
+};
+</script>
+
+<style scoped lang="scss">
+.page-container {
+  min-height: 1000px;
+
+  .page-header {
+    background: #409eff;
+    color: #fff;
+    min-height: 80px;
+    vertical-align: middle;
+  }
 }
 
-nav {
-  padding: 30px;
+a {
+  font-weight: bold;
+  color: #2c3e50;
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  &.router-link-exact-active {
+    color: #409eff;
   }
 }
 </style>
-<script setup></script>

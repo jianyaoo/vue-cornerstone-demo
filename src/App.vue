@@ -11,7 +11,7 @@
           :collapse="isCollapse"
         >
           <el-submenu
-            v-for="(route, routeIndex) in routes"
+            v-for="(route, routeIndex) in displayRoutes"
             :key="`router${routeIndex}`"
             :index="routeIndex.toString()"
           >
@@ -46,7 +46,7 @@ export default {
   name: "APP",
   data() {
     return {
-      routes,
+      displayRoutes: routes.filter((item) => item.name),
       isCollapse: false,
     };
   },

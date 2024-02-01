@@ -43,6 +43,10 @@ const basicToolsUsage = {
   ],
 };
 
-const routes = [basicUsage, basicToolsUsage];
+const routes = [
+  { path: "/", redirect: "/base/stack" },
+  basicUsage,
+  basicToolsUsage,
+];
 
 export default routes;

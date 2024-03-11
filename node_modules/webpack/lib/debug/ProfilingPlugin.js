@@ -31,7 +31,7 @@ const validate = createSchemaValidation(
 let inspector = undefined;
 
 try {
-	// eslint-disable-next-line node/no-unsupported-features/node-builtins
+	// eslint-disable-next-line n/no-unsupported-features/node-builtins
 	inspector = require("inspector");
 } catch (e) {
 	console.log("Unable to CPU profile in < node 8.0");
@@ -374,7 +374,7 @@ const makeInterceptorFor = (instance, tracer) => hookName => ({
 						name,
 						type,
 						fn
-				  });
+					});
 		return {
 			...tapInfo,
 			fn: newFn

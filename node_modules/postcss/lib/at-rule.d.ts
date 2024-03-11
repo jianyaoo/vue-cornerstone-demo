@@ -1,4 +1,7 @@
-import Container, { ContainerProps } from './container.js'
+import Container, {
+  ContainerProps,
+  ContainerWithChildren
+} from './container.js'
 
 declare namespace AtRule {
   export interface AtRuleRaws extends Record<string, unknown> {
@@ -81,11 +84,30 @@ declare class AtRule_ extends Container {
    *
    * ```js
    * const root  = postcss.parse('@media print {}')
-   * media.name //=> 'media'
    * const media = root.first
+   * media.name //=> 'media'
    * ```
    */
   name: string
+  /**
+   * An array containing the layer’s children.
+   *
+   * ```js
+   * const root = postcss.parse('@layer example { a { color: black } }')
+   * const layer = root.first
+   * layer.nodes.length           //=> 1
+   * layer.nodes[0].selector      //=> 'a'
+   * ```
+   *
+   * Can be `undefinded` if the at-rule has no body.
+   *
+   * ```js
+   * const root = postcss.parse('@layer a, b, c;')
+   * const layer = root.first
+   * layer.nodes //=> undefined
+   * ```
+   */
+  nodes: Container['nodes']
   /**
    * The at-rule’s parameters, the values that follow the at-rule’s name
    * but precede any `{}` block.
@@ -97,7 +119,7 @@ declare class AtRule_ extends Container {
    * ```
    */
   params: string
-  parent: Container | undefined
+  parent: ContainerWithChildren | undefined
 
   raws: AtRule.AtRuleRaws
 

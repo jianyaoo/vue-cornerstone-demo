@@ -307,7 +307,7 @@ class WebpackOptionsApply extends OptionsApply {
 
 		if (options.experiments.css) {
 			const CssModulesPlugin = require("./css/CssModulesPlugin");
-			new CssModulesPlugin(options.experiments.css).apply(compiler);
+			new CssModulesPlugin().apply(compiler);
 		}
 
 		if (options.experiments.lazyCompilation) {
@@ -329,7 +329,7 @@ class WebpackOptionsApply extends OptionsApply {
 											options.externalsPresets.node ? "node" : "web"
 										}.js`
 									)
-						  }),
+							}),
 				entries: !lazyOptions || lazyOptions.entries !== false,
 				imports: !lazyOptions || lazyOptions.imports !== false,
 				test: (lazyOptions && lazyOptions.test) || undefined
@@ -588,7 +588,8 @@ class WebpackOptionsApply extends OptionsApply {
 		const AddManagedPathsPlugin = require("./cache/AddManagedPathsPlugin");
 		new AddManagedPathsPlugin(
 			options.snapshot.managedPaths,
-			options.snapshot.immutablePaths
+			options.snapshot.immutablePaths,
+			options.snapshot.unmanagedPaths
 		).apply(compiler);
 
 		if (options.cache && typeof options.cache === "object") {

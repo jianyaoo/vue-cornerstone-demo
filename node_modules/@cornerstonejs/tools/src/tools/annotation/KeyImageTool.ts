@@ -1,10 +1,5 @@
 import { Events } from '../../enums';
-import {
-  getEnabledElement,
-  triggerEvent,
-  eventTarget,
-  utilities as csUtils,
-} from '@cornerstonejs/core';
+import { getEnabledElement, utilities as csUtils } from '@cornerstonejs/core';
 import type { Types } from '@cornerstonejs/core';
 
 import { AnnotationTool } from '../base';
@@ -14,11 +9,14 @@ import {
   removeAnnotation,
 } from '../../stateManagement/annotation/annotationState';
 
+import {
+  triggerAnnotationCompleted,
+  triggerAnnotationModified,
+} from '../../stateManagement/annotation/helpers/state';
 import { drawArrow as drawArrowSvg } from '../../drawingSvg';
 import { state } from '../../store';
 import { getViewportIdsWithToolToRender } from '../../utilities/viewportFilters';
 import triggerAnnotationRenderForViewportIds from '../../utilities/triggerAnnotationRenderForViewportIds';
-import { AnnotationCompletedEventDetail } from '../../types/EventTypes';
 
 import { resetElementCursor } from '../../cursors/elementCursor';
 
@@ -91,37 +89,9 @@ class KeyImageTool extends AnnotationTool {
       viewUp
     );
 
-    const FrameOfReferenceUID = viewport.getFrameOfReferenceUID();
-
-    const annotation = {
-      annotationUID: null as string,
-      highlighted: true,
-      invalidated: true,
-      metadata: {
-        toolName: this.getToolName(),
-        viewPlaneNormal: <Types.Point3>[...viewPlaneNormal],
-        viewUp: <Types.Point3>[...viewUp],
-        FrameOfReferenceUID,
-        referencedImageId,
-      },
-      data: {
-        text: '',
-        handles: {
-          points: new Array<Types.Point3>(),
-          textBox: {
-            hasMoved: false,
-            worldPosition: <Types.Point3>[0, 0, 0],
-            worldBoundingBox: {
-              topLeft: <Types.Point3>[0, 0, 0],
-              topRight: <Types.Point3>[0, 0, 0],
-              bottomLeft: <Types.Point3>[0, 0, 0],
-              bottomRight: <Types.Point3>[0, 0, 0],
-            },
-          },
-        },
-        label: '',
-      },
-    };
+    const annotation = KeyImageTool.createAnnotation({
+      metadata: { ...viewport.getViewReference(), referencedImageId },
+    });
 
     addAnnotation(annotation, element);
 
@@ -146,13 +116,7 @@ class KeyImageTool extends AnnotationTool {
       }
       annotation.data.text = text;
 
-      const eventType = Events.ANNOTATION_COMPLETED;
-
-      const eventDetail: AnnotationCompletedEventDetail = {
-        annotation,
-      };
-
-      triggerEvent(eventTarget, eventType, eventDetail);
+      triggerAnnotationCompleted(annotation);
 
       triggerAnnotationRenderForViewportIds(
         renderingEngine,
@@ -276,8 +240,8 @@ class KeyImageTool extends AnnotationTool {
   _doneChangingTextCallback(element, annotation, updatedText): void {
     annotation.data.text = updatedText;
 
-    const { renderingEngine, viewportId, renderingEngineId } =
-      getEnabledElement(element);
+    const enabledElement = getEnabledElement(element);
+    const { renderingEngine } = enabledElement;
 
     const viewportIdsToRender = getViewportIdsWithToolToRender(
       element,
@@ -286,13 +250,7 @@ class KeyImageTool extends AnnotationTool {
     triggerAnnotationRenderForViewportIds(renderingEngine, viewportIdsToRender);
 
     // Dispatching annotation modified
-    const eventType = Events.ANNOTATION_MODIFIED;
-
-    triggerEvent(eventTarget, eventType, {
-      annotation,
-      viewportId,
-      renderingEngineId,
-    });
+    triggerAnnotationModified(annotation, element);
   }
 
   _activateModify = (element: HTMLDivElement) => {

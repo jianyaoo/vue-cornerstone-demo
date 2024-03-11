@@ -4,7 +4,23 @@ const selectorParser = require("postcss-selector-parser");
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
-function getSingleLocalNamesForComposes(root) {
+function isNestedRule(rule) {
+  if (!rule.parent || rule.parent.type === "root") {
+    return false;
+  }
+
+  if (rule.parent.type === "rule") {
+    return true;
+  }
+
+  return isNestedRule(rule.parent);
+}
+
+function getSingleLocalNamesForComposes(root, rule) {
+  if (isNestedRule(rule)) {
+    throw new Error(`composition is not allowed in nested rule \n\n${rule}`);
+  }
+
   return root.nodes.map((node) => {
     if (node.type !== "selector" || node.nodes.length !== 1) {
       throw new Error(
@@ -91,7 +107,7 @@ const plugin = (options = {}) => {
     Once(root, { rule }) {
       const exports = Object.create(null);
 
-      function exportScopedName(name, rawName, node) {
+      function exportScopedName(name, rawName, node, needExport = true) {
         const scopedName = generateScopedName(
           rawName ? rawName : name,
           root.source.input.from,
@@ -107,6 +123,10 @@ const plugin = (options = {}) => {
         );
         const { key, value } = exportEntry;
 
+        if (!needExport) {
+          return scopedName;
+        }
+
         exports[key] = exports[key] || [];
 
         if (exports[key].indexOf(value) < 0) {
@@ -116,17 +136,18 @@ const plugin = (options = {}) => {
         return scopedName;
       }
 
-      function localizeNode(node) {
+      function localizeNode(node, needExport = true) {
         switch (node.type) {
           case "selector":
-            node.nodes = node.map(localizeNode);
+            node.nodes = node.map((item) => localizeNode(item, needExport));
             return node;
           case "class":
             return selectorParser.className({
               value: exportScopedName(
                 node.value,
                 node.raws && node.raws.value ? node.raws.value : null,
-                node
+                node,
+                needExport
               ),
             });
           case "id": {
@@ -134,7 +155,8 @@ const plugin = (options = {}) => {
               value: exportScopedName(
                 node.value,
                 node.raws && node.raws.value ? node.raws.value : null,
-                node
+                node,
+                needExport
               ),
             });
           }
@@ -144,7 +166,7 @@ const plugin = (options = {}) => {
                 attribute: node.attribute,
                 operator: node.operator,
                 quoteMark: "'",
-                value: exportScopedName(node.value),
+                value: exportScopedName(node.value, null, null, needExport),
               });
             }
           }
@@ -155,7 +177,7 @@ const plugin = (options = {}) => {
         );
       }
 
-      function traverseNode(node) {
+      function traverseNode(node, needExport = true) {
         switch (node.type) {
           case "pseudo":
             if (node.value === ":local") {
@@ -163,7 +185,7 @@ const plugin = (options = {}) => {
                 throw new Error('Unexpected comma (",") in :local block');
               }
 
-              const selector = localizeNode(node.first, node.spaces);
+              const selector = localizeNode(node.first, needExport);
               // move the spaces that were around the pseudo selector to the first
               // non-container node
               selector.first.spaces = node.spaces;
@@ -186,12 +208,12 @@ const plugin = (options = {}) => {
           /* falls through */
           case "root":
           case "selector": {
-            node.each(traverseNode);
+            node.each((item) => traverseNode(item, needExport));
             break;
           }
           case "id":
           case "class":
-            if (exportGlobals) {
+            if (needExport && exportGlobals) {
               exports[node.value] = [node.value];
             }
             break;
@@ -215,7 +237,10 @@ const plugin = (options = {}) => {
         rule.selector = traverseNode(parsedSelector.clone()).toString();
 
         rule.walkDecls(/composes|compose-with/i, (decl) => {
-          const localNames = getSingleLocalNamesForComposes(parsedSelector);
+          const localNames = getSingleLocalNamesForComposes(
+            parsedSelector,
+            decl.parent
+          );
           const classes = decl.value.split(/\s+/);
 
           classes.forEach((className) => {
@@ -289,6 +314,25 @@ const plugin = (options = {}) => {
         }
 
         atRule.params = exportScopedName(localMatch[1]);
+      });
+
+      root.walkAtRules(/scope$/i, (atRule) => {
+        atRule.params = atRule.params
+          .split("to")
+          .map((item) => {
+            const selector = item.trim().slice(1, -1).trim();
+
+            const localMatch = /^\s*:local\s*\((.+?)\)\s*$/.exec(selector);
+
+            if (!localMatch) {
+              return `(${selector})`;
+            }
+
+            let parsedSelector = selectorParser().astSync(selector);
+
+            return `(${traverseNode(parsedSelector, false).toString()})`;
+          })
+          .join(" to ");
       });
 
       // If we found any :locals, insert an :export rule

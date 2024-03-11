@@ -159,8 +159,8 @@ class SideEffectsFlagPlugin {
 												statement.test
 													? statement.test.range[1]
 													: statement.init
-													? statement.init.range[1]
-													: statement.range[0]
+														? statement.init.range[1]
+														: statement.range[0]
 											)
 										) {
 											sideEffectsStatement = statement;
@@ -243,7 +243,12 @@ class SideEffectsFlagPlugin {
 						);
 
 						logger.time("update dependencies");
-						for (const module of modules) {
+
+						const optimizedModules = new Set();
+
+						const optimizeIncomingConnections = module => {
+							if (optimizedModules.has(module)) return;
+							optimizedModules.add(module);
 							if (module.getSideEffectsConnectionState(moduleGraph) === false) {
 								const exportsInfo = moduleGraph.getExportsInfo(module);
 								for (const connection of moduleGraph.getIncomingConnections(
@@ -258,6 +263,9 @@ class SideEffectsFlagPlugin {
 										(dep instanceof HarmonyImportSpecifierDependency &&
 											!dep.namespaceObjectAsContext)
 									) {
+										if (connection.originModule !== null) {
+											optimizeIncomingConnections(connection.originModule);
+										}
 										// TODO improve for export *
 										if (isReexport && dep.name) {
 											const exportInfo = moduleGraph.getExportInfo(
@@ -314,6 +322,10 @@ class SideEffectsFlagPlugin {
 									}
 								}
 							}
+						};
+
+						for (const module of modules) {
+							optimizeIncomingConnections(module);
 						}
 						logger.timeEnd("update dependencies");
 					}

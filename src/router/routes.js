@@ -4,6 +4,7 @@ import BaseStack from "@/views/basicUsage/BaseStack.vue";
 import BaseNiftyFile from "@/views/basicUsage/BaseNiftyFile.vue";
 import BaseTools from "@/views/basicTools/BaseTool.vue";
 import BasicSegmentation from "@/views/basicTools/BasicSegmentation.vue";
+import WindowLevel from "@/views/basicTools/WindowLevel.vue";
 
 const basicUsage = {
   name: "基础渲染功能",
@@ -39,6 +40,11 @@ const basicToolsUsage = {
       path: "segmentation",
       name: "分割器的基础使用",
       component: BasicSegmentation,
+    },
+    {
+      path: "windowLevelTool",
+      name: "窗宽窗位的基础使用",
+      component: WindowLevel,
     },
   ],
 };

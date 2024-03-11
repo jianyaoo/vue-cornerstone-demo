@@ -124,3 +124,9 @@ It can be difficult to contribute if your environment is not setup correctly. I 
 0. VS Code and Docker Desktop
 1. [Remote-Containers extension](vscode:extension/ms-vscode-remote.remote-containers)
 2. Command Pallete --> `Remote-Containers: Open Folder in Container`
+
+### How to Run
+- Run `yarn install` in the main codecs folder
+- Run `git submodule update --init --recursive` in the main codecs folder to initiate submodules
+- Go to packages/openjpeg folder
+- Run `yarn build`

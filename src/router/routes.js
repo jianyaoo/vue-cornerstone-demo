@@ -5,6 +5,8 @@ import BaseNiftyFile from "@/views/basicUsage/BaseNiftyFile.vue";
 import BaseTools from "@/views/basicTools/BaseTool.vue";
 import BasicSegmentation from "@/views/basicTools/BasicSegmentation.vue";
 import WindowLevel from "@/views/basicTools/WindowLevel.vue";
+import BasicPET from "@/views/basicUsage/BasicPET.vue";
+import BasicPETUseTool from "@/views/basicTools/BasicPETUseTool.vue";
 
 const basicUsage = {
   name: "基础渲染功能",
@@ -27,6 +29,11 @@ const basicUsage = {
       name: "加载nifti文件",
       component: BaseNiftyFile,
     },
+    {
+      path: "basicPET",
+      name: "渲染PET模式",
+      component: BasicPET,
+    },
   ],
 };
 
@@ -45,6 +52,11 @@ const basicToolsUsage = {
       path: "windowLevelTool",
       name: "窗宽窗位的基础使用",
       component: WindowLevel,
+    },
+    {
+      path: "basicPETTools",
+      name: "PET模式下调整窗框窗位",
+      component: BasicPETUseTool,
     },
   ],
 };

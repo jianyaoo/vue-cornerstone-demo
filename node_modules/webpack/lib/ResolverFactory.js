@@ -22,7 +22,7 @@ const {
 
 /** @typedef {WebpackResolveOptions & {dependencyType?: string, resolveToContext?: boolean }} ResolveOptionsWithDependencyType */
 /**
- * @typedef {Object} WithOptions
+ * @typedef {object} WithOptions
  * @property {function(Partial<ResolveOptionsWithDependencyType>): ResolverWithOptions} withOptions create a resolver with additional/different options
  */
 
@@ -61,13 +61,15 @@ const convertToResolveOptions = resolveOptionsWithDepType => {
 		);
 
 	return removeOperations(
-		resolveByProperty(options, "byDependency", dependencyType)
+		resolveByProperty(options, "byDependency", dependencyType),
+		// Keep the `unsafeCache` because it can be a `Proxy`
+		["unsafeCache"]
 	);
 };
 
 /**
- * @typedef {Object} ResolverCache
- * @property {WeakMap<Object, ResolverWithOptions>} direct
+ * @typedef {object} ResolverCache
+ * @property {WeakMap<object, ResolverWithOptions>} direct
  * @property {Map<string, ResolverWithOptions>} stringified
  */
 

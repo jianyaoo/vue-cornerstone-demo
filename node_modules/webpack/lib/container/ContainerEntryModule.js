@@ -34,17 +34,19 @@ const ContainerExposedDependency = require("./ContainerExposedDependency");
 /** @typedef {import("./ContainerEntryDependency")} ContainerEntryDependency */
 
 /**
- * @typedef {Object} ExposeOptions
+ * @typedef {object} ExposeOptions
  * @property {string[]} import requests to exposed modules (last one is exported)
  * @property {string} name custom chunk name for the exposed module
  */
+
+/** @typedef {[string, ExposeOptions][]} ExposesList */
 
 const SOURCE_TYPES = new Set(["javascript"]);
 
 class ContainerEntryModule extends Module {
 	/**
 	 * @param {string} name container entry name
-	 * @param {[string, ExposeOptions][]} exposes list of exposed modules
+	 * @param {ExposesList} exposes list of exposed modules
 	 * @param {string} shareScope name of the share scope
 	 */
 	constructor(name, exposes, shareScope) {

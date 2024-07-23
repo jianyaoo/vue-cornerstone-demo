@@ -230,22 +230,6 @@ const mergeRuntime = (a, b) => {
 exports.mergeRuntime = mergeRuntime;
 
 /**
- * @param {RuntimeSpec[]} runtimes first
- * @param {RuntimeSpec} runtime second
- * @returns {RuntimeSpec} merged
- */
-exports.deepMergeRuntime = (runtimes, runtime) => {
-	if (!Array.isArray(runtimes)) {
-		return runtime;
-	}
-	let merged = runtime;
-	for (const r of runtimes) {
-		merged = mergeRuntime(runtime, r);
-	}
-	return merged;
-};
-
-/**
  * @param {RuntimeCondition} a first
  * @param {RuntimeCondition} b second
  * @param {RuntimeSpec} runtime full runtime
@@ -390,6 +374,7 @@ const subtractRuntime = (a, b) => {
 			}
 			const set = new SortableSet(a);
 			set.delete(b);
+			return set;
 		} else {
 			const set = new SortableSet();
 			for (const item of a) {
@@ -445,7 +430,7 @@ exports.filterRuntime = (runtime, filter) => {
 /**
  * @template T
  * @typedef {Map<string, T>} RuntimeSpecMapInnerMap
- * */
+ */
 
 /**
  * @template T

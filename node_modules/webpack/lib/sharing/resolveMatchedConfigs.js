@@ -13,7 +13,7 @@ const LazySet = require("../util/LazySet");
 
 /**
  * @template T
- * @typedef {Object} MatchedConfigs
+ * @typedef {object} MatchedConfigs
  * @property {Map<string, T>} resolved
  * @property {Map<string, T>} unresolved
  * @property {Map<string, T>} prefixed
@@ -64,10 +64,10 @@ exports.resolveMatchedConfigs = (compilation, configs) => {
 										name: `shared module ${request}`
 									})
 								);
-								return resolve();
+								return resolve(null);
 							}
 							resolved.set(/** @type {string} */ (result), config);
-							resolve();
+							resolve(null);
 						}
 					);
 				});

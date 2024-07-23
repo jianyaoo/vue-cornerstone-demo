@@ -1,5 +1,3 @@
-"use strict";
-
 const babel = require("@babel/core");
 module.exports = function injectCaller(opts, target) {
   if (!supportsCallerOption()) return opts;

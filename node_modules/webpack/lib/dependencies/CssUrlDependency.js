@@ -5,6 +5,7 @@
 
 "use strict";
 
+const RawDataUrlModule = require("../asset/RawDataUrlModule");
 const makeSerializable = require("../util/makeSerializable");
 const memoize = require("../util/memoize");
 const ModuleDependency = require("./ModuleDependency");
@@ -24,7 +25,9 @@ const ModuleDependency = require("./ModuleDependency");
 /** @typedef {import("../util/Hash")} Hash */
 /** @typedef {import("../util/runtime").RuntimeSpec} RuntimeSpec */
 
-const getRawDataUrlModule = memoize(() => require("../asset/RawDataUrlModule"));
+const getIgnoredRawDataUrlModule = memoize(() => {
+	return new RawDataUrlModule("data:,", `ignored-asset`, `(ignored asset)`);
+});
 
 class CssUrlDependency extends ModuleDependency {
 	/**
@@ -51,8 +54,7 @@ class CssUrlDependency extends ModuleDependency {
 	 * @returns {Module | null} a module
 	 */
 	createIgnoredModule(context) {
-		const RawDataUrlModule = getRawDataUrlModule();
-		return new RawDataUrlModule("data:,", `ignored-asset`, `(ignored asset)`);
+		return getIgnoredRawDataUrlModule();
 	}
 
 	/**
@@ -124,6 +126,7 @@ CssUrlDependency.Template = class CssUrlDependencyTemplate extends (
 		{ moduleGraph, runtimeTemplate, codeGenerationResults }
 	) {
 		const dep = /** @type {CssUrlDependency} */ (dependency);
+		const module = /** @type {Module} */ (moduleGraph.getModule(dep));
 
 		/** @type {string | undefined} */
 		let newValue;
@@ -132,8 +135,7 @@ CssUrlDependency.Template = class CssUrlDependencyTemplate extends (
 			case "string":
 				newValue = cssEscapeString(
 					runtimeTemplate.assetUrl({
-						publicPath: "",
-						module: /** @type {Module} */ (moduleGraph.getModule(dep)),
+						module,
 						codeGenerationResults
 					})
 				);
@@ -141,8 +143,7 @@ CssUrlDependency.Template = class CssUrlDependencyTemplate extends (
 			case "url":
 				newValue = `url(${cssEscapeString(
 					runtimeTemplate.assetUrl({
-						publicPath: "",
-						module: /** @type {Module} */ (moduleGraph.getModule(dep)),
+						module,
 						codeGenerationResults
 					})
 				)})`;
@@ -158,5 +159,7 @@ CssUrlDependency.Template = class CssUrlDependencyTemplate extends (
 };
 
 makeSerializable(CssUrlDependency, "webpack/lib/dependencies/CssUrlDependency");
+
+CssUrlDependency.PUBLIC_PATH_AUTO = "__WEBPACK_CSS_PUBLIC_PATH_AUTO__";
 
 module.exports = CssUrlDependency;

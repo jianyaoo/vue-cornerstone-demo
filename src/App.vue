@@ -1,23 +1,34 @@
+<script setup>
+import routes from "@/router/routes";
+
+const displayRoutes = ref(routes.filter((item) => item.name));
+const isCollapse = ref(false);
+</script>
+
 <template>
   <el-container class="page-container">
     <el-header class="page-header">
-      <h1>cornerstone3D在线演示（基于Vue运行）</h1>
+      <h1>cornerstone3D在线演示（Vue3版本）</h1>
     </el-header>
+
     <el-container>
       <el-aside width="300px">
         <el-menu
-          default-active="1-4-1"
+          default-active="0-1"
           class="el-menu-vertical-demo"
           :collapse="isCollapse"
         >
-          <el-submenu
+          <el-sub-menu
             v-for="(route, routeIndex) in displayRoutes"
             :key="`router${routeIndex}`"
             :index="routeIndex.toString()"
           >
-            <template v-slot:title>
-              <i :class="route.icon"></i>
-              <span slot="title">{{ route.name }}</span>
+            <template #title>
+              <i
+                class="iconfont"
+                :class="route.icon"
+              />
+              <span>{{ route.name }}</span>
             </template>
             <el-menu-item
               v-for="(routeChildren, index) in route.children"
@@ -28,10 +39,10 @@
                 {{ routeChildren.name }}
               </router-link>
             </el-menu-item>
-          </el-submenu>
+          </el-sub-menu>
         </el-menu>
       </el-aside>
-
+      
       <el-main>
         <router-view />
       </el-main>
@@ -39,28 +50,15 @@
   </el-container>
 </template>
 
-<script>
-import routes from "@/router/routes";
-
-export default {
-  name: "APP",
-  data() {
-    return {
-      displayRoutes: routes.filter((item) => item.name),
-      isCollapse: false,
-    };
-  },
-};
-</script>
-
-<style scoped lang="scss">
+<style lang="scss">
 .page-container {
   min-height: 1000px;
 
   .page-header {
-    background: #409eff;
+    background: #061C49;
     color: #fff;
     min-height: 80px;
+    line-height: 80px;
     vertical-align: middle;
   }
 }
@@ -72,5 +70,10 @@ a {
   &.router-link-exact-active {
     color: #409eff;
   }
+}
+
+i{
+  color: #000;
+  margin-right: 3px;
 }
 </style>

@@ -10,7 +10,6 @@ This library is a JavaScript port made possible by [emscripten](https://emscript
 
 ## Features
 
-...
 
 ## Installing
 

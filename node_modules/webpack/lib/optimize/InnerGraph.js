@@ -9,6 +9,7 @@ const { UsageState } = require("../ExportsInfo");
 
 /** @typedef {import("estree").Node} AnyNode */
 /** @typedef {import("../Dependency")} Dependency */
+/** @typedef {import("../Module")} Module */
 /** @typedef {import("../ModuleGraph")} ModuleGraph */
 /** @typedef {import("../ModuleGraphConnection")} ModuleGraphConnection */
 /** @typedef {import("../ModuleGraphConnection").ConnectionState} ConnectionState */
@@ -20,7 +21,7 @@ const { UsageState } = require("../ExportsInfo");
 /** @typedef {function(boolean | Set<string> | undefined): void} UsageCallback */
 
 /**
- * @typedef {Object} StateObject
+ * @typedef {object} StateObject
  * @property {InnerGraph} innerGraph
  * @property {TopLevelSymbol=} currentTopLevelSymbol
  * @property {Map<TopLevelSymbol, Set<UsageCallback>>} usageCallbackMap
@@ -295,7 +296,9 @@ exports.isDependencyUsedByExports = (
 ) => {
 	if (usedByExports === false) return false;
 	if (usedByExports !== true && usedByExports !== undefined) {
-		const selfModule = moduleGraph.getParentModule(dependency);
+		const selfModule =
+			/** @type {Module} */
+			(moduleGraph.getParentModule(dependency));
 		const exportsInfo = moduleGraph.getExportsInfo(selfModule);
 		let used = false;
 		for (const exportName of usedByExports) {
@@ -320,7 +323,9 @@ exports.getDependencyUsedByExportsCondition = (
 ) => {
 	if (usedByExports === false) return false;
 	if (usedByExports !== true && usedByExports !== undefined) {
-		const selfModule = moduleGraph.getParentModule(dependency);
+		const selfModule =
+			/** @type {Module} */
+			(moduleGraph.getParentModule(dependency));
 		const exportsInfo = moduleGraph.getExportsInfo(selfModule);
 		return (connections, runtime) => {
 			for (const exportName of usedByExports) {

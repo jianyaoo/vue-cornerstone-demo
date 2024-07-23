@@ -171,6 +171,10 @@ class ExportsInfo {
 		this._exportsAreOrdered = true;
 	}
 
+	/**
+	 * @param {ExportsInfo | undefined} exportsInfo exports info
+	 * @returns {boolean} result
+	 */
 	setRedirectNamedTo(exportsInfo) {
 		if (this._redirectTo === exportsInfo) return false;
 		this._redirectTo = exportsInfo;
@@ -207,9 +211,6 @@ class ExportsInfo {
 			this._redirectTo.setHasUseInfo();
 		} else {
 			this._otherExportsInfo.setHasUseInfo();
-			if (this._otherExportsInfo.canMangleUse === undefined) {
-				this._otherExportsInfo.canMangleUse = true;
-			}
 		}
 	}
 
@@ -479,6 +480,7 @@ class ExportsInfo {
 	 * @returns {SortableSet<string> | boolean | null} set of used exports, or true (when namespace object is used), or false (when unused), or null (when unknown)
 	 */
 	getUsedExports(runtime) {
+		// eslint-disable-next-line no-constant-binary-expression
 		if (!this._redirectTo !== undefined) {
 			switch (this._otherExportsInfo.getUsed(runtime)) {
 				case UsageState.NoInfo:
@@ -527,6 +529,7 @@ class ExportsInfo {
 	 * @returns {null | true | string[]} list of exports when known
 	 */
 	getProvidedExports() {
+		// eslint-disable-next-line no-constant-binary-expression
 		if (!this._redirectTo !== undefined) {
 			switch (this._otherExportsInfo.provided) {
 				case undefined:
@@ -670,7 +673,7 @@ class ExportsInfo {
 	}
 
 	/**
-	 * @param {string | string[]} name the export name
+	 * @param {string | string[] | undefined} name the export name
 	 * @param {RuntimeSpec} runtime check usage for this runtime only
 	 * @returns {string | string[] | false} the used name
 	 */
@@ -807,16 +810,28 @@ class ExportInfo {
 	constructor(name, initFrom) {
 		/** @type {string} */
 		this.name = name;
-		/** @private @type {string | null} */
+		/**
+		 * @private
+		 * @type {string | null}
+		 */
 		this._usedName = initFrom ? initFrom._usedName : null;
-		/** @private @type {UsageStateType} */
+		/**
+		 * @private
+		 * @type {UsageStateType}
+		 */
 		this._globalUsed = initFrom ? initFrom._globalUsed : undefined;
-		/** @private @type {Map<string, RuntimeUsageStateType>} */
+		/**
+		 * @private
+		 * @type {Map<string, RuntimeUsageStateType>}
+		 */
 		this._usedInRuntime =
 			initFrom && initFrom._usedInRuntime
 				? new Map(initFrom._usedInRuntime)
 				: undefined;
-		/** @private @type {boolean} */
+		/**
+		 * @private
+		 * @type {boolean}
+		 */
 		this._hasUseInRuntimeInfo = initFrom
 			? initFrom._hasUseInRuntimeInfo
 			: false;

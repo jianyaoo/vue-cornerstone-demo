@@ -1,0 +1,29 @@
+body {
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+
+  .el-menu {
+    background: #090C28;
+    border-right: 2px solid #081C48;
+
+    .el-sub-menu__title {
+      background: #090C28;
+      color: #fff;
+    }
+
+    .el-sub-menu__title:hover, .el-menu-item:hover {
+      background: #081C48;
+      color: #96CDF2;
+    }
+
+    a.router-link-exact-active{
+      color: #96CDF2;
+    }
+  }
+
+  .el-divider__text{
+    background: #96CDF2;
+    color: red;
+  }
+}

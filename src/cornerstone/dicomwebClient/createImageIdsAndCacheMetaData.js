@@ -9,7 +9,7 @@ import getPixelSpacingInformation from "./getPixelSpacingInformation";
 import { convertMultiframeImageIds } from "./convertMultiframeImageIds";
 import removeInvalidTags from "./removeInvalidTags";
 
-import ptScalingMetaDataProvider from "../ptScalingMetaDataProvider";
+import ptScalingMetaDataProvider from "../helper/ptScalingMetaDataProvider";
 
 const { DicomMetaDictionary } = dcmjs.data;
 const { calibratedPixelSpacingMetadataProvider } = utilities;

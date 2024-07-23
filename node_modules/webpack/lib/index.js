@@ -60,6 +60,8 @@ const memoize = require("./util/memoize");
 /** @typedef {import("./stats/DefaultStatsFactoryPlugin").StatsModuleTraceDependency} StatsModuleTraceDependency */
 /** @typedef {import("./stats/DefaultStatsFactoryPlugin").StatsModuleTraceItem} StatsModuleTraceItem */
 /** @typedef {import("./stats/DefaultStatsFactoryPlugin").StatsProfile} StatsProfile */
+/** @typedef {import("./util/fs").InputFileSystem} InputFileSystem */
+/** @typedef {import("./util/fs").OutputFileSystem} OutputFileSystem */
 
 /**
  * @template {Function} T
@@ -221,6 +223,9 @@ module.exports = mergeExports(fn, {
 	get HotModuleReplacementPlugin() {
 		return require("./HotModuleReplacementPlugin");
 	},
+	get InitFragment() {
+		return require("./InitFragment");
+	},
 	get IgnorePlugin() {
 		return require("./IgnorePlugin");
 	},
@@ -276,6 +281,9 @@ module.exports = mergeExports(fn, {
 	},
 	get Parser() {
 		return require("./Parser");
+	},
+	get PlatformPlugin() {
+		return require("./PlatformPlugin");
 	},
 	get PrefetchPlugin() {
 		return require("./PrefetchPlugin");
@@ -576,6 +584,9 @@ module.exports = mergeExports(fn, {
 		},
 		get LazySet() {
 			return require("./util/LazySet");
+		},
+		get compileBooleanMatcher() {
+			return require("./util/compileBooleanMatcher");
 		}
 	},
 

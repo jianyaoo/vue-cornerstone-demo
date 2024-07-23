@@ -13,9 +13,15 @@ class ArrayQueue {
 	 * @param {Iterable<T>=} items The initial elements.
 	 */
 	constructor(items) {
-		/** @private @type {T[]} */
+		/**
+		 * @private
+		 * @type {T[]}
+		 */
 		this._list = items ? Array.from(items) : [];
-		/** @private @type {T[]} */
+		/**
+		 * @private
+		 * @type {T[]}
+		 */
 		this._listReversed = [];
 	}
 
@@ -77,31 +83,18 @@ class ArrayQueue {
 	}
 
 	[Symbol.iterator]() {
-		let i = -1;
-		let reversed = false;
 		return {
 			next: () => {
-				if (!reversed) {
-					i++;
-					if (i < this._list.length) {
-						return {
-							done: false,
-							value: this._list[i]
-						};
-					}
-					reversed = true;
-					i = this._listReversed.length;
-				}
-				i--;
-				if (i < 0) {
+				const item = this.dequeue();
+				if (item) {
 					return {
-						done: true,
-						value: undefined
+						done: false,
+						value: item
 					};
 				}
 				return {
-					done: false,
-					value: this._listReversed[i]
+					done: true,
+					value: undefined
 				};
 			}
 		};

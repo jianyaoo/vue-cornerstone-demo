@@ -1,16 +1,13 @@
-import Vue from "vue";
-import ElementUI from "element-ui";
-import "element-ui/lib/theme-chalk/index.css";
+import { createApp } from "vue";
+import "element-plus/dist/index.css";
+import '@/style/index.scss'
+
 import App from "./App.vue";
+
 import router from "./router";
-import store from "./store";
 
 window.SharedArrayBuffer = ArrayBuffer;
-Vue.config.productionTip = false;
-Vue.use(ElementUI);
 
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount("#app");
+const app = createApp(App);
+app.use(router);
+app.mount("#app");

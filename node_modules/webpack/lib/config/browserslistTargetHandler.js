@@ -16,7 +16,7 @@ const path = require("path");
 const inputRx = /^(?:((?:[A-Z]:)?[/\\].*?))?(?::(.+?))?$/i;
 
 /**
- * @typedef {Object} BrowserslistHandlerConfig
+ * @typedef {object} BrowserslistHandlerConfig
  * @property {string=} configPath
  * @property {string=} env
  * @property {string=} query
@@ -344,6 +344,12 @@ const resolve = browsers => {
 		importScripts: false,
 		importScriptsInWorker: true,
 		nodeBuiltins: nodeProperty,
+		nodePrefixForCoreModules:
+			nodeProperty &&
+			!browsers.some(b => /^node 15/.test(b)) &&
+			rawChecker({
+				node: [14, 18]
+			}),
 		require: nodeProperty
 	};
 };

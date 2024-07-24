@@ -14,15 +14,15 @@ export default {
       name: "渲染Volume影像",
       component: () => import("@/views/basicUsage/BaseVolume.vue"),
     },
-    // {
-    //   path: "niftiFile",
-    //   name: "加载nifti文件",
-    //   component: () => import("@/views/basicUsage/BaseNiftyFile.vue"),
-    // },
-    // {
-    //   path: "basicPET",
-    //   name: "渲染PET模式",
-    //   component: () => import("@/views/basicUsage/BasicPET.vue"),
-    // },
+    {
+      path: "niftiFile",
+      name: "渲染nifti文件",
+      component: () => import("@/views/basicUsage/BaseNiftyFile.vue"),
+    },
+    {
+      path: "basicPET",
+      name: "渲染PET模式",
+      component: () => import("@/views/basicUsage/BasicPET.vue"),
+    },
   ],
 };

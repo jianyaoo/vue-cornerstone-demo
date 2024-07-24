@@ -4,7 +4,7 @@ import basicToolRoute from "./basicToolRoute";
 const routes = [
   { path: "/", redirect: "/basicUsage/stack" },
   basicUsageRoute,
-  // basicToolRoute,
+  basicToolRoute,
 ];
 
 export default routes;

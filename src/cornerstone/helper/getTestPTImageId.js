@@ -1,4 +1,4 @@
-import { createImageIdsAndCacheMetaData } from "@/cornerstone";
+import createImageIdsAndCacheMetaData from "@/cornerstone/dicomwebClient/createImageIdsAndCacheMetaData";
 
 export default async function () {
   const imageIds = await createImageIdsAndCacheMetaData({

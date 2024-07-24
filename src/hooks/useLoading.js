@@ -4,15 +4,14 @@ export default function useLoading(type = "volume") {
   const loading = ref(false);
 
   const eventMap = {
-    stack: Enums.Events.IMAGE_LOADED
+    stack: Enums.Events.IMAGE_LOADED,
+    volume: Enums.Events.IMAGE_VOLUME_LOADING_COMPLETED
   };
 
-  eventTarget.addEventListener(Enums.Events.ELEMENT_ENABLED, () => {
+  onMounted(()=>{
     loading.value = true;
-  });
-
+  })
   eventTarget.addEventListener(eventMap[type], () => {
-    console.log("成功加载影像");
     loading.value = false;
   });
 

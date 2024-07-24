@@ -1078,18 +1078,7 @@
   resolved "https://registry.npmmirror.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@1.70.8":
-  version "1.70.8"
-  resolved "https://registry.npmmirror.com/@cornerstonejs/core/-/core-1.70.8.tgz#e66731986de638ebd7307fec19508544bb5fe7dc"
-  integrity sha512-xDAHxw4eGqJ4sPHc/+wPdRhZd2CYCkEuA7dE43e4rS6XKAN2X2BCjvTlZkAjECnOIsAnIOg//Pq7V6I09L28vg==
-  dependencies:
-    "@kitware/vtk.js" "30.3.3"
-    comlink "^4.4.1"
-    detect-gpu "^5.0.22"
-    gl-matrix "^3.4.3"
-    lodash.clonedeep "4.5.0"
-
-"@cornerstonejs/core@^1.70.8":
+"@cornerstonejs/core@^1.70.0", "@cornerstonejs/core@^1.82.5":
   version "1.82.5"
   resolved "https://registry.npmmirror.com/@cornerstonejs/core/-/core-1.82.5.tgz#0247a52f8453484b9a6f1002beaaa3d63e56e316"
   integrity sha512-ZGKdmSdZ1/Zfyl5GGAu+q4uqslJq0FSzI7BG3oKOaR+tbdghbc6t3pzCAoQtwMZu/s7f05kWGZaOVf+l9fHzDw==
@@ -1100,42 +1089,42 @@
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/dicom-image-loader@1.70.8":
-  version "1.70.8"
-  resolved "https://registry.npmmirror.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.70.8.tgz#e8107177298c0e9b314c225b93b0e28db59c8142"
-  integrity sha512-YoTN/gINulfZr80tecbwqijNwm+UpbRuq6gOACmXGQ4y9MjT78p8e6NMdvU/40rwT41FR3KNySbKEXJSDRURgA==
+"@cornerstonejs/dicom-image-loader@^1.70.0":
+  version "1.82.5"
+  resolved "https://registry.npmmirror.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.82.5.tgz#4001e190a7d45c065ef24e777ae3789f51455270"
+  integrity sha512-SHS9qDZKEgWLHX5RtURlEyotHYah7dDecB0lfw4EdC51wsCwIxjxfrYRgKRVdGkhgrKdPrDC6Iz7U4cbkqJmkA==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
     "@cornerstonejs/codec-openjph" "^2.4.5"
-    "@cornerstonejs/core" "^1.70.8"
+    "@cornerstonejs/core" "^1.82.5"
     dicom-parser "^1.8.9"
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/nifti-volume-loader@1.70.8":
-  version "1.70.8"
-  resolved "https://registry.npmmirror.com/@cornerstonejs/nifti-volume-loader/-/nifti-volume-loader-1.70.8.tgz#0bf826a4a3e782358c77058ee9f55ab7453d1951"
-  integrity sha512-90iU46rcJue/KVTx4n+UkV3+ZH0DaCWXGBItdMhOLC97YKPZH6iHq43JF9EDFQi8zlE8DWM860IEbfQ1U+bxcA==
+"@cornerstonejs/nifti-volume-loader@^1.70.0":
+  version "1.82.5"
+  resolved "https://registry.npmmirror.com/@cornerstonejs/nifti-volume-loader/-/nifti-volume-loader-1.82.5.tgz#23c56386553f0e1222a47ef1dbf28162ad6800eb"
+  integrity sha512-wdpuXjGVp1H7uA9vsgAZQNrJ8hACbE1WQk86V0fWV92FIGFOLVuEJT0I0V2r1M/j3I5+VvSpAohNzuOy8AfmDA==
   dependencies:
-    "@cornerstonejs/core" "^1.70.8"
-    nifti-reader-js "^0.6.6"
+    "@cornerstonejs/core" "^1.82.5"
+    nifti-reader-js "^0.6.8"
 
-"@cornerstonejs/streaming-image-volume-loader@1.70.8":
-  version "1.70.8"
-  resolved "https://registry.npmmirror.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.70.8.tgz#97a6b72b254564aef9b3b4e10896d5ed42b13c50"
-  integrity sha512-d53GB3Q0TMWOOzW9kmD03OUFCfTrVRoM/0O2ZRNdrtkj5H87YYLtKSyJsFrey7kC+3VfNVd+KLu4H0RsW/SulQ==
+"@cornerstonejs/streaming-image-volume-loader@^1.70.0":
+  version "1.82.5"
+  resolved "https://registry.npmmirror.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.82.5.tgz#574e2040e891c320be92a6e9587e946e414f8d70"
+  integrity sha512-5b/5zt9Jg7/Wtnh1yCcbn+Yx8f5v5f2rFNNr2sTx1urHYKKi1M6iG27tXJ/mXXp123HvMdJqlQQ4b4oUdOYWbQ==
   dependencies:
-    "@cornerstonejs/core" "^1.70.8"
+    "@cornerstonejs/core" "^1.82.5"
     comlink "^4.4.1"
 
-"@cornerstonejs/tools@1.70.8":
-  version "1.70.8"
-  resolved "https://registry.npmmirror.com/@cornerstonejs/tools/-/tools-1.70.8.tgz#2318f8d9a31ff77692fe2c7ec3ed1a758b82d13a"
-  integrity sha512-/hS8FckYtPXK5OYnDPzJUIjMgTyaYQOkwxo0eoRYwbCPFrHoqeT87drSdWdXm2RWR7fR+95ScRNaB1ZGBPEqcA==
+"@cornerstonejs/tools@^1.70.0":
+  version "1.82.5"
+  resolved "https://registry.npmmirror.com/@cornerstonejs/tools/-/tools-1.82.5.tgz#113b40826fc96d44f1dbb1ca0eeb0b0940db826c"
+  integrity sha512-vCmtbI3qyf1HFRFSlFSM+ODU63dMKN7szuO2hJFMCO0cqWzbtBXXBhndpBtSLkBYQknjae3p3MUPrgZ8/CjAaA==
   dependencies:
-    "@cornerstonejs/core" "^1.70.8"
+    "@cornerstonejs/core" "^1.82.5"
     "@icr/polyseg-wasm" "0.4.0"
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
@@ -1267,28 +1256,6 @@
   version "29.7.0"
   resolved "https://registry.npmmirror.com/@kitware/vtk.js/-/vtk.js-29.7.0.tgz#56c352a755dd61bf34664866441ef9143e55a24d"
   integrity sha512-z6XcoB+uUKayOsfLFR6GJW59bUyDe8JLkw3AMWKHbdLQmWvGosl32Zq18TYwCWAH/epIjZBoLBV+8o2GjgCb0w==
-  dependencies:
-    "@babel/runtime" "7.22.11"
-    "@types/webxr" "^0.5.5"
-    commander "9.2.0"
-    d3-scale "4.0.2"
-    fast-deep-equal "^3.1.3"
-    fflate "0.7.3"
-    gl-matrix "3.4.3"
-    globalthis "1.0.3"
-    seedrandom "3.0.5"
-    shader-loader "1.3.1"
-    shelljs "0.8.5"
-    spark-md5 "3.0.2"
-    stream-browserify "3.0.0"
-    webworker-promise "0.5.0"
-    worker-loader "3.0.8"
-    xmlbuilder2 "3.0.2"
-
-"@kitware/vtk.js@30.3.3":
-  version "30.3.3"
-  resolved "https://registry.npmmirror.com/@kitware/vtk.js/-/vtk.js-30.3.3.tgz#348e17fdc896c912eca7036f607d21ef6128bca1"
-  integrity sha512-es9I5LLlg+TpaIXk5aHSPzyI/YnCI4egHA1cbG98IP7t9W4KODUcJjyrXFAa7aSvfXZ8y2jhD9qrsaEnstEkJA==
   dependencies:
     "@babel/runtime" "7.22.11"
     "@types/webxr" "^0.5.5"
@@ -5078,7 +5045,7 @@ nice-try@^1.0.4:
   resolved "https://registry.npmmirror.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
-nifti-reader-js@^0.6.6:
+nifti-reader-js@^0.6.8:
   version "0.6.8"
   resolved "https://registry.npmmirror.com/nifti-reader-js/-/nifti-reader-js-0.6.8.tgz#658ae7b426880f147149b0ec6fffc39e3eb03e0a"
   integrity sha512-yIKNVzYFiUcSHazoR+sd6Ka7sUmZTabaVqJRFxbdlAKR1hnPBuNP71g3AyApo37nJ3k41c632QPij5q7gF1YPQ==

@@ -1,5 +1,6 @@
 <script setup>
 import routes from "@/router/routes";
+import { House } from "@element-plus/icons-vue";
 
 const displayRoutes = ref(routes.filter((item) => item.name));
 const isCollapse = ref(false);
@@ -24,10 +25,7 @@ const isCollapse = ref(false);
             :index="routeIndex.toString()"
           >
             <template #title>
-              <i
-                class="iconfont"
-                :class="route.icon"
-              />
+              <el-icon><House /></el-icon>
               <span>{{ route.name }}</span>
             </template>
             <el-menu-item

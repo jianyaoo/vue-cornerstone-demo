@@ -152,7 +152,7 @@ abstract class BaseTool implements IBaseTool {
    * @returns the volumeId for the viewport if specified in the tool configuration,
    * or the first actorUID in the viewport if not.
    */
-  private getTargetVolumeId(viewport: Types.IViewport): string | undefined {
+  protected getTargetVolumeId(viewport: Types.IViewport): string | undefined {
     if (this.configuration.volumeId) {
       return this.configuration.volumeId;
     }
@@ -257,7 +257,7 @@ abstract class BaseTool implements IBaseTool {
     if (viewport instanceof BaseVolumeViewport) {
       return `volumeId:${this.getTargetVolumeId(viewport)}`;
     }
-    throw new Error('getTargetId: viewport must have a getTargetId method');
+    throw new Error('getTargetId: viewport must have a getReferenceId method');
   }
 }
 

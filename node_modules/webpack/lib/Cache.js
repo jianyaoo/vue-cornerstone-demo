@@ -14,14 +14,14 @@ const {
 /** @typedef {import("./WebpackError")} WebpackError */
 
 /**
- * @typedef {Object} Etag
+ * @typedef {object} Etag
  * @property {function(): string} toString
  */
 
 /**
  * @template T
  * @callback CallbackCache
- * @param {(WebpackError | null)=} err
+ * @param {WebpackError | null} err
  * @param {T=} result
  * @returns {void}
  */
@@ -33,6 +33,11 @@ const {
  * @returns {void}
  */
 
+/**
+ * @param {number} times times
+ * @param {function(Error=): void} callback callback
+ * @returns {function(Error=): void} callback
+ */
 const needCalls = (times, callback) => {
 	return err => {
 		if (--times === 0) {
@@ -71,6 +76,7 @@ class Cache {
 	 * @returns {void}
 	 */
 	get(identifier, etag, callback) {
+		/** @type {GotHandler[]} */
 		const gotHandlers = [];
 		this.hooks.get.callAsync(identifier, etag, gotHandlers, (err, result) => {
 			if (err) {

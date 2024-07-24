@@ -11,7 +11,7 @@ const BULK_SIZE = 2000;
 
 // We are using an object instead of a Map as this will stay static during the runtime
 // so access to it can be optimized by v8
-/** @type {Object<string, Map<string, string>>} */
+/** @type {{[key: string]: Map<string, string>}} */
 const digestCaches = {};
 
 /** @typedef {function(): Hash} HashFactory */
@@ -143,7 +143,7 @@ let BatchedHash = undefined;
 
 /**
  * Creates a hash by name or function
- * @param {string | typeof Hash | undefined} algorithm the algorithm name or a constructor creating a hash
+ * @param {string | typeof Hash} algorithm the algorithm name or a constructor creating a hash
  * @returns {Hash} the hash
  */
 module.exports = algorithm => {
@@ -184,9 +184,7 @@ module.exports = algorithm => {
 			if (crypto === undefined) crypto = require("crypto");
 			return new BulkUpdateDecorator(
 				() =>
-					/** @type {typeof import("crypto")} */ (crypto).createHash(
-						/** @type {string} */ (algorithm)
-					),
+					/** @type {typeof import("crypto")} */ (crypto).createHash(algorithm),
 				algorithm
 			);
 	}

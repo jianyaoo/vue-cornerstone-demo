@@ -1,14 +1,12 @@
-# pkg-dir [![Build Status](https://travis-ci.org/sindresorhus/pkg-dir.svg?branch=master)](https://travis-ci.org/sindresorhus/pkg-dir)
+# pkg-dir
 
 > Find the root directory of a Node.js project or npm package
 
-
 ## Install
 
+```sh
+npm install pkg-dir
 ```
-$ npm install pkg-dir
-```
-
 
 ## Usage
 
@@ -25,34 +23,32 @@ $ npm install pkg-dir
 
 ```js
 // example.js
-const pkgDir = require('pkg-dir');
+import {packageDirectory} from 'pkg-dir';
 
-(async () => {
-	const rootDir = await pkgDir(__dirname);
-
-	console.log(rootDir);
-	//=> '/Users/sindresorhus/foo'
-})();
+console.log(await packageDirectory());
+//=> '/Users/sindresorhus/foo'
 ```
-
 
 ## API
 
-### pkgDir([cwd])
+### packageDirectory(option?)
 
-Returns a `Promise` for either the project root path or `undefined` if it couldn't be found.
+Returns a `Promise` for either the project root path or `undefined` if it could not be found.
 
-### pkgDir.sync([cwd])
+### packageDirectorySync(options?)
 
-Returns the project root path or `undefined` if it couldn't be found.
+Returns the project root path or `undefined` if it could not be found.
 
-#### cwd
+#### options
 
-Type: `string`<br>
+Type: `object`
+
+##### cwd
+
+Type: `string`\
 Default: `process.cwd()`
 
-Directory to start from.
-
+The directory to start searching from.
 
 ## Related
 
@@ -60,7 +56,14 @@ Directory to start from.
 - [pkg-up](https://github.com/sindresorhus/pkg-up) - Find the closest package.json file
 - [find-up](https://github.com/sindresorhus/find-up) - Find a file by walking up parent directories
 
+---
 
-## License
-
-MIT © [Sindre Sorhus](https://sindresorhus.com)
+<div align="center">
+	<b>
+		<a href="https://tidelift.com/subscription/pkg/npm-pkg-dir?utm_source=npm-pkg-dir&utm_medium=referral&utm_campaign=readme">Get professional support for this package with a Tidelift subscription</a>
+	</b>
+	<br>
+	<sub>
+		Tidelift helps make open source sustainable for maintainers while giving companies<br>assurances about security, maintenance, and licensing for their dependencies.
+	</sub>
+</div>

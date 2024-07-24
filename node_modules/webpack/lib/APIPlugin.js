@@ -25,6 +25,7 @@ const GetFullHashRuntimeModule = require("./runtime/GetFullHashRuntimeModule");
 
 /** @typedef {import("./Compiler")} Compiler */
 /** @typedef {import("./Dependency").DependencyLocation} DependencyLocation */
+/** @typedef {import("./Module").BuildInfo} BuildInfo */
 /** @typedef {import("./javascript/JavascriptParser")} JavascriptParser */
 /** @typedef {import("./javascript/JavascriptParser").Range} Range */
 
@@ -132,7 +133,7 @@ function getReplacements(module, importMetaName) {
 const PLUGIN_NAME = "APIPlugin";
 
 /**
- * @typedef {Object} APIPluginOptions
+ * @typedef {object} APIPluginOptions
  * @property {boolean} [module] the output filename
  */
 
@@ -187,10 +188,14 @@ class APIPlugin {
 				hooks.renderModuleContent.tap(
 					PLUGIN_NAME,
 					(source, module, renderContext) => {
-						if (module.buildInfo.needCreateRequire) {
+						if (/** @type {BuildInfo} */ (module.buildInfo).needCreateRequire) {
+							const needPrefix =
+								renderContext.runtimeTemplate.supportNodePrefixForCoreModules();
 							const chunkInitFragments = [
 								new InitFragment(
-									'import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";\n',
+									`import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "${
+										needPrefix ? "node:" : ""
+									}module";\n`,
 									InitFragment.STAGE_HARMONY_IMPORTS,
 									0,
 									"external module node-commonjs"
@@ -214,7 +219,8 @@ class APIPlugin {
 							const dep = toConstantDependency(parser, info.expr, info.req);
 
 							if (key === "__non_webpack_require__" && this.options.module) {
-								parser.state.module.buildInfo.needCreateRequire = true;
+								/** @type {BuildInfo} */
+								(parser.state.module.buildInfo).needCreateRequire = true;
 							}
 
 							return dep(expression);
@@ -267,7 +273,8 @@ class APIPlugin {
 					parser.hooks.expression
 						.for("__webpack_module__.id")
 						.tap(PLUGIN_NAME, expr => {
-							parser.state.module.buildInfo.moduleConcatenationBailout =
+							/** @type {BuildInfo} */
+							(parser.state.module.buildInfo).moduleConcatenationBailout =
 								"__webpack_module__.id";
 							const dep = new ConstDependency(
 								parser.state.module.moduleArgument + ".id",
@@ -282,7 +289,8 @@ class APIPlugin {
 					parser.hooks.expression
 						.for("__webpack_module__")
 						.tap(PLUGIN_NAME, expr => {
-							parser.state.module.buildInfo.moduleConcatenationBailout =
+							/** @type {BuildInfo} */
+							(parser.state.module.buildInfo).moduleConcatenationBailout =
 								"__webpack_module__";
 							const dep = new ConstDependency(
 								parser.state.module.moduleArgument,

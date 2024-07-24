@@ -52,7 +52,7 @@ const MinMaxSizeWarning = require("./MinMaxSizeWarning");
  */
 
 /**
- * @typedef {Object} CacheGroupSource
+ * @typedef {object} CacheGroupSource
  * @property {string=} key
  * @property {number=} priority
  * @property {GetName=} getName
@@ -75,7 +75,7 @@ const MinMaxSizeWarning = require("./MinMaxSizeWarning");
  */
 
 /**
- * @typedef {Object} CacheGroup
+ * @typedef {object} CacheGroup
  * @property {string} key
  * @property {number=} priority
  * @property {GetName=} getName
@@ -101,7 +101,7 @@ const MinMaxSizeWarning = require("./MinMaxSizeWarning");
  */
 
 /**
- * @typedef {Object} FallbackCacheGroup
+ * @typedef {object} FallbackCacheGroup
  * @property {ChunkFilterFunction} chunksFilter
  * @property {SplitChunksSizes} minSize
  * @property {SplitChunksSizes} maxAsyncSize
@@ -110,7 +110,7 @@ const MinMaxSizeWarning = require("./MinMaxSizeWarning");
  */
 
 /**
- * @typedef {Object} CacheGroupsContext
+ * @typedef {object} CacheGroupsContext
  * @property {ModuleGraph} moduleGraph
  * @property {ChunkGraph} chunkGraph
  */
@@ -131,7 +131,7 @@ const MinMaxSizeWarning = require("./MinMaxSizeWarning");
  */
 
 /**
- * @typedef {Object} SplitChunksOptions
+ * @typedef {object} SplitChunksOptions
  * @property {ChunkFilterFunction} chunksFilter
  * @property {string[]} defaultSizeTypes
  * @property {SplitChunksSizes} minSize
@@ -153,14 +153,14 @@ const MinMaxSizeWarning = require("./MinMaxSizeWarning");
  */
 
 /**
- * @typedef {Object} ChunksInfoItem
+ * @typedef {object} ChunksInfoItem
  * @property {SortableSet<Module>} modules
  * @property {CacheGroup} cacheGroup
  * @property {number} cacheGroupIndex
  * @property {string} name
  * @property {Record<string, number>} sizes
  * @property {Set<Chunk>} chunks
- * @property {Set<Chunk>} reuseableChunks
+ * @property {Set<Chunk>} reusableChunks
  * @property {Set<bigint | Chunk>} chunksKeys
  */
 
@@ -1023,7 +1023,7 @@ module.exports = class SplitChunksPlugin {
 						getExportsCombinationsFactory()(key);
 
 					/**
-					 * @typedef {Object} SelectedChunksResult
+					 * @typedef {object} SelectedChunksResult
 					 * @property {Chunk[]} chunks the list of chunks
 					 * @property {bigint | Chunk} key a key of the list
 					 */
@@ -1177,7 +1177,7 @@ module.exports = class SplitChunksPlugin {
 									name,
 									sizes: {},
 									chunks: new Set(),
-									reuseableChunks: new Set(),
+									reusableChunks: new Set(),
 									chunksKeys: new Set()
 								})
 							);
@@ -1322,7 +1322,7 @@ module.exports = class SplitChunksPlugin {
 					}
 
 					/**
-					 * @typedef {Object} MaxSizeQueueItem
+					 * @typedef {object} MaxSizeQueueItem
 					 * @property {SplitChunksSizes} minSize
 					 * @property {SplitChunksSizes} maxAsyncSize
 					 * @property {SplitChunksSizes} maxInitialSize

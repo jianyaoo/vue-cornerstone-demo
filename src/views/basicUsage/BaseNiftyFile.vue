@@ -1,116 +1,128 @@
+<script setup>
+import {
+  volumeLoader,
+  RenderingEngine,
+  Enums as csEnums,
+  setVolumesForViewports, eventTarget
+} from "@cornerstonejs/core";
+import { cornerstoneNiftiImageVolumeLoader, Enums as niftiEnum } from "@cornerstonejs/nifti-volume-loader";
+import initCornerstone from "@/cornerstone/helper/initCornerstone";
+import destoryCS from "@/cornerstone/helper/destoryCS";
+
+const renderingEngineId = 'my_renderingEngine_3';
+let loading = ref(true)
+
+onMounted(()=>{
+  init();
+})
+
+onBeforeUnmount(()=>{
+  destoryCS(renderingEngineId)
+})
+
+eventTarget.addEventListener(niftiEnum.Events.NIFTI_VOLUME_LOADED, () => {
+  loading.value = false;
+})
+
+async function init() {
+  await initCornerstone();
+  
+  // step1: 注册一个nifti格式的加载器
+  volumeLoader.registerVolumeLoader(
+    "nifti",
+    cornerstoneNiftiImageVolumeLoader
+  );
+  
+  // step2: 声明volumeId，格式为 'nifti:'+真实的请求路径
+  // 在定义volumeId时使用 nifti 前缀，便于识别使用的加载器种类
+  const niftiURL =
+    "https://ohif-assets.s3.us-east-2.amazonaws.com/nifti/MRHead.nii.gz";
+  const volumeId = "nifti:" + niftiURL;
+  
+  await volumeLoader.createAndCacheVolume(volumeId);
+  
+  const renderingEngine = new RenderingEngine(renderingEngineId);
+  
+  
+  // 在渲染引擎中创建并加载视图，使视图与HTML元素绑定
+  const viewportId1 = "CT_AXIAL";
+  const viewportId2 = "CT_SAGITTAL";
+  const viewportId3 = "CT_CORONAL";
+  const viewportInputArray = [
+    {
+      viewportId: viewportId1,
+      type: csEnums.ViewportType.ORTHOGRAPHIC,
+      element: document.querySelector("#element1"),
+      defaultOptions: {
+        orientation: csEnums.OrientationAxis.AXIAL,
+      },
+    },
+    {
+      viewportId: viewportId2,
+      type: csEnums.ViewportType.ORTHOGRAPHIC,
+      element: document.querySelector("#element2"),
+      defaultOptions: {
+        orientation: csEnums.OrientationAxis.SAGITTAL,
+      },
+    },
+    {
+      viewportId: viewportId3,
+      type: csEnums.ViewportType.ORTHOGRAPHIC,
+      element: document.querySelector("#element3"),
+      defaultOptions: {
+        orientation: csEnums.OrientationAxis.CORONAL,
+      },
+    },
+  ];
+  renderingEngine.setViewports(viewportInputArray);
+  
+  // 在视图上设置Volume
+  await setVolumesForViewports(
+    renderingEngine,
+    [
+      {
+        volumeId: volumeId,
+      },
+    ],
+    [viewportId1, viewportId2, viewportId3]
+  );
+  
+  // 渲染图像
+  renderingEngine.renderViewports([viewportId1, viewportId2, viewportId3]);
+}
+</script>
+
 <template>
   <div>
     <h3>加载渲染NifTi文件</h3>
-    <el-alert
-      title="从cornerstone服务器加载演示数据源，加载较慢请稍等"
-      type="info"
-    ></el-alert>
-    <div id="demo-wrap">
-      <div id="element1" class="cornerstone-item"></div>
-      <div id="element2" class="cornerstone-item"></div>
-      <div id="element3" class="cornerstone-item"></div>
+    <div
+      id="demo-wrap"
+    >
+      <div
+        id="element1"
+        v-loading="loading"
+        class="cornerstone-item"
+        element-loading-text="Loading..."
+        element-loading-background="rgba(6, 28, 73, 0.2)"
+      />
+      <div
+        id="element2"
+        v-loading="loading"
+        class="cornerstone-item"
+        element-loading-text="Loading..."
+        element-loading-background="rgba(6, 28, 73, 0.2)"
+      />
+      <div
+        id="element3"
+        v-loading="loading"
+        class="cornerstone-item"
+        element-loading-text="Loading..."
+        element-loading-background="rgba(6, 28, 73, 0.2)"
+      />
     </div>
   </div>
 </template>
 
-<script>
-import {
-  cache,
-  volumeLoader,
-  RenderingEngine,
-  Enums as csEnums,
-  setVolumesForViewports,
-  getRenderingEngine,
-} from "@cornerstonejs/core";
-import { cornerstoneNiftiImageVolumeLoader } from "@cornerstonejs/nifti-volume-loader";
-import { initCornerstone } from "../../cornerstone";
-
-export default {
-  name: "VueCornerstoneDemoNiftyFile",
-
-  data() {
-    return {
-      volumeId: "",
-      renderingEngineId: "my_renderingEngine_3",
-    };
-  },
-
-  mounted() {
-    this.init();
-  },
-  beforeDestroy() {
-    // 销毁组件时销毁webGL，避免再次渲染时报错
-    getRenderingEngine(this.renderingEngineId).destroy();
-    cache.removeVolumeLoadObject(this.volumeId);
-  },
-  methods: {
-    async init() {
-      await initCornerstone();
-
-      // 注册一个nifti格式的加载器
-      volumeLoader.registerVolumeLoader(
-        "nifti",
-        cornerstoneNiftiImageVolumeLoader
-      );
-
-      const niftiURL =
-        "https://ohif-assets.s3.us-east-2.amazonaws.com/nifti/MRHead.nii.gz";
-
-      // 在定义volumeId时使用 nifti 前缀，便于识别使用的加载器种类
-      const volumeId = "nifti:" + niftiURL;
-      this.volumeId = volumeId;
-      await volumeLoader.createAndCacheVolume(volumeId);
-
-      const renderingEngine = new RenderingEngine(this.renderingEngineId);
-      // 在渲染引擎中创建并加载视图，使视图与HTML元素绑定
-      const viewportId1 = "CT_AXIAL";
-      const viewportId2 = "CT_SAGITTAL";
-      const viewportId3 = "CT_CORONAL";
-      const viewportInputArray = [
-        {
-          viewportId: viewportId1,
-          type: csEnums.ViewportType.ORTHOGRAPHIC,
-          element: document.querySelector("#element1"),
-          defaultOptions: {
-            orientation: csEnums.OrientationAxis.AXIAL,
-          },
-        },
-        {
-          viewportId: viewportId2,
-          type: csEnums.ViewportType.ORTHOGRAPHIC,
-          element: document.querySelector("#element2"),
-          defaultOptions: {
-            orientation: csEnums.OrientationAxis.SAGITTAL,
-          },
-        },
-        {
-          viewportId: viewportId3,
-          type: csEnums.ViewportType.ORTHOGRAPHIC,
-          element: document.querySelector("#element3"),
-          defaultOptions: {
-            orientation: csEnums.OrientationAxis.CORONAL,
-          },
-        },
-      ];
-      renderingEngine.setViewports(viewportInputArray);
-
-      // 在视图上设置Volume
-      await setVolumesForViewports(
-        renderingEngine,
-        [
-          {
-            volumeId: volumeId,
-          },
-        ],
-        [viewportId1, viewportId2, viewportId3]
-      );
-
-      // 渲染图像
-      renderingEngine.renderViewports([viewportId1, viewportId2, viewportId3]);
-    },
-  },
-};
-</script>
 
 <style lang="scss" scoped>
 .cornerstone-item {
@@ -118,5 +130,9 @@ export default {
   width: 300px;
   height: 300px;
   margin-top: 20px;
+  margin-right: 20px;
+  padding: 20px;
+  border: 2px solid #96CDF2;
+  border-radius: 10px;
 }
 </style>

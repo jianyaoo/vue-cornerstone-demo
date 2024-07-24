@@ -49,8 +49,8 @@ class WindowLevelTool extends BaseTool {
 
     const properties = viewport.getProperties();
     if (viewport instanceof VolumeViewport) {
-      const targetId = this.getTargetId(viewport as Types.IVolumeViewport);
-      volumeId = utilities.getVolumeId(targetId);
+      volumeId = this.getTargetVolumeId(viewport);
+
       viewportsContainingVolumeUID = utilities.getViewportsWithVolumeId(
         volumeId,
         renderingEngine.id
@@ -211,7 +211,7 @@ class WindowLevelTool extends BaseTool {
     if (imageData.getScalarData) {
       scalarData = imageData.getScalarData();
     } else {
-      scalarData = imageData.getPointData().getScalars();
+      scalarData = imageData.getPointData().getScalars().getData();
     }
 
     if (dimensions[2] !== 1) {

@@ -36,13 +36,13 @@ const ConsumeSharedFallbackDependency = require("./ConsumeSharedFallbackDependen
 /** @typedef {import("../util/semver").SemVerRange} SemVerRange */
 
 /**
- * @typedef {Object} ConsumeOptions
+ * @typedef {object} ConsumeOptions
  * @property {string=} import fallback request
  * @property {string=} importResolved resolved fallback request
  * @property {string} shareKey global share key
  * @property {string} shareScope share scope
  * @property {SemVerRange | false | undefined} requiredVersion version requirement
- * @property {string} packageName package name to determine required version automatically
+ * @property {string=} packageName package name to determine required version automatically
  * @property {boolean} strictVersion don't use shared version even if version isn't valid
  * @property {boolean} singleton use single global version
  * @property {boolean} eager include the fallback module in a sync way
@@ -207,26 +207,31 @@ class ConsumeSharedModule extends Module {
 				});
 			}
 		}
-		let fn = "load";
-		const args = [JSON.stringify(shareScope), JSON.stringify(shareKey)];
+
+		const args = [
+			JSON.stringify(shareScope),
+			JSON.stringify(shareKey),
+			JSON.stringify(eager)
+		];
 		if (requiredVersion) {
-			if (strictVersion) {
-				fn += "Strict";
-			}
-			if (singleton) {
-				fn += "Singleton";
-			}
 			args.push(stringifyHoley(requiredVersion));
-			fn += "VersionCheck";
-		} else {
-			if (singleton) {
-				fn += "Singleton";
-			}
 		}
 		if (fallbackCode) {
-			fn += "Fallback";
 			args.push(fallbackCode);
 		}
+
+		let fn;
+
+		if (requiredVersion) {
+			if (strictVersion) {
+				fn = singleton ? "loadStrictSingletonVersion" : "loadStrictVersion";
+			} else {
+				fn = singleton ? "loadSingletonVersion" : "loadVersion";
+			}
+		} else {
+			fn = singleton ? "loadSingleton" : "load";
+		}
+
 		const code = runtimeTemplate.returningFunction(`${fn}(${args.join(", ")})`);
 		const sources = new Map();
 		sources.set("consume-shared", new RawSource(code));

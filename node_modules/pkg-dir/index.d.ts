@@ -1,44 +1,58 @@
-declare const pkgDir: {
+export interface Options {
 	/**
-	Find the root directory of a Node.js project or npm package.
+	The directory to start searching from.
 
-	@param cwd - Directory to start from. Default: `process.cwd()`.
-	@returns The project root path or `undefined` if it couldn't be found.
-
-	@example
-	```
-	// /
-	// └── Users
-	//     └── sindresorhus
-	//         └── foo
-	//             ├── package.json
-	//             └── bar
-	//                 ├── baz
-	//                 └── example.js
-
-	// example.js
-	import pkgDir = require('pkg-dir');
-
-	(async () => {
-		const rootDir = await pkgDir(__dirname);
-
-		console.log(rootDir);
-		//=> '/Users/sindresorhus/foo'
-	})();
-	```
+	@default process.cwd()
 	*/
-	(cwd?: string): Promise<string | undefined>;
+	readonly cwd?: string;
+}
 
-	/**
-	Synchronously find the root directory of a Node.js project or npm package.
+/**
+Find the root directory of a Node.js project or npm package.
 
-	@param cwd - Directory to start from. Default: `process.cwd()`.
-	@returns The project root path or `undefined` if it couldn't be found.
-	*/
-	sync(cwd?: string): string | undefined;
+@returns The project root path or `undefined` if it could not be found.
 
-	// TODO: Remove this for the next major release
-	default: typeof pkgDir;
-};
+@example
+```
+// /
+// └── Users
+//     └── sindresorhus
+//         └── foo
+//             ├── package.json
+//             └── bar
+//                 ├── baz
+//                 └── example.js
 
-export = pkgDir;
+// example.js
+import {packageDirectory} from 'pkg-dir';
+
+console.log(await packageDirectory());
+//=> '/Users/sindresorhus/foo'
+```
+*/
+export function packageDirectory(options?: Options): Promise<string | undefined>;
+
+/**
+Synchronously find the root directory of a Node.js project or npm package.
+
+@returns The project root path or `undefined` if it could not be found.
+
+@example
+```
+// /
+// └── Users
+//     └── sindresorhus
+//         └── foo
+//             ├── package.json
+//             └── bar
+//                 ├── baz
+//                 └── example.js
+
+// example.js
+import {packageDirectorySync} from 'pkg-dir';
+
+console.log(packageDirectorySync());
+//=> '/Users/sindresorhus/foo'
+```
+*/
+export function packageDirectorySync(options?: Options): string | undefined;

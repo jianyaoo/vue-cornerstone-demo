@@ -89,7 +89,7 @@ const memoize = require("./util/memoize");
 /** @typedef {UnsafeCacheData & { parser: undefined | Parser, parserOptions: undefined | ParserOptions, generator: undefined | Generator, generatorOptions: undefined | GeneratorOptions }} NormalModuleUnsafeCacheData */
 
 /**
- * @typedef {Object} SourceMap
+ * @typedef {object} SourceMap
  * @property {number} version
  * @property {string[]} sources
  * @property {string} mappings
@@ -107,7 +107,7 @@ const getValidate = memoize(() => require("schema-utils").validate);
 const ABSOLUTE_PATH_REGEX = /^([a-zA-Z]:\\|\\\\|\/)/;
 
 /**
- * @typedef {Object} LoaderItem
+ * @typedef {object} LoaderItem
  * @property {string} loader
  * @property {any} options
  * @property {string?} ident
@@ -117,7 +117,7 @@ const ABSOLUTE_PATH_REGEX = /^([a-zA-Z]:\\|\\\\|\/)/;
 /**
  * @param {string} context absolute context path
  * @param {string} source a source path
- * @param {Object=} associatedObjectForCache an object to which the cache will be attached
+ * @param {object=} associatedObjectForCache an object to which the cache will be attached
  * @returns {string} new source path
  */
 const contextifySourceUrl = (context, source, associatedObjectForCache) => {
@@ -132,7 +132,7 @@ const contextifySourceUrl = (context, source, associatedObjectForCache) => {
 /**
  * @param {string} context absolute context path
  * @param {SourceMap} sourceMap a source map
- * @param {Object=} associatedObjectForCache an object to which the cache will be attached
+ * @param {object=} associatedObjectForCache an object to which the cache will be attached
  * @returns {SourceMap} new source map
  */
 const contextifySourceMap = (context, sourceMap, associatedObjectForCache) => {
@@ -199,7 +199,7 @@ makeSerializable(
 );
 
 /**
- * @typedef {Object} NormalModuleCompilationHooks
+ * @typedef {object} NormalModuleCompilationHooks
  * @property {SyncHook<[object, NormalModule]>} loader
  * @property {SyncHook<[LoaderItem[], NormalModule, object]>} beforeLoaders
  * @property {SyncHook<[NormalModule]>} beforeParse
@@ -210,7 +210,7 @@ makeSerializable(
  */
 
 /**
- * @typedef {Object} NormalModuleCreateData
+ * @typedef {object} NormalModuleCreateData
  * @property {string=} layer an optional layer in which the module is
  * @property {JavaScriptModuleTypes | ""} type module type. When deserializing, this is set to an empty string "".
  * @property {string} request request string
@@ -344,12 +344,12 @@ class NormalModule extends Module {
 		/**
 		 * @private
 		 * @type {Map<string, number> | undefined}
-		 **/
+		 */
 		this._sourceSizes = undefined;
 		/**
 		 * @private
 		 * @type {undefined | SourceTypes}
-		 **/
+		 */
 		this._sourceTypes = undefined;
 
 		// Cache
@@ -499,7 +499,7 @@ class NormalModule extends Module {
 	 * @param {string} name the asset name
 	 * @param {string | Buffer} content the content
 	 * @param {(string | SourceMap)=} sourceMap an optional source map
-	 * @param {Object=} associatedObjectForCache object for caching
+	 * @param {object=} associatedObjectForCache object for caching
 	 * @returns {Source} the created source
 	 */
 	createSourceForAsset(
@@ -776,7 +776,7 @@ class NormalModule extends Module {
 	 * @param {string} context the compilation context
 	 * @param {string | Buffer} content the content
 	 * @param {(string | SourceMapSource)=} sourceMap an optional source map
-	 * @param {Object=} associatedObjectForCache object for caching
+	 * @param {object=} associatedObjectForCache object for caching
 	 * @returns {Source} the created source
 	 */
 	createSource(context, content, sourceMap, associatedObjectForCache) {
@@ -867,9 +867,14 @@ class NormalModule extends Module {
 				return callback(error);
 			}
 
+			const isBinaryModule =
+				this.generatorOptions && this.generatorOptions.binary !== undefined
+					? this.generatorOptions.binary
+					: this.binary;
+
 			this._source = this.createSource(
 				/** @type {string} */ (options.context),
-				this.binary ? asBuffer(source) : asString(source),
+				isBinaryModule ? asBuffer(source) : asString(source),
 				sourceMap,
 				compilation.compiler.root
 			);
@@ -926,6 +931,8 @@ class NormalModule extends Module {
 				loaderContext._compilation =
 					loaderContext._compiler =
 					loaderContext._module =
+					// eslint-disable-next-line no-warning-comments
+					// @ts-ignore
 					loaderContext.fs =
 						undefined;
 
@@ -1325,7 +1332,6 @@ class NormalModule extends Module {
 		moduleGraph,
 		chunkGraph,
 		runtime,
-		runtimes,
 		concatenationScope,
 		codeGenerationResults,
 		sourceTypes
@@ -1352,14 +1358,13 @@ class NormalModule extends Module {
 				? new RawSource(
 						"throw new Error(" + JSON.stringify(this.error.message) + ");"
 					)
-				: this.generator.generate(this, {
+				: /** @type {Generator} */ (this.generator).generate(this, {
 						dependencyTemplates,
 						runtimeTemplate,
 						moduleGraph,
 						chunkGraph,
 						runtimeRequirements,
 						runtime,
-						runtimes,
 						concatenationScope,
 						codeGenerationResults,
 						getData,

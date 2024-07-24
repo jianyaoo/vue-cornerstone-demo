@@ -6,7 +6,7 @@
 "use strict";
 
 const { Parser: AcornParser } = require("acorn");
-const { importAssertions } = require("acorn-import-assertions");
+const { importAttributesOrAssertions } = require("acorn-import-attributes");
 const { SyncBailHook, HookMap } = require("tapable");
 const vm = require("vm");
 const Parser = require("../Parser");
@@ -87,13 +87,19 @@ const BasicEvaluatedExpression = require("./BasicEvaluatedExpression");
 /** @typedef {import("estree").Super} Super */
 /** @typedef {import("estree").TaggedTemplateExpression} TaggedTemplateExpression */
 /** @typedef {import("estree").TemplateLiteral} TemplateLiteral */
-/** @typedef {Record<string, any>} Assertions */
-/** @template T @typedef {import("tapable").AsArray<T>} AsArray<T> */
+/** @typedef {import("estree").AssignmentProperty} AssignmentProperty */
+/**
+ * @template T
+ * @typedef {import("tapable").AsArray<T>} AsArray<T>
+ */
 /** @typedef {import("../Parser").ParserState} ParserState */
 /** @typedef {import("../Parser").PreparsedAst} PreparsedAst */
 /** @typedef {{declaredScope: ScopeInfo, freeName: string | true, tagInfo: TagInfo | undefined}} VariableInfoInterface */
 /** @typedef {{ name: string | VariableInfo, rootInfo: string | VariableInfo, getMembers: () => string[], getMembersOptionals: () => boolean[], getMemberRanges: () => Range[] }} GetInfoResult */
 /** @typedef {Statement | ModuleDeclaration | Expression} StatementPathItem */
+/** @typedef {TODO} OnIdent */
+
+/** @typedef {Record<string, string> & { _isLegacyAssert?: boolean }} ImportAttributes */
 
 /** @type {string[]} */
 const EMPTY_ARRAY = [];
@@ -103,7 +109,7 @@ const ALLOWED_MEMBER_TYPES_ALL = 0b11;
 
 // Syntax: https://developer.mozilla.org/en/SpiderMonkey/Parser_API
 
-const parser = AcornParser.extend(importAssertions);
+const parser = AcornParser.extend(importAttributesOrAssertions);
 
 class VariableInfo {
 	/**
@@ -123,14 +129,14 @@ class VariableInfo {
 /** @typedef {Omit<AcornOptions, "sourceType" | "ecmaVersion"> & { sourceType: "module" | "script" | "auto", ecmaVersion?: AcornOptions["ecmaVersion"] }} ParseOptions */
 
 /**
- * @typedef {Object} TagInfo
+ * @typedef {object} TagInfo
  * @property {any} tag
  * @property {any} data
  * @property {TagInfo | undefined} next
  */
 
 /**
- * @typedef {Object} ScopeInfo
+ * @typedef {object} ScopeInfo
  * @property {StackedMap<string, VariableInfo | ScopeInfo>} definitions
  * @property {boolean | "arrow"} topLevelScope
  * @property {boolean | string} inShorthand
@@ -141,6 +147,13 @@ class VariableInfo {
  */
 
 /** @typedef {[number, number]} Range */
+
+/**
+ * @typedef {object} DestructuringAssignmentProperty
+ * @property {string} id
+ * @property {Range | undefined=} range
+ * @property {boolean | string} shorthand
+ */
 
 /**
  * Helper function for joining two ranges into a single range. This is useful
@@ -257,7 +270,7 @@ class JavascriptParser extends Parser {
 			evaluateCallExpression: new HookMap(
 				() => new SyncBailHook(["expression"])
 			),
-			/** @type {HookMap<SyncBailHook<[CallExpression, BasicEvaluatedExpression | undefined], BasicEvaluatedExpression | undefined | null>>} */
+			/** @type {HookMap<SyncBailHook<[CallExpression, BasicEvaluatedExpression], BasicEvaluatedExpression | undefined | null>>} */
 			evaluateCallExpressionMember: new HookMap(
 				() => new SyncBailHook(["expression", "param"])
 			),
@@ -298,15 +311,15 @@ class JavascriptParser extends Parser {
 				"exportName",
 				"identifierName"
 			]),
-			/** @type {SyncBailHook<[ExportNamedDeclaration | ExportAllDeclaration], boolean | void>} */
+			/** @type {SyncBailHook<[ExportDefaultDeclaration | ExportNamedDeclaration], boolean | void>} */
 			export: new SyncBailHook(["statement"]),
 			/** @type {SyncBailHook<[ExportNamedDeclaration | ExportAllDeclaration, ImportSource], boolean | void>} */
 			exportImport: new SyncBailHook(["statement", "source"]),
-			/** @type {SyncBailHook<[ExportNamedDeclaration | ExportAllDeclaration, Declaration], boolean | void>} */
+			/** @type {SyncBailHook<[ExportDefaultDeclaration | ExportNamedDeclaration | ExportAllDeclaration, Declaration], boolean | void>} */
 			exportDeclaration: new SyncBailHook(["statement", "declaration"]),
-			/** @type {SyncBailHook<[ExportDefaultDeclaration, Declaration], boolean | void>} */
+			/** @type {SyncBailHook<[ExportDefaultDeclaration, FunctionDeclaration | ClassDeclaration], boolean | void>} */
 			exportExpression: new SyncBailHook(["statement", "declaration"]),
-			/** @type {SyncBailHook<[ExportNamedDeclaration | ExportAllDeclaration, string, string, number | undefined], boolean | void>} */
+			/** @type {SyncBailHook<[ExportDefaultDeclaration | ExportNamedDeclaration | ExportAllDeclaration, string, string, number | undefined], boolean | void>} */
 			exportSpecifier: new SyncBailHook([
 				"statement",
 				"identifierName",
@@ -349,7 +362,7 @@ class JavascriptParser extends Parser {
 			typeof: new HookMap(() => new SyncBailHook(["expression"])),
 			/** @type {SyncBailHook<[ImportExpression], boolean | void>} */
 			importCall: new SyncBailHook(["expression"]),
-			/** @type {SyncBailHook<[Expression], boolean | void>} */
+			/** @type {SyncBailHook<[Expression | ForOfStatement], boolean | void>} */
 			topLevelAwait: new SyncBailHook(["expression"]),
 			/** @type {HookMap<SyncBailHook<[CallExpression], boolean | void>>} */
 			call: new HookMap(() => new SyncBailHook(["expression"])),
@@ -432,7 +445,7 @@ class JavascriptParser extends Parser {
 		this.statementPath = undefined;
 		/** @type {Statement | ModuleDeclaration | Expression | undefined} */
 		this.prevStatement = undefined;
-		/** @type {WeakMap<Expression, Set<string>> | undefined} */
+		/** @type {WeakMap<Expression, Set<DestructuringAssignmentProperty>> | undefined} */
 		this.destructuringAssignmentProperties = undefined;
 		this.currentTagData = undefined;
 		this.magicCommentContext = vm.createContext(undefined, {
@@ -600,7 +613,7 @@ class JavascriptParser extends Parser {
 		 *
 		 * import("./" + foo + bar); // webpack will auto evaluate this into import("./foobar")
 		 * ```
-		 * @param {boolean | number | BigInt | string} value the value to convert to an expression
+		 * @param {boolean | number | bigint | string} value the value to convert to an expression
 		 * @param {BinaryExpression | UnaryExpression} expr the expression being evaluated
 		 * @param {boolean} sideEffects whether the expression has side effects
 		 * @returns {BasicEvaluatedExpression | undefined} the evaluated expression
@@ -658,7 +671,7 @@ class JavascriptParser extends Parser {
 				 * Evaluates a binary expression if and only if it is a const operation (e.g. 1 + 2, "a" + "b", etc.).
 				 *
 				 * @template T
-				 * @param {(leftOperand: T, rightOperand: T) => boolean | number | BigInt | string} operandHandler the handler for the operation (e.g. (a, b) => a + b)
+				 * @param {(leftOperand: T, rightOperand: T) => boolean | number | bigint | string} operandHandler the handler for the operation (e.g. (a, b) => a + b)
 				 * @returns {BasicEvaluatedExpression | undefined} the evaluated expression
 				 */
 				const handleConstOperation = operandHandler => {
@@ -880,7 +893,12 @@ class JavascriptParser extends Parser {
 										/** @type {string} */ (left.string) +
 											/** @type {string} */ (right.prefix.string)
 									)
-									.setRange(joinRanges(left.range, right.prefix.range)),
+									.setRange(
+										joinRanges(
+											/** @type {Range} */ (left.range),
+											/** @type {Range} */ (right.prefix.range)
+										)
+									),
 								right.postfix,
 								right.wrappedInnerExpressions
 							);
@@ -901,7 +919,10 @@ class JavascriptParser extends Parser {
 						if (right.isString()) {
 							res.setString(left.number + /** @type {string} */ (right.string));
 						} else if (right.isNumber()) {
-							res.setNumber(left.number + right.number);
+							res.setNumber(
+								/** @type {number} */ (left.number) +
+									/** @type {number} */ (right.number)
+							);
 						} else {
 							return;
 						}
@@ -1063,7 +1084,7 @@ class JavascriptParser extends Parser {
 				 * Evaluates a UnaryExpression if and only if it is a basic const operator (e.g. +a, -a, ~a).
 				 *
 				 * @template T
-				 * @param {(operand: T) => boolean | number | BigInt | string} operandHandler handler for the operand
+				 * @param {(operand: T) => boolean | number | bigint | string} operandHandler handler for the operand
 				 * @returns {BasicEvaluatedExpression | undefined} evaluated expression
 				 */
 				const handleConstOperation = operandHandler => {
@@ -1328,7 +1349,7 @@ class JavascriptParser extends Parser {
 				if (arg1.type === "SpreadElement") return;
 				const arg1Eval = this.evaluateExpression(arg1);
 				if (!arg1Eval.isString()) return;
-				const arg1Value = arg1Eval.string;
+				const arg1Value = /** @type {string} */ (arg1Eval.string);
 
 				let result;
 				if (arg2) {
@@ -1357,9 +1378,11 @@ class JavascriptParser extends Parser {
 				let arg1 = this.evaluateExpression(expr.arguments[0]);
 				let arg2 = this.evaluateExpression(expr.arguments[1]);
 				if (!arg1.isString() && !arg1.isRegExp()) return;
-				const arg1Value = arg1.regExp || arg1.string;
+				const arg1Value = /** @type {string | RegExp} */ (
+					arg1.regExp || arg1.string
+				);
 				if (!arg2.isString()) return;
-				const arg2Value = arg2.string;
+				const arg2Value = /** @type {string} */ (arg2.string);
 				return new BasicEvaluatedExpression()
 					.setString(
 						/** @type {string} */ (param.string).replace(arg1Value, arg2Value)
@@ -1380,7 +1403,9 @@ class JavascriptParser extends Parser {
 							if (expr.arguments[0].type === "SpreadElement") return;
 							arg1 = this.evaluateExpression(expr.arguments[0]);
 							if (!arg1.isNumber()) return;
-							result = str[fn](arg1.number);
+							result = str[
+								/** @type {"substr" | "substring" | "slice"} */ (fn)
+							](/** @type {number} */ (arg1.number));
 							break;
 						case 2: {
 							if (expr.arguments[0].type === "SpreadElement") return;
@@ -1389,7 +1414,12 @@ class JavascriptParser extends Parser {
 							const arg2 = this.evaluateExpression(expr.arguments[1]);
 							if (!arg1.isNumber()) return;
 							if (!arg2.isNumber()) return;
-							result = str[fn](arg1.number, arg2.number);
+							result = str[
+								/** @type {"substr" | "substring" | "slice"} */ (fn)
+							](
+								/** @type {number} */ (arg1.number),
+								/** @type {number} */ (arg2.number)
+							);
 							break;
 						}
 						default:
@@ -1443,7 +1473,7 @@ class JavascriptParser extends Parser {
 				}
 
 				const part = new BasicEvaluatedExpression()
-					.setString(quasi)
+					.setString(/** @type {string} */ (quasi))
 					.setRange(/** @type {Range} */ (quasiExpr.range))
 					.setExpression(quasiExpr);
 				quasis.push(part);
@@ -1489,7 +1519,6 @@ class JavascriptParser extends Parser {
 			.for("concat")
 			.tap("JavascriptParser", (expr, param) => {
 				if (!param.isString() && !param.isWrapped()) return;
-
 				let stringSuffix = null;
 				let hasUnknownParams = false;
 				const innerExpressions = [];
@@ -1569,7 +1598,9 @@ class JavascriptParser extends Parser {
 						/** @type {string} */
 						(param.string).split(/** @type {string} */ (arg.string));
 				} else if (arg.isRegExp()) {
-					result = /** @type {string} */ (param.string).split(arg.regExp);
+					result = /** @type {string} */ (param.string).split(
+						/** @type {RegExp} */ (arg.regExp)
+					);
 				} else {
 					return;
 				}
@@ -1627,7 +1658,7 @@ class JavascriptParser extends Parser {
 				});
 				if (!items.every(Boolean)) return;
 				return new BasicEvaluatedExpression()
-					.setItems(items)
+					.setItems(/** @type {BasicEvaluatedExpression[]} */ (items))
 					.setRange(/** @type {Range} */ (expr.range));
 			});
 		this.hooks.evaluate
@@ -1678,7 +1709,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {Expression} node node
-	 * @returns {Set<string>|undefined} destructured identifiers
+	 * @returns {Set<DestructuringAssignmentProperty> | undefined} destructured identifiers
 	 */
 	destructuringAssignmentPropertiesFor(node) {
 		if (!this.destructuringAssignmentProperties) return undefined;
@@ -2213,6 +2244,9 @@ class JavascriptParser extends Parser {
 		});
 	}
 
+	/**
+	 * @param {ForOfStatement} statement statement
+	 */
 	preWalkForOfStatement(statement) {
 		if (statement.await && this.scope.topLevelScope === true) {
 			this.hooks.topLevelAwait.call(statement);
@@ -2305,7 +2339,9 @@ class JavascriptParser extends Parser {
 
 		// check multiple assignments
 		if (this.destructuringAssignmentProperties.has(expression)) {
-			const set = this.destructuringAssignmentProperties.get(expression);
+			const set =
+				/** @type {Set<DestructuringAssignmentProperty>} */
+				(this.destructuringAssignmentProperties.get(expression));
 			this.destructuringAssignmentProperties.delete(expression);
 			for (const id of set) keys.add(id);
 		}
@@ -2322,8 +2358,11 @@ class JavascriptParser extends Parser {
 		}
 	}
 
+	/**
+	 * @param {ImportDeclaration} statement statement
+	 */
 	blockPreWalkImportDeclaration(statement) {
-		const source = statement.source.value;
+		const source = /** @type {ImportSource} */ (statement.source.value);
 		this.hooks.import.call(statement, source);
 		for (const specifier of statement.specifiers) {
 			const name = specifier.local.name;
@@ -2340,7 +2379,12 @@ class JavascriptParser extends Parser {
 						!this.hooks.importSpecifier.call(
 							statement,
 							source,
-							specifier.imported.name || specifier.imported.value,
+							specifier.imported.name ||
+								// eslint-disable-next-line no-warning-comments
+								// @ts-ignore
+								// Old version of acorn used it
+								// TODO drop it in webpack@6
+								specifier.imported.value,
 							name
 						)
 					) {
@@ -2360,7 +2404,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {Declaration} declaration declaration
-	 * @param {TODO} onIdent on ident callback
+	 * @param {OnIdent} onIdent on ident callback
 	 */
 	enterDeclaration(declaration, onIdent) {
 		switch (declaration.type) {
@@ -2383,10 +2427,13 @@ class JavascriptParser extends Parser {
 		}
 	}
 
+	/**
+	 * @param {ExportNamedDeclaration} statement statement
+	 */
 	blockPreWalkExportNamedDeclaration(statement) {
 		let source;
 		if (statement.source) {
-			source = statement.source.value;
+			source = /** @type {ImportSource} */ (statement.source.value);
 			this.hooks.exportImport.call(statement, source);
 		} else {
 			this.hooks.export.call(statement);
@@ -2414,7 +2461,13 @@ class JavascriptParser extends Parser {
 				const specifier = statement.specifiers[specifierIndex];
 				switch (specifier.type) {
 					case "ExportSpecifier": {
-						const name = specifier.exported.name || specifier.exported.value;
+						const name =
+							specifier.exported.name ||
+							// eslint-disable-next-line no-warning-comments
+							// @ts-ignore
+							// Old version of acorn used it
+							// TODO drop it in webpack@6
+							specifier.exported.value;
 						if (source) {
 							this.hooks.exportImportSpecifier.call(
 								statement,
@@ -2447,36 +2500,50 @@ class JavascriptParser extends Parser {
 		}
 	}
 
+	/**
+	 * @param {TODO} statement statement
+	 */
 	blockPreWalkExportDefaultDeclaration(statement) {
 		const prev = this.prevStatement;
 		this.preWalkStatement(statement.declaration);
 		this.prevStatement = prev;
 		this.blockPreWalkStatement(statement.declaration);
 		if (
-			statement.declaration.id &&
+			/** @type {FunctionDeclaration | ClassDeclaration} */ (
+				statement.declaration
+			).id &&
 			statement.declaration.type !== "FunctionExpression" &&
 			statement.declaration.type !== "ClassExpression"
 		) {
+			const declaration =
+				/** @type {FunctionDeclaration | ClassDeclaration} */
+				(statement.declaration);
 			this.hooks.exportSpecifier.call(
 				statement,
-				statement.declaration.id.name,
+				declaration.id.name,
 				"default",
 				undefined
 			);
 		}
 	}
 
+	/**
+	 * @param {ExportDefaultDeclaration} statement statement
+	 */
 	walkExportDefaultDeclaration(statement) {
 		this.hooks.export.call(statement);
 		if (
-			statement.declaration.id &&
+			/** @type {FunctionDeclaration | ClassDeclaration} */ (
+				statement.declaration
+			).id &&
 			statement.declaration.type !== "FunctionExpression" &&
 			statement.declaration.type !== "ClassExpression"
 		) {
-			if (
-				!this.hooks.exportDeclaration.call(statement, statement.declaration)
-			) {
-				this.walkStatement(statement.declaration);
+			const declaration =
+				/** @type {FunctionDeclaration | ClassDeclaration} */
+				(statement.declaration);
+			if (!this.hooks.exportDeclaration.call(statement, declaration)) {
+				this.walkStatement(declaration);
 			}
 		} else {
 			// Acorn parses `export default function() {}` as `FunctionDeclaration` and
@@ -2486,14 +2553,23 @@ class JavascriptParser extends Parser {
 				statement.declaration.type === "FunctionDeclaration" ||
 				statement.declaration.type === "ClassDeclaration"
 			) {
-				this.walkStatement(statement.declaration);
+				this.walkStatement(
+					/** @type {FunctionDeclaration | ClassDeclaration} */
+					(statement.declaration)
+				);
 			} else {
 				this.walkExpression(statement.declaration);
 			}
-			if (!this.hooks.exportExpression.call(statement, statement.declaration)) {
+
+			if (
+				!this.hooks.exportExpression.call(
+					statement,
+					/** @type {TODO} */ (statement).declaration
+				)
+			) {
 				this.hooks.exportSpecifier.call(
 					statement,
-					statement.declaration,
+					/** @type {TODO} */ (statement.declaration),
 					"default",
 					undefined
 				);
@@ -2501,8 +2577,11 @@ class JavascriptParser extends Parser {
 		}
 	}
 
+	/**
+	 * @param {ExportAllDeclaration} statement statement
+	 */
 	blockPreWalkExportAllDeclaration(statement) {
-		const source = statement.source.value;
+		const source = /** @type {ImportSource} */ (statement.source.value);
 		const name = statement.exported ? statement.exported.name : null;
 		this.hooks.exportImport.call(statement, source);
 		this.hooks.exportImportSpecifier.call(statement, source, null, name, 0);
@@ -2556,30 +2635,43 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {ObjectPattern} objectPattern object pattern
-	 * @returns {Set<string> | undefined} set of names or undefined if not all keys are identifiers
+	 * @returns {Set<DestructuringAssignmentProperty> | undefined} set of names or undefined if not all keys are identifiers
 	 */
 	_preWalkObjectPattern(objectPattern) {
-		const ids = new Set();
+		/** @type {Set<DestructuringAssignmentProperty>} */
+		const props = new Set();
 		const properties = objectPattern.properties;
 		for (let i = 0; i < properties.length; i++) {
 			const property = properties[i];
 			if (property.type !== "Property") return;
+			if (property.shorthand && property.value.type === "Identifier") {
+				this.scope.inShorthand = property.value.name;
+			}
 			const key = property.key;
 			if (key.type === "Identifier") {
-				ids.add(key.name);
+				props.add({
+					id: key.name,
+					range: key.range,
+					shorthand: this.scope.inShorthand
+				});
 			} else {
-				const id = this.evaluateExpression(key);
+				const id = this.evaluateExpression(/** @type {TODO} */ (key));
 				const str = id.asString();
 				if (str) {
-					ids.add(str);
+					props.add({
+						id: str,
+						range: key.range,
+						shorthand: this.scope.inShorthand
+					});
 				} else {
 					// could not evaluate key
 					return;
 				}
 			}
+			this.scope.inShorthand = false;
 		}
 
-		return ids;
+		return props;
 	}
 
 	/**
@@ -2764,10 +2856,16 @@ class JavascriptParser extends Parser {
 		this.walkPattern(pattern.left);
 	}
 
+	/**
+	 * @param {ObjectPattern} pattern pattern
+	 */
 	walkObjectPattern(pattern) {
 		for (let i = 0, len = pattern.properties.length; i < len; i++) {
 			const prop = pattern.properties[i];
 			if (prop) {
+				if (prop.type === "RestElement") {
+					continue;
+				}
 				if (prop.computed) this.walkExpression(prop.key);
 				if (prop.value) this.walkPattern(prop.value);
 			}
@@ -3248,9 +3346,21 @@ class JavascriptParser extends Parser {
 		}
 	}
 
+	/**
+	 * @private
+	 * @param {FunctionExpression | ArrowFunctionExpression} functionExpression function expression
+	 * @param {(Expression | SpreadElement)[]} options options
+	 * @param {Expression | SpreadElement | null} currentThis current this
+	 */
 	_walkIIFE(functionExpression, options, currentThis) {
+		/**
+		 * @param {Expression | SpreadElement} argOrThis arg or this
+		 * @returns {string | VariableInfoInterface | undefined} var info
+		 */
 		const getVarInfo = argOrThis => {
-			const renameIdentifier = this.getRenameIdentifier(argOrThis);
+			const renameIdentifier = this.getRenameIdentifier(
+				/** @type {Expression} */ (argOrThis)
+			);
 			if (renameIdentifier) {
 				if (
 					this.callHooksForInfo(
@@ -3267,7 +3377,7 @@ class JavascriptParser extends Parser {
 						)
 					) {
 						return typeof renameIdentifier === "string"
-							? this.getVariableInfo(renameIdentifier)
+							? /** @type {string} */ (this.getVariableInfo(renameIdentifier))
 							: renameIdentifier;
 					}
 				}
@@ -3280,12 +3390,15 @@ class JavascriptParser extends Parser {
 		const varInfoForArgs = options.map(getVarInfo);
 		const wasTopLevel = this.scope.topLevelScope;
 		this.scope.topLevelScope = wasTopLevel && arrow ? "arrow" : false;
-		const scopeParams = params.filter(
-			(identifier, idx) => !varInfoForArgs[idx]
-		);
+		const scopeParams =
+			/** @type {(Identifier | string)[]} */
+			(params.filter((identifier, idx) => !varInfoForArgs[idx]));
 
 		// Add function name in scope for recursive calls
-		if (functionExpression.id) {
+		if (
+			functionExpression.type === "FunctionExpression" &&
+			functionExpression.id
+		) {
 			scopeParams.push(functionExpression.id.name);
 		}
 
@@ -3297,7 +3410,7 @@ class JavascriptParser extends Parser {
 				const varInfo = varInfoForArgs[i];
 				if (!varInfo) continue;
 				if (!params[i] || params[i].type !== "Identifier") continue;
-				this.setVariable(params[i].name, varInfo);
+				this.setVariable(/** @type {Identifier} */ (params[i]).name, varInfo);
 			}
 			if (functionExpression.body.type === "BlockStatement") {
 				this.detectMode(functionExpression.body.body);
@@ -3322,6 +3435,9 @@ class JavascriptParser extends Parser {
 		this.walkExpression(expression.source);
 	}
 
+	/**
+	 * @param {CallExpression} expression expression
+	 */
 	walkCallExpression(expression) {
 		const isSimpleFunction = fn => {
 			return fn.params.every(p => p.type === "Identifier");
@@ -3330,14 +3446,20 @@ class JavascriptParser extends Parser {
 			expression.callee.type === "MemberExpression" &&
 			expression.callee.object.type.endsWith("FunctionExpression") &&
 			!expression.callee.computed &&
+			// eslint-disable-next-line no-warning-comments
+			// @ts-ignore
+			// TODO check me and handle more cases
 			(expression.callee.property.name === "call" ||
+				// eslint-disable-next-line no-warning-comments
+				// @ts-ignore
 				expression.callee.property.name === "bind") &&
 			expression.arguments.length > 0 &&
 			isSimpleFunction(expression.callee.object)
 		) {
 			// (function(…) { }.call/bind(?, …))
 			this._walkIIFE(
-				expression.callee.object,
+				/** @type {FunctionExpression | ArrowFunctionExpression} */
+				(expression.callee.object),
 				expression.arguments.slice(1),
 				expression.arguments[0]
 			);
@@ -3346,7 +3468,12 @@ class JavascriptParser extends Parser {
 			isSimpleFunction(expression.callee)
 		) {
 			// (function(…) { }(…))
-			this._walkIIFE(expression.callee, expression.arguments, null);
+			this._walkIIFE(
+				/** @type {FunctionExpression | ArrowFunctionExpression} */
+				(expression.callee),
+				expression.arguments,
+				null
+			);
 		} else {
 			if (expression.callee.type === "MemberExpression") {
 				const exprInfo = this.getMemberExpressionInfo(
@@ -3366,7 +3493,9 @@ class JavascriptParser extends Parser {
 					if (result === true) return;
 				}
 			}
-			const callee = this.evaluateExpression(expression.callee);
+			const callee = this.evaluateExpression(
+				/** @type {TODO} */ (expression.callee)
+			);
 			if (callee.isIdentifier()) {
 				const result1 = this.callHooksForInfo(
 					this.hooks.callMemberChain,
@@ -3824,8 +3953,8 @@ class JavascriptParser extends Parser {
 	}
 
 	/**
-	 * @param {(Pattern | Property)[]} patterns patterns
-	 * @param {TODO} onIdent on ident callback
+	 * @param {(string | Pattern | Property)[]} patterns patterns
+	 * @param {OnIdent} onIdent on ident callback
 	 */
 	enterPatterns(patterns, onIdent) {
 		for (const pattern of patterns) {
@@ -3839,7 +3968,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {Pattern | Property} pattern pattern
-	 * @param {TODO} onIdent on ident callback
+	 * @param {OnIdent} onIdent on ident callback
 	 */
 	enterPattern(pattern, onIdent) {
 		if (!pattern) return;
@@ -3873,7 +4002,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {Identifier} pattern identifier pattern
-	 * @param {TODO} onIdent callback
+	 * @param {OnIdent} onIdent callback
 	 */
 	enterIdentifier(pattern, onIdent) {
 		if (!this.callHooksForName(this.hooks.pattern, pattern.name, pattern)) {
@@ -3883,7 +4012,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {ObjectPattern} pattern object pattern
-	 * @param {TODO} onIdent callback
+	 * @param {OnIdent} onIdent callback
 	 */
 	enterObjectPattern(pattern, onIdent) {
 		for (
@@ -3898,7 +4027,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {ArrayPattern} pattern object pattern
-	 * @param {TODO} onIdent callback
+	 * @param {OnIdent} onIdent callback
 	 */
 	enterArrayPattern(pattern, onIdent) {
 		for (
@@ -3916,7 +4045,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {RestElement} pattern object pattern
-	 * @param {TODO} onIdent callback
+	 * @param {OnIdent} onIdent callback
 	 */
 	enterRestElement(pattern, onIdent) {
 		this.enterPattern(pattern.argument, onIdent);
@@ -3924,7 +4053,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {AssignmentPattern} pattern object pattern
-	 * @param {TODO} onIdent callback
+	 * @param {OnIdent} onIdent callback
 	 */
 	enterAssignmentPattern(pattern, onIdent) {
 		this.enterPattern(pattern.left, onIdent);
@@ -3975,6 +4104,10 @@ class JavascriptParser extends Parser {
 		);
 	}
 
+	/**
+	 * @param {Expression} expression expression
+	 * @returns {TODO} result
+	 */
 	parseCalculatedString(expression) {
 		switch (expression.type) {
 			case "BinaryExpression":
@@ -4412,7 +4545,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {string} name variable name
-	 * @returns {ExportedVariableInfo} info for this variable
+	 * @returns {string | ExportedVariableInfo} info for this variable
 	 */
 	getVariableInfo(name) {
 		const value = this.scope.definitions.get(name);
@@ -4425,7 +4558,7 @@ class JavascriptParser extends Parser {
 
 	/**
 	 * @param {string} name variable name
-	 * @param {ExportedVariableInfo} variableInfo new info for this variable
+	 * @param {string | ExportedVariableInfo} variableInfo new info for this variable
 	 * @returns {void}
 	 */
 	setVariable(name, variableInfo) {

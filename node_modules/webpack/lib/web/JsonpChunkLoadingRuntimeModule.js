@@ -15,9 +15,10 @@ const compileBooleanMatcher = require("../util/compileBooleanMatcher");
 
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../ChunkGraph")} ChunkGraph */
+/** @typedef {import("../Module").ReadOnlyRuntimeRequirements} ReadOnlyRuntimeRequirements */
 
 /**
- * @typedef {Object} JsonpCompilationPluginHooks
+ * @typedef {object} JsonpCompilationPluginHooks
  * @property {SyncWaterfallHook<[string, Chunk]>} linkPreload
  * @property {SyncWaterfallHook<[string, Chunk]>} linkPrefetch
  */
@@ -48,7 +49,7 @@ class JsonpChunkLoadingRuntimeModule extends RuntimeModule {
 	}
 
 	/**
-	 * @param {Set<string>} runtimeRequirements runtime requirements
+	 * @param {ReadOnlyRuntimeRequirements} runtimeRequirements runtime requirements
 	 */
 	constructor(runtimeRequirements) {
 		super("jsonp chunk loading", RuntimeModule.STAGE_ATTACH);

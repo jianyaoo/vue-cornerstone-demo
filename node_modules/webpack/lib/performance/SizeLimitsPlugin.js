@@ -13,18 +13,19 @@ const NoAsyncChunksWarning = require("./NoAsyncChunksWarning");
 /** @typedef {import("webpack-sources").Source} Source */
 /** @typedef {import("../../declarations/WebpackOptions").PerformanceOptions} PerformanceOptions */
 /** @typedef {import("../ChunkGroup")} ChunkGroup */
+/** @typedef {import("../Compilation").Asset} Asset */
 /** @typedef {import("../Compiler")} Compiler */
 /** @typedef {import("../Entrypoint")} Entrypoint */
 /** @typedef {import("../WebpackError")} WebpackError */
 
 /**
- * @typedef {Object} AssetDetails
+ * @typedef {object} AssetDetails
  * @property {string} name
  * @property {number} size
  */
 
 /**
- * @typedef {Object} EntrypointDetails
+ * @typedef {object} EntrypointDetails
  * @property {string} name
  * @property {number} size
  * @property {string[]} files
@@ -32,6 +33,12 @@ const NoAsyncChunksWarning = require("./NoAsyncChunksWarning");
 
 const isOverSizeLimitSet = new WeakSet();
 
+/**
+ * @param {Asset["name"]} name the name
+ * @param {Asset["source"]} source the source
+ * @param {Asset["info"]} info the info
+ * @returns {boolean} result
+ */
 const excludeSourceMap = (name, source, info) => !info.development;
 
 module.exports = class SizeLimitsPlugin {
@@ -104,6 +111,10 @@ module.exports = class SizeLimitsPlugin {
 				}
 			}
 
+			/**
+			 * @param {Asset["name"]} name the name
+			 * @returns {boolean | undefined} result
+			 */
 			const fileFilter = name => {
 				const asset = compilation.getAsset(name);
 				return asset && assetFilter(asset.name, asset.source, asset.info);

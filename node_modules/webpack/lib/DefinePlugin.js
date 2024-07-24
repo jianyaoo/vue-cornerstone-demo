@@ -27,6 +27,7 @@ const createHash = require("./util/createHash");
 /** @typedef {import("./NormalModule")} NormalModule */
 /** @typedef {import("./RuntimeTemplate")} RuntimeTemplate */
 /** @typedef {import("./javascript/JavascriptParser")} JavascriptParser */
+/** @typedef {import("./javascript/JavascriptParser").DestructuringAssignmentProperty} DestructuringAssignmentProperty */
 /** @typedef {import("./javascript/JavascriptParser").Range} Range */
 /** @typedef {import("./logging/Logger").Logger} Logger */
 
@@ -34,7 +35,7 @@ const createHash = require("./util/createHash");
 /** @typedef {RecursiveArrayOrRecord<CodeValuePrimitive|RuntimeValue>} CodeValue */
 
 /**
- * @typedef {Object} RuntimeValueOptions
+ * @typedef {object} RuntimeValueOptions
  * @property {string[]=} fileDependencies
  * @property {string[]=} contextDependencies
  * @property {string[]=} missingDependencies
@@ -112,6 +113,15 @@ class RuntimeValue {
 					? this.options.version()
 					: this.options.version) || "unset";
 	}
+}
+
+/**
+ * @param {Set<DestructuringAssignmentProperty> | undefined} properties properties
+ * @returns {Set<string> | undefined} used keys
+ */
+function getObjKeys(properties) {
+	if (!properties) return undefined;
+	return new Set([...properties].map(p => p.id));
 }
 
 /**
@@ -262,7 +272,7 @@ const toCode = (
 
 	const strCode = transformToCode();
 
-	logger.log(`Replaced "${key}" with "${strCode}"`);
+	logger.debug(`Replaced "${key}" with "${strCode}"`);
 
 	return strCode;
 };
@@ -308,8 +318,10 @@ const PLUGIN_NAME = "DefinePlugin";
 const VALUE_DEP_PREFIX = `webpack/${PLUGIN_NAME} `;
 const VALUE_DEP_MAIN = `webpack/${PLUGIN_NAME}_hash`;
 const TYPEOF_OPERATOR_REGEXP = /^typeof\s+/;
-const WEBPACK_REQUIRE_FUNCTION_REGEXP = /__webpack_require__\s*(!?\.)/;
-const WEBPACK_REQUIRE_IDENTIFIER_REGEXP = /__webpack_require__/;
+const WEBPACK_REQUIRE_FUNCTION_REGEXP = new RegExp(
+	`${RuntimeGlobals.require}\\s*(!?\\.)`
+);
+const WEBPACK_REQUIRE_IDENTIFIER_REGEXP = new RegExp(RuntimeGlobals.require);
 
 class DefinePlugin {
 	/**
@@ -489,7 +501,7 @@ class DefinePlugin {
 									runtimeTemplate,
 									logger,
 									!parser.isAsiPosition(/** @type {Range} */ (expr.range)[0]),
-									parser.destructuringAssignmentPropertiesFor(expr)
+									null
 								);
 
 								if (parser.scope.inShorthand) {
@@ -564,7 +576,7 @@ class DefinePlugin {
 					/**
 					 * Apply Object
 					 * @param {string} key Key
-					 * @param {Object} obj Object
+					 * @param {object} obj Object
 					 * @returns {void}
 					 */
 					const applyObjectDefine = (key, obj) => {
@@ -595,7 +607,7 @@ class DefinePlugin {
 								runtimeTemplate,
 								logger,
 								!parser.isAsiPosition(/** @type {Range} */ (expr.range)[0]),
-								parser.destructuringAssignmentPropertiesFor(expr)
+								getObjKeys(parser.destructuringAssignmentPropertiesFor(expr))
 							);
 
 							if (parser.scope.inShorthand) {

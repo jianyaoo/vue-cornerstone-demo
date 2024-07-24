@@ -8,7 +8,7 @@
 const LazySet = require("../util/LazySet");
 const makeSerializable = require("../util/makeSerializable");
 
-/** @typedef {import("enhanced-resolve/lib/Resolver")} Resolver */
+/** @typedef {import("enhanced-resolve").Resolver} Resolver */
 /** @typedef {import("../CacheFacade").ItemCacheFacade} ItemCacheFacade */
 /** @typedef {import("../Compiler")} Compiler */
 /** @typedef {import("../FileSystemInfo")} FileSystemInfo */
@@ -50,7 +50,7 @@ const addAllToSet = (set, otherSet) => {
 };
 
 /**
- * @param {Object} object an object
+ * @param {object} object an object
  * @param {boolean} excludeContext if true, context is not included in string
  * @returns {string} stringified version
  */
@@ -104,9 +104,9 @@ class ResolverCachePlugin {
 		/**
 		 * @param {ItemCacheFacade} itemCache cache
 		 * @param {Resolver} resolver the resolver
-		 * @param {Object} resolveContext context for resolving meta info
-		 * @param {Object} request the request info object
-		 * @param {function((Error | null)=, Object=): void} callback callback function
+		 * @param {object} resolveContext context for resolving meta info
+		 * @param {object} request the request info object
+		 * @param {function((Error | null)=, object=): void} callback callback function
 		 * @returns {void}
 		 */
 		const doRealResolve = (
@@ -188,16 +188,16 @@ class ResolverCachePlugin {
 		};
 		compiler.resolverFactory.hooks.resolver.intercept({
 			factory(type, hook) {
-				/** @type {Map<string, (function(Error=, Object=): void)[]>} */
+				/** @type {Map<string, (function(Error=, object=): void)[]>} */
 				const activeRequests = new Map();
-				/** @type {Map<string, [function(Error=, Object=): void, function(Error=, Object=): void][]>} */
+				/** @type {Map<string, [function(Error=, object=): void, function(Error=, object=): void][]>} */
 				const activeRequestsWithYield = new Map();
 				hook.tap(
 					"ResolverCachePlugin",
 					/**
 					 * @param {Resolver} resolver the resolver
-					 * @param {Object} options resolve options
-					 * @param {Object} userOptions resolve options passed by the user
+					 * @param {object} options resolve options
+					 * @param {object} userOptions resolve options passed by the user
 					 * @returns {void}
 					 */
 					(resolver, options, userOptions) => {
@@ -213,7 +213,10 @@ class ResolverCachePlugin {
 								stage: -100
 							},
 							(request, resolveContext, callback) => {
-								if (request._ResolverCachePluginCacheMiss || !fileSystemInfo) {
+								if (
+									/** @type {TODO} */ (request)._ResolverCachePluginCacheMiss ||
+									!fileSystemInfo
+								) {
 									return callback();
 								}
 								const withYield = typeof resolveContext.yield === "function";
@@ -225,7 +228,9 @@ class ResolverCachePlugin {
 									const activeRequest = activeRequestsWithYield.get(identifier);
 									if (activeRequest) {
 										activeRequest[0].push(callback);
-										activeRequest[1].push(resolveContext.yield);
+										activeRequest[1].push(
+											/** @type {TODO} */ (resolveContext.yield)
+										);
 										return;
 									}
 								} else {
@@ -303,19 +308,22 @@ class ResolverCachePlugin {
 												cachedResolves++;
 												if (resolveContext.missingDependencies) {
 													addAllToSet(
-														resolveContext.missingDependencies,
+														/** @type {LazySet<string>} */
+														(resolveContext.missingDependencies),
 														snapshot.getMissingIterable()
 													);
 												}
 												if (resolveContext.fileDependencies) {
 													addAllToSet(
-														resolveContext.fileDependencies,
+														/** @type {LazySet<string>} */
+														(resolveContext.fileDependencies),
 														snapshot.getFileIterable()
 													);
 												}
 												if (resolveContext.contextDependencies) {
 													addAllToSet(
-														resolveContext.contextDependencies,
+														/** @type {LazySet<string>} */
+														(resolveContext.contextDependencies),
 														snapshot.getContextIterable()
 													);
 												}

@@ -38,11 +38,11 @@ const cachedCleverMerge = (first, second) => {
 		innerCache = new WeakMap();
 		mergeCache.set(first, innerCache);
 	}
-	const prevMerge = innerCache.get(second);
+	const prevMerge = /** @type {T & O} */ (innerCache.get(second));
 	if (prevMerge !== undefined) return prevMerge;
 	const newMerge = _cleverMerge(first, second, true);
 	innerCache.set(second, newMerge);
-	return newMerge;
+	return /** @type {T & O} */ (newMerge);
 };
 
 /**
@@ -69,7 +69,7 @@ const cachedSetProperty = (obj, property, value) => {
 
 	let result = mapByValue.get(value);
 
-	if (result) return result;
+	if (result) return /** @type {T} */ (result);
 
 	result = {
 		...obj,
@@ -77,18 +77,18 @@ const cachedSetProperty = (obj, property, value) => {
 	};
 	mapByValue.set(value, result);
 
-	return result;
+	return /** @type {T} */ (result);
 };
 
 /**
- * @typedef {Object} ObjectParsedPropertyEntry
+ * @typedef {object} ObjectParsedPropertyEntry
  * @property {any | undefined} base base value
  * @property {string | undefined} byProperty the name of the selector property
  * @property {Map<string, any>} byValues value depending on selector property, merged with base
  */
 
 /**
- * @typedef {Object} ParsedObject
+ * @typedef {object} ParsedObject
  * @property {Map<string, ObjectParsedPropertyEntry>} static static properties (key is property name)
  * @property {{ byProperty: string, fn: Function } | undefined} dynamic dynamic part
  */
@@ -257,7 +257,7 @@ const cleverMerge = (first, second) => {
 	if (typeof second !== "object" || second === null) return second;
 	if (typeof first !== "object" || first === null) return first;
 
-	return _cleverMerge(first, second, false);
+	return /** @type {T & O} */ (_cleverMerge(first, second, false));
 };
 
 /**
@@ -498,27 +498,40 @@ const mergeSingleValue = (a, b, internalCaching) => {
 };
 
 /**
- * @template T
+ * @template {object} T
  * @param {T} obj the object
+ * @param {(keyof T)[]=} keysToKeepOriginalValue keys to keep original value
  * @returns {T} the object without operations like "..." or DELETE
  */
-const removeOperations = obj => {
+const removeOperations = (obj, keysToKeepOriginalValue = []) => {
 	const newObj = /** @type {T} */ ({});
 	for (const key of Object.keys(obj)) {
-		const value = obj[key];
+		const value = obj[/** @type {keyof T} */ (key)];
 		const type = getValueType(value);
+		if (
+			type === VALUE_TYPE_OBJECT &&
+			keysToKeepOriginalValue.includes(/** @type {keyof T} */ (key))
+		) {
+			newObj[/** @type {keyof T} */ (key)] = value;
+			continue;
+		}
 		switch (type) {
 			case VALUE_TYPE_UNDEFINED:
 			case VALUE_TYPE_DELETE:
 				break;
 			case VALUE_TYPE_OBJECT:
-				newObj[key] = removeOperations(value);
+				newObj[key] = removeOperations(
+					/** @type {TODO} */ (value),
+					keysToKeepOriginalValue
+				);
 				break;
 			case VALUE_TYPE_ARRAY_EXTEND:
-				newObj[key] = value.filter(i => i !== "...");
+				newObj[key] =
+					/** @type {any[]} */
+					(value).filter(i => i !== "...");
 				break;
 			default:
-				newObj[key] = value;
+				newObj[/** @type {keyof T} */ (key)] = value;
 				break;
 		}
 	}

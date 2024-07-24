@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.4](https://localhost/compare/@cornerstonejs/codec-openjpeg@1.2.3...@cornerstonejs/codec-openjpeg@1.2.4) (2024-03-25)
+
+
+### Bug Fixes
+
+* Update emsdk to get the latest updates ([#41](https://localhost/issues/41)) ([01535f3](https://localhost/commits/01535f35809f4b53866cabfb63111bb4cfef2017))
+* **openjpeg:** Update README.md ([#42](https://localhost/issues/42)) ([5f1bf9b](https://localhost/commits/5f1bf9ba43b3a509dc8dc537e6c9eb57e60d6ab0))
+
+
+
+
+
 ## [1.2.3](https://localhost/compare/@cornerstonejs/codec-openjpeg@1.2.2...@cornerstonejs/codec-openjpeg@1.2.3) (2024-02-06)
 
 **Note:** Version bump only for package @cornerstonejs/codec-openjpeg

@@ -24,5 +24,10 @@ export default {
       name: "渲染PET模式",
       component: () => import("@/views/basicUsage/BasicPET.vue"),
     },
+    {
+      path: "localFile",
+      name: "加载本地dicom",
+      component: () => import("@/views/basicUsage/LocalFile.vue"),
+    },
   ],
 };

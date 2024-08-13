@@ -205,6 +205,7 @@ function activeTools() {
 }
 
 function handleChange(evt) {
+  // 阻止事件冒泡
   evt.stopPropagation();
   evt.preventDefault();
   

@@ -152,6 +152,11 @@ function getValue(volume, worldPos) {
 }
 
 function handleMouseMove(event) {
+  if (loading.value){
+    return '';
+  }
+  
+  
   const element = event.currentTarget;
   const rect = element.getBoundingClientRect();
   
@@ -160,6 +165,7 @@ function handleMouseMove(event) {
     Math.floor(event.clientY - rect.top)
   ];
   canvasPos.value = canvas;
+
   
   const viewport = getRenderingEngine(renderingEngineId).getViewport(viewportIdMap[element.id]);
   const worldPosTemp = viewport.canvasToWorld(canvas);

@@ -95,6 +95,17 @@ async function init() {
     viewportId2,
     viewportId3
   ]);
+  
+  
+  // 设置当前激活的工具
+  const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+  toolGroup.setToolActive(WindowLevelTool.toolName, {
+    bindings: [
+      {
+        mouseButton: cstEnums.MouseBindings.Primary
+      }
+    ]
+  });
 }
 
 function addTools() {
@@ -108,15 +119,6 @@ function addTools() {
   toolGroup.addViewport(viewportId1, renderingEngineId);
   toolGroup.addViewport(viewportId2, renderingEngineId);
   toolGroup.addViewport(viewportId3, renderingEngineId);
-  
-  // 设置当前激活的工具
-  toolGroup.setToolActive(WindowLevelTool.toolName, {
-    bindings: [
-      {
-        mouseButton: cstEnums.MouseBindings.Primary
-      }
-    ]
-  });
 }
 </script>
 

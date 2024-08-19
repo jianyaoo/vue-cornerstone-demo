@@ -19,6 +19,11 @@ export default {
       name: "刷子工具演示",
       component: () => import("@/views/basicTools/BasicSegmentation.vue"),
     },
+    {
+      path: "colorBar",
+      name: "基础colorBar",
+      component: () => import("@/views/basicTools/ColorBar.vue"),
+    },
     // {
     //   path: "basicPETTools",
     //   name: "PET模式下调整窗框窗位",

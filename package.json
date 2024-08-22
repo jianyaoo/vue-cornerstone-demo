@@ -1,6 +1,6 @@
 {
-  "name": "cornerstone-vue",
-  "version": "0.1.0",
+  "name": "vue-cornerstone-demo",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@cornerstonejs/calculate-suv": "1.1.0",
-    "@cornerstonejs/core": "^1.70.0",
-    "@cornerstonejs/dicom-image-loader": "^1.70.0",
-    "@cornerstonejs/nifti-volume-loader": "^1.70.0",
-    "@cornerstonejs/streaming-image-volume-loader": "^1.70.0",
-    "@cornerstonejs/tools": "^1.70.0",
+    "@cornerstonejs/core": "1.70.0",
+    "@cornerstonejs/dicom-image-loader": "1.70.0",
+    "@cornerstonejs/nifti-volume-loader": "1.70.0",
+    "@cornerstonejs/streaming-image-volume-loader": "1.70.0",
+    "@cornerstonejs/tools": "1.70.0",
     "@element-plus/icons-vue": "^2.3.1",
     "@icr/polyseg-wasm": "0.4.0",
     "@kitware/vtk.js": "29.7.0",

@@ -18,9 +18,11 @@ module.exports = defineConfig({
     },
   },
   configureWebpack: {
+    devtool: 'source-map',
     resolve: {
       alias: {
         "@cornerstonejs/tools": "@cornerstonejs/tools/dist/umd/index.js",
+        "@cornerstonejs/core": "@cornerstonejs/core/dist/umd/index.js",
       },
     },
     experiments: {
@@ -37,7 +39,7 @@ module.exports = defineConfig({
         },
         {
           test: /\.m?js$/,
-          exclude: /(node_modules|bower_components)/,
+          //exclude: /(node_modules|bower_components)/,
           use: {
             loader: 'babel-loader',
             options: {

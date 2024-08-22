@@ -29,5 +29,10 @@ export default {
       name: "加载本地dicom",
       component: () => import("@/views/basicUsage/LocalFile.vue"),
     },
+    {
+      path: "load3DVolume",
+      name: "加载3D影像",
+      component: () => import("@/views/basicUsage/Basic3DRender.vue"),
+    },
   ],
 };

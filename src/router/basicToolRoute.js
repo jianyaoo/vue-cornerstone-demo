@@ -6,7 +6,7 @@ export default {
   children: [
     {
       path: "basicUse",
-      name: "基础工具使用",
+      name: "基础工具及同步器演示",
       component: () => import("@/views/basicTools/BasicToolUse.vue"),
     },
     {

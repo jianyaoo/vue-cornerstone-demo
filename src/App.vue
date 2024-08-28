@@ -15,23 +15,25 @@ const isCollapse = ref(false);
     <el-container>
       <el-aside width="300px">
         <el-menu
-          default-active="0-1"
-          class="el-menu-vertical-demo"
-          :collapse="isCollapse"
+            default-active="0-1"
+            class="el-menu-vertical-demo"
+            :collapse="isCollapse"
         >
           <el-sub-menu
-            v-for="(route, routeIndex) in displayRoutes"
-            :key="`router${routeIndex}`"
-            :index="routeIndex.toString()"
+              v-for="(route, routeIndex) in displayRoutes"
+              :key="`router${routeIndex}`"
+              :index="routeIndex.toString()"
           >
             <template #title>
-              <el-icon><House /></el-icon>
+              <el-icon>
+                <House/>
+              </el-icon>
               <span>{{ route.name }}</span>
             </template>
             <el-menu-item
-              v-for="(routeChildren, index) in route.children"
-              :key="index"
-              :index="`${routeIndex}-${index}`"
+                v-for="(routeChildren, index) in route.children"
+                :key="index"
+                :index="`${routeIndex}-${index}`"
             >
               <router-link :to="`${route.path}/${routeChildren.path}`">
                 {{ routeChildren.name }}
@@ -40,15 +42,17 @@ const isCollapse = ref(false);
           </el-sub-menu>
         </el-menu>
       </el-aside>
-      
+
       <el-main>
-        <router-view />
+        <router-view/>
       </el-main>
     </el-container>
   </el-container>
 </template>
 
-<style lang="scss">
+<style lang="scss">;
+@import "style/cs";
+
 .page-container {
   min-height: 1000px;
 
@@ -70,7 +74,7 @@ a {
   }
 }
 
-i{
+i {
   color: #000;
   margin-right: 3px;
 }

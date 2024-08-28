@@ -2,35 +2,35 @@
 import vtkColormaps from "@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps";
 import { getRenderingEngine } from "@cornerstonejs/core";
 import {
-  utilities as cstUtils
+  utilities as cstUtils,
 } from "@cornerstonejs/tools";
-import useInitVolumeCS from "@/hooks/useInitVolumeCS";
 import useLoading from "@/hooks/useLoading";
+import useInitCS from '@/hooks/useInitCS'
 import {
   createIds,
   ctVolumeId,
   ptVolumeId,
-  renderingEngine_id
+  renderingEngine_id,
 } from "@/enums/cs";
 
-const { ViewportColorbar } = cstUtils.voi.colorbar;
-const { ColorbarRangeTextPosition } = cstUtils.voi.colorbar.Enums;
+const {ViewportColorbar} = cstUtils.voi.colorbar;
+const {ColorbarRangeTextPosition} = cstUtils.voi.colorbar.Enums;
 const colorMaps = vtkColormaps.rgbPresetNames.map((presetName) =>
-  vtkColormaps.getPresetByName(presetName)
+    vtkColormaps.getPresetByName(presetName),
 );
 
-const elementIds = createIds("element", 3);
+const elementIds = createIds("volumeDom", 3);
 
 const ctTheme = ref("Grayscale");
 const ctOpacity = ref(255);
 const ptTheme = ref("jet");
 const ptOpacity = ref(120);
 
-const { loading } = useLoading();
+const {loading} = useLoading();
 
 onMounted(async () => {
-  await useInitVolumeCS(true);
-  
+  await useInitCS(['volume'], true);
+
   initColorBar(ctTheme.value, ctVolumeId);
   initColorBar(ptTheme.value, ptVolumeId);
   setColorMapToVP(ptVolumeId, ptOpacity.value, 'opacity');
@@ -52,30 +52,30 @@ watch(ptOpacity, (newValue) => {
   setColorMapToVP(ptVolumeId, newValue, 'opacity');
 });
 
-
 function setColorMapToVP(volumeId, value, type = "name") {
   const typeObj = {
     name: () => ({
-      name: value
+      name: value,
     }),
-    
+
     opacity: () => {
       const op = value / 255;
       return {
-        opacity: op
+        opacity: op,
       }
-    }
+    },
   };
-  
-  const vps = getRenderingEngine(renderingEngine_id).getViewports();
+
+  const vps = getRenderingEngine(renderingEngine_id)
+  .getViewports();
   vps.forEach(viewport => {
     viewport.setProperties(
-      {
-        colormap: {
-          ...typeObj[type]()
-        }
-      },
-      volumeId
+        {
+          colormap: {
+            ...typeObj[type](),
+          },
+        },
+        volumeId,
     );
     viewport.render();
   });
@@ -98,12 +98,12 @@ function initColorBar(activeColormapName, volumeId) {
           maxNumTicks: 8,
           tickSize: 5,
           tickWidth: 1,
-          labelMargin: 3
-        }
-      }
+          labelMargin: 3,
+        },
+      },
     });
   });
-  
+
   setColorMapToVP(volumeId, activeColormapName);
 }
 </script>
@@ -172,7 +172,7 @@ function initColorBar(activeColormapName, volumeId) {
     <div id="demo-wrap">
       <div class="colorBar-wrap">
         <div
-          id="element1"
+          :id="elementIds[0]"
           v-loading="loading"
           class="cornerstone-item"
           element-loading-text="Loading..."
@@ -185,7 +185,7 @@ function initColorBar(activeColormapName, volumeId) {
       </div>
       <div class="colorBar-wrap">
         <div
-          id="element2"
+          :id="elementIds[1]"
           v-loading="loading"
           class="cornerstone-item"
           element-loading-text="Loading..."
@@ -198,7 +198,7 @@ function initColorBar(activeColormapName, volumeId) {
       </div>
       <div class="colorBar-wrap">
         <div
-          id="element3"
+          :id="elementIds[2]"
           v-loading="loading"
           class="cornerstone-item"
           element-loading-text="Loading..."
@@ -226,7 +226,7 @@ function initColorBar(activeColormapName, volumeId) {
 .form {
   margin-top: 20px;
   display: flex;
-  
+
   .form-item {
     display: flex;
     align-items: center;
@@ -247,7 +247,7 @@ function initColorBar(activeColormapName, volumeId) {
   padding: 20px 10px 20px 20px;
   border: 2px solid #96CDF2;
   border-radius: 10px;
-  
+
   .cornerstone-item {
     display: inline-block;
     width: 100%;
@@ -255,7 +255,7 @@ function initColorBar(activeColormapName, volumeId) {
     overflow: hidden;
     box-sizing: border-box;
   }
-  
+
   .colorBar {
     position: relative;
     box-sizing: border-box;
@@ -274,7 +274,7 @@ function initColorBar(activeColormapName, volumeId) {
 #tip {
   margin-top: 20px;
   font-size: 14px;
-  
+
   p {
     line-height: 30px;
     color: #eee;

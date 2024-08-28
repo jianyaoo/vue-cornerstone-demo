@@ -2,7 +2,7 @@ import {
   Enums as csEnums,
   RenderingEngine,
   volumeLoader,
-  setVolumesForViewports
+  setVolumesForViewports, getRenderingEngine,
 } from "@cornerstonejs/core";
 import {
   createIds,
@@ -14,20 +14,22 @@ import initCornerstone from "@/cornerstone/helper/initCornerstone";
 import getTestImageId from "@/cornerstone/helper/getTestImageId";
 import getTestPTImageId from "@/cornerstone/helper/getTestPTImageId";
 
-const viewportIds = createIds("vp", 3);
-const elementIds = createIds("element", 3);
+const viewportIds = createIds("volumeVP", 3);
+const elementIds = createIds("volumeDom", 3);
 
-export default async function useInitVolumeCS(isRecon) {
-  await initCornerstone();
-
-  const renderingEngine = new RenderingEngine(renderingEngine_id);
+export default async function useInitVolumeCS({
+  isRecon,
+  beforeRenderHook = () => {}
+}) {
+  const renderingEngine = getRenderingEngine(renderingEngine_id);
 
   const viewportInputArray = createMPRViewports();
   renderingEngine.setViewports(viewportInputArray);
 
+  const imageIds = await getTestImageId();
+
   const volumeInputs = [];
 
-  const imageIds = await getTestImageId();
   const volume = await volumeLoader.createAndCacheVolume(ctVolumeId, {
     imageIds
   });
@@ -55,6 +57,10 @@ export default async function useInitVolumeCS(isRecon) {
     volumeInputs,
     viewportIds
   );
+
+  console.log(beforeRenderHook)
+
+  beforeRenderHook();
 
   renderingEngine.renderViewports(viewportIds);
 }

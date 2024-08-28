@@ -9,5 +9,10 @@ export default {
       name: "高级colorBar",
       component: () => import("@/views/advancedUsage/ReconColorBar.vue"),
     },
+    {
+      path: "AnnotationTool",
+      name: "注释测量工具",
+      component: () => import("@/views/advancedUsage/AnnotationTool.vue"),
+    },
   ],
 };

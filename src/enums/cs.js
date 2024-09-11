@@ -3,6 +3,9 @@ export const ctVolumeId = 'ctVolumeId';
 export const ptVolumeId = 'ptVolumeId';
 
 export const toolGroupId = 'toolGroupId'
+export const toolGroupIdByVolume = 'toolGroupIdVolume'
+
+export const toolGroupIdByStack = 'toolGroupIdStack'
 
 export const preType = {
 	volumeVP: 'volumeVP',

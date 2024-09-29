@@ -23,9 +23,10 @@ module.exports = {
     requireConfigFile: false,
   },
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-console': 'warn',
+    'no-debugger': 'off',
     'no-unused-vars': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-mixed-spaces-and-tabs': 0,
   },
   settings: {
     'import/resolver': {

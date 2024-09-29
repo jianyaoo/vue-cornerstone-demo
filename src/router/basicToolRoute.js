@@ -10,6 +10,11 @@ export default {
       component: () => import("@/views/basicTools/BasicToolUse.vue"),
     },
     {
+      path: "AnnotationTool",
+      name: "注释测量类工具",
+      component: () => import("@/views/basicTools/AnnotationTool.vue"),
+    },
+    {
       path: "windowLevelTool",
       name: "窗宽窗位演示",
       component: () => import("@/views/basicTools/WindowLevel.vue"),

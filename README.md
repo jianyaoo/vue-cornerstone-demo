@@ -1,9 +1,11 @@
 # Cornerstone 3D 演示案例（基于Vue3框架）
-⛳️ 该仓库为从0开始上手 `Cornerstone3D` 的演示示例，从基础的影像渲染、工具运用，会逐步延展至业务需求、自定义工具类等场景，直至源码解析环节。
+⛳️ 该仓库为从0开始上手 `Cornerstone3D` 的演示示例，从基础的影像渲染、工具运用，会逐步延展至业务需求、自定义工具类等场景，直至源码解析环节。案例演示由易到难，循序渐进，对于刚刚开始接触Cornerstone的朋友极其友好。
 
-🚀 目前Vue版本已由2.6升级至Vue3，打包工具为webpack，node版本18.16.0。项目中webpack的配置已解决部分新上手时问题，如果是使用vite打包可查看[vite构建](https://juejin.cn/post/7390577262292746291)
+🚀 目前Vue版本已由2.6升级至Vue3，打包工具为webpack，node版本20.17.0。项目中webpack的配置已解决部分新上手时问题，如果是使用vite打包可查看[vite构建](https://juejin.cn/post/7390577262292746291)
 
-🎉  🎉  🎉   仓库将持续更新，欢迎大家Star，在使用过程中遇到任何相关问题或需要的示例欢迎随时issues或掘金评论
+🚀 clone项目后如果运行报错，建议删除node_modules文件夹后重新安装一下依赖，启动时遇到的大部分问题都是由Cornerstone版本不一致导致，如果重新安装后运行依旧有问题随时联系~
+
+🎉  🎉  🎉  仓库将持续更新，欢迎大家Star，在使用过程中遇到任何相关问题或需要的功能示例欢迎随时issues或掘金博客中评论。
 
 ## 已支持的功能
 ### 🎈 基础渲染示例
@@ -12,11 +14,12 @@
 - [渲染nifti文件](https://github.com/jianyaoo/vue-cornerstone-demo/blob/main/src/views/basicUsage/BaseNiftyFile.vue)
 - [渲染PET融合模式](https://github.com/jianyaoo/vue-cornerstone-demo/blob/main/src/views/basicUsage/BasicPET.vue)
 - [加载本地dicom](https://github.com/jianyaoo/vue-cornerstone-demo/blob/main/src/views/basicUsage/LocalFile.vue)
-
+- [渲染3D影像](https://github.com/jianyaoo/vue-cornerstone-demo/blob/main/src/views/basicUsage/Basic3DRender.vue)
 
 ### 📡 工具基础使用示例
 - [基础工具使用](https://github.com/jianyaoo/vue-cornerstone-demo/blob/main/src/views/basicTools/BasicToolUse.vue)
 - [窗宽窗位演示](https://github.com/jianyaoo/vue-cornerstone-demo/blob/main/src/views/basicTools/WindowLevel.vue)
+- [注释工具使用](https://github.com/jianyaoo/vue-cornerstone-demo/blob/main/src/views/basicTools/AnnotationTool.vue)
 - [刷子工具演示](https://github.com/jianyaoo/vue-cornerstone-demo/blob/main/src/views/basicTools/BasicSegmentation.vue)
 - [基础colorBar](https://github.com/jianyaoo/vue-cornerstone-demo/blob/main/src/views/basicTools/ColorBar.vue)
 
@@ -29,13 +32,17 @@
 - [一文(N长图)了解Cornerstone3DTools常用工具(万字总结附导图)](https://juejin.cn/post/7330300019022495779)
 
 
-### 🌿 基础概念系列
-
+### 🌿 基础功能系列
 - [如何渲染一个基础的Dicom文件](https://juejin.cn/post/7322754558275878924)
-- [如何使用Cornerstone加载本地的dicom文件并渲染](https://juejin.cn/post/7393189744329719846)
-- [如何加载nifti格式的文件](https://juejin.cn/post/7324886896214605878)
+- [如何渲染一个nifti格式的文件](https://juejin.cn/post/7324886896214605878)
+- [如何渲染一个3D影像](https://juejin.cn/post/7406150677225685031)
+- [使用Cornerstone加载本地的dicom文件并渲染](https://juejin.cn/post/7393189744329719846)
 - [Cornerstone加载本地Dicom文件第二弹 - Blob篇](https://juejin.cn/post/7399530649999654946)
+- [Cornerstone渲染CT+PET融合影像及相关应用场景](https://juejin.cn/post/7405250711283335206)
 
+
+### 🍒 工具应用系列
+- [Cornerstone3D Tools对影像进行交互(上篇)-基础交互工具及同步器](https://juejin.cn/post/7407644269995065384)
 
 
 ### 🌴 场景及原理解析系列
@@ -49,7 +56,7 @@
 - [记录vite项目中Cornerstone的兼容问题](https://juejin.cn/post/7390577262292746291)
 
 
-## 部分截图
+## 项目截图
 ### 渲染栈影像
 ![1.png](public%2F1.png)
 
@@ -61,3 +68,6 @@
 
 ### 基础工具使用
 ![5.png](public%2F5.png)
+
+### 注释工具使用
+![img.png](public/6.png)

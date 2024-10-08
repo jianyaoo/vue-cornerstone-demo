@@ -1,11 +1,19 @@
 # Cornerstone 3D 演示案例（基于Vue3框架）
-⛳️ 该仓库为从0开始上手 `Cornerstone3D` 的演示示例，从基础的影像渲染、工具运用，会逐步延展至业务需求、自定义工具类等场景，直至源码解析环节。案例演示由易到难，循序渐进，对于刚刚开始接触Cornerstone的朋友极其友好。
+⛳️ 该仓库为从0开始上手 `Cornerstone3D` 的演示示例，从基础的影像渲染、工具运用，逐步延展至业务需求、自定义工具类等场景，直至源码解析环节。案例演示由易到难，循序渐进，对于刚刚开始接触Cornerstone的朋友极其友好。
 
 🚀 目前Vue版本已由2.6升级至Vue3，打包工具为webpack，node版本20.17.0。项目中webpack的配置已解决部分新上手时问题，如果是使用vite打包可查看[vite构建](https://juejin.cn/post/7390577262292746291)
 
-🚀 clone项目后如果运行报错，建议删除node_modules文件夹后重新安装一下依赖，启动时遇到的大部分问题都是由Cornerstone版本不一致导致，如果重新安装后运行依旧有问题随时联系~
-
 🎉  🎉  🎉  仓库将持续更新，欢迎大家Star，在使用过程中遇到任何相关问题或需要的功能示例欢迎随时issues或掘金博客中评论。
+
+## 本地运行
+1. clone到本地 `git clone https://github.com/jianyaoo/vue-cornerstone-demo.git`
+
+2. 更新node版本为20版本以上 
+
+3. 安装依赖 `yarn install`
+
+4. 启动项目 `npm run serve`
+
 
 ## 已支持的功能
 ### 🎈 基础渲染示例

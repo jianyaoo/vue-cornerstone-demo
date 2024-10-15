@@ -13,6 +13,10 @@ export default {
       path: "AnnotationTool",
       name: "注释测量类工具",
       component: () => import("@/views/basicTools/AnnotationTool.vue"),
+    },{
+      path: "AnnotationOperator",
+      name: "注释操作API",
+      component: () => import("@/views/basicTools/AnnotationOperator.vue"),
     },
     {
       path: "windowLevelTool",

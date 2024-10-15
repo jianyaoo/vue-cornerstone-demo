@@ -14,7 +14,7 @@ function addToolGroup(item, toolGroup) {
 	toolGroup.addTool(item.toolName)
 }
 
-export function addTools(registerToolsConfig, volumeVps, stackVps) {
+export function addTools(registerToolsConfig, volumeVps = [], stackVps = []) {
 	return () => {
 		const toolGroupVolume = ToolGroupManager.createToolGroup(toolGroupIdByVolume);
 		const toolGroupStack = ToolGroupManager.createToolGroup(toolGroupIdByStack);

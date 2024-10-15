@@ -1,4 +1,6 @@
 <script setup>
+	import { getRenderingEngine } from "@cornerstonejs/core";
+	import { annotation} from "@cornerstonejs/tools";
 	import {
 		baseAnnoToolConfig,
 		splineAnnoToolsConfig,
@@ -6,13 +8,11 @@
 		registerAllTools
 	} from '@/cornerstone/tools/registerToolList'
 	import { addTools, changeTool } from '@/cornerstone/tools/utils'
+	import { createIds, preType, renderingEngine_id, } from "@/enums/cs";
 	import useInitCS from '@/hooks/useInitCS'
 	import useLoading from "@/hooks/useLoading";
-	import {
-		createIds, preType, renderingEngine_id,
-	} from "@/enums/cs";
-	import { annotation, utilities as cstUtils } from "@cornerstonejs/tools";
-	import { getRenderingEngine } from "@cornerstonejs/core";
+
+
 	
 	
 	const result = ref();
@@ -208,8 +208,7 @@
         </div>
       </div>
     </div>
-		
-		
+	  
     <div id="demo-wrap">
       <div class="viewport-wrap">
         <div class="title">

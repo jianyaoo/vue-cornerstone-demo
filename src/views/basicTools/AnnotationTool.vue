@@ -1,6 +1,6 @@
 <script setup>
 	import { getRenderingEngine } from "@cornerstonejs/core";
-	import { annotation} from "@cornerstonejs/tools";
+	import { annotation, Enums as cstEnums, ToolGroupManager } from "@cornerstonejs/tools";
 	import {
 		baseAnnoToolConfig,
 		splineAnnoToolsConfig,
@@ -8,12 +8,14 @@
 		registerAllTools
 	} from '@/cornerstone/tools/registerToolList'
 	import { addTools, changeTool } from '@/cornerstone/tools/utils'
-	import { createIds, preType, renderingEngine_id, } from "@/enums/cs";
+	import { createIds, preType, renderingEngine_id, toolGroupIdByStack, toolGroupIdByVolume, } from "@/enums/cs";
 	import useInitCS from '@/hooks/useInitCS'
 	import useLoading from "@/hooks/useLoading";
+	import destoryCS from "@/cornerstone/helper/destoryCS";
+	import { ElMessage } from "element-plus";
 
 
-	
+
 	
 	const result = ref();
 	const volumeVp = createIds(preType.volumeVP, 3);
@@ -59,16 +61,15 @@
 			action: actuator.removeSingleAnno,
 		}
 	]
-	const selectedButton = [{
-		text: '',
-		action: ''
-	}]
+
+	const modeButton = Object.values(cstEnums.ToolModes);
 	
 	
 	const {loading} = useLoading();
 	
 	const checkedToolName = ref("")
 	const checkedToolObj = ref(null)
+	const toolMode = ref(modeButton[0]);
 	
 	onMounted(async () => {
 		await useInitCS(
@@ -78,9 +79,28 @@
 				addTools([...baseAnnoToolConfig, ...splineAnnoToolsConfig, ...specificTool], volumeVp, stackVp));
 	});
 	
+	onBeforeUnmount(() => {
+		destoryCS(renderingEngine_id, [toolGroupIdByVolume, toolGroupIdByStack]);
+	});
+	
 	function handleToolChange(toolName) {
 		checkedToolObj.value = registerAllTools.find(item => item.toolName === toolName);
 		changeTool(toolName, 'Disabled')
+	}
+	
+	function handleModeChange(mode){
+		if (!checkedToolName.value){
+			ElMessage.error('请先选中一个工具进行激活');
+			return;
+		}
+		
+		const toolGroupVolume = ToolGroupManager.getToolGroup(toolGroupIdByVolume);
+		toolGroupVolume[`setTool${mode}`](checkedToolObj.value.toolName);
+		if (mode === modeButton[0]){
+			toolGroupVolume.setToolActive(checkedToolObj.value.toolName, {
+				bindings: [{mouseButton: cstEnums.MouseBindings.Primary}],
+			});
+		}
 	}
 </script>
 
@@ -160,6 +180,30 @@
                 :value="item.toolName"
               >
                 {{ item.label }}（{{ item.desc || item.toolName }}）
+              </el-radio>
+            </el-radio-group>
+          </el-card>
+        </div>
+	      
+        <div class="form-item-group">
+          <el-card
+            style="max-width: 50%; min-width: 800px;margin-bottom: 20px"
+            shadow="always"
+          >
+            <template #header>
+              工具状态
+            </template>
+            <el-radio-group
+              v-model="toolMode"
+              @change="handleModeChange"
+            >
+              <el-radio
+                v-for="(item, index) in modeButton"
+                :key="index"
+                class="radio-item"
+                :value="item"
+              >
+                {{ item }}
               </el-radio>
             </el-radio-group>
           </el-card>

@@ -4,6 +4,7 @@
 	import { eventTarget, getRenderingEngine, utilities as csUtils } from "@cornerstonejs/core";
 	import { annotation, Enums as cstEnums } from "@cornerstonejs/tools";
 	import { addTools, changeTool } from "@/cornerstone/tools/utils";
+	import destoryCS from "@/cornerstone/helper/destoryCS";
 	import { baseAnnoToolConfig, registerAllTools } from "@/cornerstone/tools/registerToolList";
 	import { createIds, ctVolumeId, preType, renderingEngine_id, toolGroupIdByVolume } from "@/enums/cs";
 	import useInitCS from "@/hooks/useInitCS";
@@ -29,6 +30,11 @@
 				{},
 				addTools([...baseAnnoToolConfig], volumeVp));
 	});
+	
+	onBeforeUnmount(() => {
+		destoryCS(renderingEngine_id, [toolGroupIdByVolume]);
+	});
+	
 	
 	eventTarget.addEventListener(cstEnums.Events.ANNOTATION_ADDED, () => {
 		allAnnotation.value = annotation.state.getAllAnnotations()

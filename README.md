@@ -48,6 +48,7 @@
 - [使用Cornerstone加载本地的dicom文件并渲染](https://juejin.cn/post/7393189744329719846)
 - [Cornerstone加载本地Dicom文件第二弹 - Blob篇](https://juejin.cn/post/7399530649999654946)
 - [Cornerstone渲染CT+PET融合影像及相关应用场景](https://juejin.cn/post/7405250711283335206)
+- [Cornerstone3D Tools对影像进行交互(中篇)-注释类工具使用](https://juejin.cn/post/7425910507351228470)
 
 
 ### 🍒 工具应用系列

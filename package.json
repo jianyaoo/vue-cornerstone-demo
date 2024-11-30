@@ -25,7 +25,8 @@
     "element-ui": "^2.15.14",
     "vue": "^3.0.0",
     "vue-json-pretty": "^2.4.0",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.0.0",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",

@@ -17,6 +17,10 @@ export default {
       path: "AnnotationOperator",
       name: "注释操作API",
       component: () => import("@/views/basicTools/AnnotationOperator.vue"),
+    },{
+      path: "SegmentationTool",
+      name: "分割标注类工具",
+      component: () => import("@/views/basicTools/SegmentationTool.vue"),
     },
     {
       path: "windowLevelTool",

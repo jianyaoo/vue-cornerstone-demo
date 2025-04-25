@@ -31,6 +31,21 @@ export default {
       path: "basicSegmentation",
       name: "刷子工具演示",
       component: () => import("@/views/basicTools/BasicSegmentation.vue"),
+    }, {
+      path: "basicSegSurface",
+      name: "刷子工具演示3D",
+      component: () => import("@/views/basicTools/BasicSegSurface.vue"),
+    },
+
+    {
+      path: "SegExport_nii",
+      name: "导出Seg",
+      component: () => import("@/views/basicTools/SegExport_nii.vue"),
+    },
+    {
+      path: "exportSeg",
+      name: "导出Seg2",
+      component: () => import("@/views/basicTools/SegExport.vue"),
     },
     {
       path: "colorBar",

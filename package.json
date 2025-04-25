@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@cornerstonejs/adapters": "^1.86.1",
     "@cornerstonejs/calculate-suv": "1.1.0",
     "@cornerstonejs/core": "^1.72.0",
     "@cornerstonejs/dicom-image-loader": "^1.72.0",
@@ -70,5 +71,6 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "packageManager": "yarn@3.6.0+sha512.418e45c2268c4d6b69a28f3939084b5853d5f392c43c0b5588bd1995a96e328414ae4b7777a8980c64bad4328c52586ff879b289f98ae65372a55fa4d0ff70dd"
 }

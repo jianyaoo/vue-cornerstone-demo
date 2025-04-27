@@ -1,13 +1,24 @@
 {
-  "name": "vue-cornerstone-demo",
+  "name": "cs3D-v1",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev:v1": "pnpm --filter cs3D-v1 dev",
-    "dev:v2": "pnpm --filter cs3D-v2 dev"
+    "dev": "../../node_modules/.bin/vue-cli-service serve",
+    "build": "../../node_modules/.bin/vue-cli-service build",
+    "lint": "../../node_modules/.bin/vue-cli-service lint"
   },
   "dependencies": {
+    "@cornerstonejs/adapters": "^1.86.1",
+    "@cornerstonejs/calculate-suv": "1.1.0",
+    "@cornerstonejs/core": "^1.72.0",
+    "@cornerstonejs/dicom-image-loader": "^1.72.0",
+    "@cornerstonejs/nifti-volume-loader": "^1.72.0",
+    "@cornerstonejs/streaming-image-volume-loader": "^1.72.0",
+    "@cornerstonejs/tools": "^1.72.0",
     "@element-plus/icons-vue": "^2.3.1",
+    "@icr/polyseg-wasm": "0.4.0",
+    "@kitware/vtk.js": "29.7.0",
+    "core-js": "^3.8.3",
     "dcmjs": "^0.30.0",
     "dicom-parser": "^1.8.21",
     "dicomweb-client": "^0.10.4",
@@ -15,7 +26,8 @@
     "element-ui": "^2.15.14",
     "vue": "^3.0.0",
     "vue-json-pretty": "^2.4.0",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.0.0",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",

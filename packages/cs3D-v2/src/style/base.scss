@@ -1,0 +1,89 @@
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, form, fieldset, legend, button, input, textarea, th, td {
+    margin: 0;
+    padding: 0;
+}
+
+.block, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
+    display: block;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    min-height: 100%;
+}
+
+address, cite, dfn, em, var, i {
+    font-style: normal;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    -webkit-touch-callout: none;
+    transition: all .3s;
+    cursor: pointer;
+    color: #dcdfe6;
+}
+
+sup {
+    vertical-align: text-top;
+    top: 0;
+}
+
+sub {
+    vertical-align: text-bottom;
+}
+
+fieldset, img {
+    border: 0;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+textarea {
+    resize: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+input, button, select, textarea {
+    outline: none;
+}
+
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+    font-size: 12px;
+}
+
+*:focus {
+    outline: 0;
+}
+
+::-webkit-scrollbar,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece,
+::-webkit-scrollbar-corner {
+    width: 10px;
+    height: 10px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #162c32;
+    border-radius: 30px;
+}

@@ -8,6 +8,103 @@ importers:
 
   .:
     dependencies:
+      '@element-plus/icons-vue':
+        specifier: ^2.3.1
+        version: 2.3.1(vue@3.5.13)
+      dcmjs:
+        specifier: ^0.30.0
+        version: 0.30.3
+      dicom-parser:
+        specifier: ^1.8.21
+        version: 1.8.21
+      dicomweb-client:
+        specifier: ^0.10.4
+        version: 0.10.4
+      element-plus:
+        specifier: ^2.7.7
+        version: 2.9.4(vue@3.5.13)
+      element-ui:
+        specifier: ^2.15.14
+        version: 2.15.14(vue@3.5.13)
+      vue:
+        specifier: ^3.0.0
+        version: 3.5.13
+      vue-json-pretty:
+        specifier: ^2.4.0
+        version: 2.4.0(vue@3.5.13)
+      vue-router:
+        specifier: ^4.0.0
+        version: 4.5.0(vue@3.5.13)
+    devDependencies:
+      '@babel/core':
+        specifier: ^7.24.9
+        version: 7.26.7
+      '@babel/eslint-parser':
+        specifier: ^7.12.16
+        version: 7.26.5(@babel/core@7.26.7)(eslint@7.32.0)
+      '@babel/plugin-transform-class-static-block':
+        specifier: ^7.23.4
+        version: 7.26.0(@babel/core@7.26.7)
+      '@babel/preset-env':
+        specifier: ^7.24.8
+        version: 7.26.7(@babel/core@7.26.7)
+      '@vue/cli-plugin-babel':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/cli-service@5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3))(core-js@3.40.0)(vue@3.5.13)
+      '@vue/cli-plugin-eslint':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/cli-service@5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3))(eslint@7.32.0)
+      '@vue/cli-plugin-router':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/cli-service@5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3))
+      '@vue/cli-plugin-vuex':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/cli-service@5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3))
+      '@vue/cli-service':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3)
+      babel-loader:
+        specifier: ^9.1.3
+        version: 9.2.1(@babel/core@7.26.7)(webpack@5.97.1)
+      eslint:
+        specifier: ^7.32.0
+        version: 7.32.0
+      eslint-config-prettier:
+        specifier: ^8.3.0
+        version: 8.10.0(eslint@7.32.0)
+      eslint-plugin-prettier:
+        specifier: ^4.0.0
+        version: 4.2.1(eslint-config-prettier@8.10.0(eslint@7.32.0))(eslint@7.32.0)(prettier@2.8.8)
+      eslint-plugin-vue:
+        specifier: ^8.0.3
+        version: 8.7.1(eslint@7.32.0)
+      prettier:
+        specifier: ^2.4.1
+        version: 2.8.8
+      sass:
+        specifier: ^1.32.7
+        version: 1.84.0
+      sass-loader:
+        specifier: ^12.0.0
+        version: 12.6.0(sass@1.84.0)(webpack@5.97.1)
+      unplugin-auto-import:
+        specifier: ^0.18.0
+        version: 0.18.6(@vueuse/core@9.13.0(vue@3.5.13))
+      unplugin-element-plus:
+        specifier: ^0.8.0
+        version: 0.8.0
+      unplugin-vue-components:
+        specifier: ^0.27.3
+        version: 0.27.5(@babel/parser@7.26.7)(vue@3.5.13)
+      vue-eslint-parser:
+        specifier: ^10.1.3
+        version: 10.1.3(eslint@7.32.0)
+      vue-template-compiler:
+        specifier: ^2.6.14
+        version: 2.7.16
+
+  packages/cs3D-v1:
+    dependencies:
       '@cornerstonejs/adapters':
         specifier: ^1.86.1
         version: 1.86.1(@babel/preset-env@7.26.7(@babel/core@7.26.7))(@icr/polyseg-wasm@0.4.0)(@kitware/vtk.js@29.7.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(autoprefixer@10.4.20(postcss@8.5.1))(d3-array@3.2.4)(d3-interpolate@3.0.1)(webpack@5.97.1)(wslink@1.12.4)
@@ -68,6 +165,130 @@ importers:
       yarn:
         specifier: ^1.22.22
         version: 1.22.22
+    devDependencies:
+      '@babel/core':
+        specifier: ^7.24.9
+        version: 7.26.7
+      '@babel/eslint-parser':
+        specifier: ^7.12.16
+        version: 7.26.5(@babel/core@7.26.7)(eslint@7.32.0)
+      '@babel/plugin-transform-class-static-block':
+        specifier: ^7.23.4
+        version: 7.26.0(@babel/core@7.26.7)
+      '@babel/preset-env':
+        specifier: ^7.24.8
+        version: 7.26.7(@babel/core@7.26.7)
+      '@vue/cli-plugin-babel':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/cli-service@5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3))(core-js@3.40.0)(vue@3.5.13)
+      '@vue/cli-plugin-eslint':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/cli-service@5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3))(eslint@7.32.0)
+      '@vue/cli-plugin-router':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/cli-service@5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3))
+      '@vue/cli-plugin-vuex':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/cli-service@5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3))
+      '@vue/cli-service':
+        specifier: ~5.0.0
+        version: 5.0.8(@vue/compiler-sfc@3.5.13)(lodash@4.17.21)(prettier@2.8.8)(sass-loader@12.6.0(sass@1.84.0)(webpack@5.97.1))(vue-template-compiler@2.7.16)(vue@3.5.13)(webpack-sources@3.2.3)
+      babel-loader:
+        specifier: ^9.1.3
+        version: 9.2.1(@babel/core@7.26.7)(webpack@5.97.1)
+      eslint:
+        specifier: ^7.32.0
+        version: 7.32.0
+      eslint-config-prettier:
+        specifier: ^8.3.0
+        version: 8.10.0(eslint@7.32.0)
+      eslint-plugin-prettier:
+        specifier: ^4.0.0
+        version: 4.2.1(eslint-config-prettier@8.10.0(eslint@7.32.0))(eslint@7.32.0)(prettier@2.8.8)
+      eslint-plugin-vue:
+        specifier: ^8.0.3
+        version: 8.7.1(eslint@7.32.0)
+      prettier:
+        specifier: ^2.4.1
+        version: 2.8.8
+      sass:
+        specifier: ^1.32.7
+        version: 1.84.0
+      sass-loader:
+        specifier: ^12.0.0
+        version: 12.6.0(sass@1.84.0)(webpack@5.97.1)
+      unplugin-auto-import:
+        specifier: ^0.18.0
+        version: 0.18.6(@vueuse/core@9.13.0(vue@3.5.13))
+      unplugin-element-plus:
+        specifier: ^0.8.0
+        version: 0.8.0
+      unplugin-vue-components:
+        specifier: ^0.27.3
+        version: 0.27.5(@babel/parser@7.26.7)(vue@3.5.13)
+      vue-eslint-parser:
+        specifier: ^10.1.3
+        version: 10.1.3(eslint@7.32.0)
+      vue-template-compiler:
+        specifier: ^2.6.14
+        version: 2.7.16
+
+  packages/cs3D-v2:
+    dependencies:
+      '@cornerstonejs/adapters':
+        specifier: ^2.19.0
+        version: 2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@cornerstonejs/tools@2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@kitware/vtk.js@29.7.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+      '@cornerstonejs/calculate-suv':
+        specifier: 1.1.0
+        version: 1.1.0
+      '@cornerstonejs/core':
+        specifier: ^2.19.0
+        version: 2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)
+      '@cornerstonejs/dicom-image-loader':
+        specifier: ^2.19.0
+        version: 2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(dicom-parser@1.8.21)
+      '@cornerstonejs/nifti-volume-loader':
+        specifier: ^2.19.0
+        version: 2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))
+      '@cornerstonejs/tools':
+        specifier: ^2.19.0
+        version: 2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@kitware/vtk.js@29.7.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@element-plus/icons-vue':
+        specifier: ^2.3.1
+        version: 2.3.1(vue@3.5.13)
+      '@icr/polyseg-wasm':
+        specifier: 0.4.0
+        version: 0.4.0
+      '@kitware/vtk.js':
+        specifier: 29.7.0
+        version: 29.7.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)
+      dcmjs:
+        specifier: ^0.30.0
+        version: 0.30.3
+      dicom-parser:
+        specifier: ^1.8.21
+        version: 1.8.21
+      dicomweb-client:
+        specifier: ^0.10.4
+        version: 0.10.4
+      element-plus:
+        specifier: ^2.7.7
+        version: 2.9.4(vue@3.5.13)
+      element-ui:
+        specifier: ^2.15.14
+        version: 2.15.14(vue@3.5.13)
+      vue:
+        specifier: ^3.0.0
+        version: 3.5.13
+      vue-json-pretty:
+        specifier: ^2.4.0
+        version: 2.4.0(vue@3.5.13)
+      vue-router:
+        specifier: ^4.0.0
+        version: 4.5.0(vue@3.5.13)
+      wasm-loader:
+        specifier: ^1.3.0
+        version: 1.3.0(wasm-dce@1.0.2)
     devDependencies:
       '@babel/core':
         specifier: ^7.24.9
@@ -695,6 +916,12 @@ packages:
   '@cornerstonejs/adapters@1.86.1':
     resolution: {integrity: sha512-YdqO+0nmPhzf3vO3jvefnvoRw+dcAbik9H4s3WKVnFuHa181zYx2WCeLpmVzeqrMruPZf/Ibuwh9UeISXYOU5Q==}
 
+  '@cornerstonejs/adapters@2.19.16':
+    resolution: {integrity: sha512-hw+JYvkZvIihnTTfM0vdSO2gOwhGz7qw06b3kTBAA8P3Bsnt4tZE51j6Mv2JNcuT2U0K6HkHx1uQLMs02BZuNQ==}
+    peerDependencies:
+      '@cornerstonejs/core': ^2.19.16
+      '@cornerstonejs/tools': ^2.19.16
+
   '@cornerstonejs/calculate-suv@1.1.0':
     resolution: {integrity: sha512-Q9XraiDJif9aMFArD2iEuDO/HXbcRVCqB7KfaHgDrdTTjgDFovS91Psbdim7crypRSvE6dh/+HKeFNHdvNkA6w==}
     engines: {node: '>=10'}
@@ -718,11 +945,25 @@ packages:
   '@cornerstonejs/core@1.86.1':
     resolution: {integrity: sha512-Al6rAxEGfcAreQipRwTGF53FwTQ4OqlVQtr2tvZbqOj+j3fu1z8aewwjdUIjo4S0pwTcKB/vsONzLAtiG6bbsg==}
 
+  '@cornerstonejs/core@2.19.16':
+    resolution: {integrity: sha512-tpKT3zPfkh8/3uZ1tJYS03vGsUIBJPLqqq3M30tQgV77iigG+HiJnAwY5qZW8SsYJJsB9BUW5sBKSdPE0jfnuQ==}
+
   '@cornerstonejs/dicom-image-loader@1.86.0':
     resolution: {integrity: sha512-OPZCGdtdomj3TGktATQcLVIpTVv7ZqF8EyPgkEX+eIRXILzpu5Nm6gf3Lwofa5HVFwvmoJmVnU8jToKcoKPkqQ==}
 
+  '@cornerstonejs/dicom-image-loader@2.19.16':
+    resolution: {integrity: sha512-xIgunmOhMO7ljHJYEgmREA5BHXr4abe4lyCwEjkD5tJu26ya3awpg/kcZIT7eLdr58/g0Ukmag4M5AK2M9G1XQ==}
+    peerDependencies:
+      '@cornerstonejs/core': ^2.19.16
+      dicom-parser: ^1.8.9
+
   '@cornerstonejs/nifti-volume-loader@1.86.1':
     resolution: {integrity: sha512-+ddRT8Pe0tfigKWu1cCodIl3zIgj2wNapbQrM1mwC/ETCRgS0uV4IUH0K3ChqbIZJ2Ob/i8X+roFIX7zUygyOA==}
+
+  '@cornerstonejs/nifti-volume-loader@2.19.16':
+    resolution: {integrity: sha512-bKfmJfy116HiuMJXEUUxGj90NZvD5/9LIa1LFb8p7u4SggsleeOHjS3vS2e23yK9DPBbaseud+KgE6cYUB6qUw==}
+    peerDependencies:
+      '@cornerstonejs/core': ^2.19.16
 
   '@cornerstonejs/streaming-image-volume-loader@1.86.1':
     resolution: {integrity: sha512-AOn285RnnRnBv2fMg8dFQTq80LAXXAGKqmtlAdhpZbh19B+NTKUKhRVOBUnvrgz4VhlsKx0ibYn9ztEx+18P2g==}
@@ -732,6 +973,17 @@ packages:
     peerDependencies:
       '@icr/polyseg-wasm': 0.4.0
       '@kitware/vtk.js': 30.4.1
+      '@types/d3-array': ^3.0.4
+      '@types/d3-interpolate': ^3.0.1
+      d3-array: ^3.2.3
+      d3-interpolate: ^3.0.1
+      gl-matrix: ^3.4.3
+
+  '@cornerstonejs/tools@2.19.16':
+    resolution: {integrity: sha512-MGcxAlGKt8fxWKSEaF6cRk4bFZzc2Sngt7fW9JnLS0OucEX2/iFN615SsXjZpag7XgTj2NAX72SVYwRLXgSXzw==}
+    peerDependencies:
+      '@cornerstonejs/core': ^2.19.16
+      '@kitware/vtk.js': 32.9.0
       '@types/d3-array': ^3.0.4
       '@types/d3-interpolate': ^3.0.1
       d3-array: ^3.2.3
@@ -814,6 +1066,14 @@ packages:
 
   '@kitware/vtk.js@30.4.1':
     resolution: {integrity: sha512-jBJFm8AyWpJjNFFBadXyvBwegdD9M6WRdxmIb+x/MVpCyA5lEZSMemhiMn71oKsznaEe5Pjv2VDVJWmwK0vhUg==}
+    hasBin: true
+    peerDependencies:
+      '@babel/preset-env': ^7.17.10
+      autoprefixer: ^10.4.7
+      wslink: '>=1.1.0 || ^2.0.0'
+
+  '@kitware/vtk.js@32.9.0':
+    resolution: {integrity: sha512-Tk9O++q6J4Z47DQnYXMnSeTmSRTQeK0Wa3447iGivCt162swOkIFCHBRtiwwHjWbe8tKCS8N/7d+eHCxkK7JtA==}
     hasBin: true
     peerDependencies:
       '@babel/preset-env': ^7.17.10
@@ -957,6 +1217,12 @@ packages:
     peerDependenciesMeta:
       rollup:
         optional: true
+
+  '@rollup/rollup-linux-x64-gnu@4.13.0':
+    resolution: {integrity: sha512-yUD/8wMffnTKuiIsl6xU+4IA8UNhQ/f1sAnQebmE/lyQ8abjsVyDkyRkWop0kdMhKMprpNIhPmYlCxgHrPoXoA==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
 
   '@sideway/address@4.1.5':
     resolution: {integrity: sha512-IqO/DUQHUkPeixNQ8n0JA6102hT9CmaljNTPmQ1u8MEhBo/R4Q8eKLN/vGZxuebwOroDB4cbpjheD4+/sKFK4Q==}
@@ -1487,6 +1753,11 @@ packages:
 
   babel-runtime@6.26.0:
     resolution: {integrity: sha512-ITKNuq2wKlW1fJg9sSW52eepoYgZBggvOAHC0u/CYu/qxQ9EVzThCgR69BnSXLHjy2f7SY5zaQ4yt7H9ZVxY2g==}
+
+  babylon@7.0.0-beta.47:
+    resolution: {integrity: sha512-+rq2cr4GDhtToEzKFD6KZZMDBXhjFAr9JjPw9pAppZACeEWqNM294j+NdBzkSHYXwzzBmVjZ3nEVJlOhbR2gOQ==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -2864,6 +3135,9 @@ packages:
   joi@17.13.3:
     resolution: {integrity: sha512-otDA4ldcIx+ZXsKHWmp0YizCweVRZG96J10b0FevjfuncLO1oX59THoAmHkNubYJ+9gWsYsp5k8v4ib6oDv1fA==}
 
+  jpeg-lossless-decoder-js@2.1.2:
+    resolution: {integrity: sha512-fYf/plymnuKwVw+s8gJ8O/BPw8y8OLaN11MBvEcT05kuy3m45o7BEC4J0JbxMNUYyO+MdK/I/jq0q1gkVYZm2Q==}
+
   js-message@1.0.7:
     resolution: {integrity: sha512-efJLHhLjIyKRewNS9EGZ4UpI8NguuL6fKkhRxVuMmrGV2xN/0APGdQYwLFky5w9naebSZ0OwAGp0G6/2Cg90rA==}
     engines: {node: '>=0.6.0'}
@@ -3033,6 +3307,10 @@ packages:
   loglevelnext@3.0.1:
     resolution: {integrity: sha512-JpjaJhIN1reaSb26SIxDGtE0uc67gPl19OMVHrr+Ggt6b/Vy60jmCtKgQBrygAH0bhRA2nkxgDvM+8QvR8r0YA==}
     engines: {node: '>= 6.14.4'}
+
+  long@3.2.0:
+    resolution: {integrity: sha512-ZYvPPOMqUwPoDsbJaR10iQJYnMuZhRTvHYl62ErLIEX7RgFlziSBUUvrt3OVfc47QlHHpzPZYP17g3Fv7oeJkg==}
+    engines: {node: '>=0.6'}
 
   lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
@@ -3331,6 +3609,9 @@ packages:
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
+
+  pako@1.0.11:
+    resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
 
   pako@2.1.0:
     resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
@@ -4264,6 +4545,9 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
+  utif@3.1.0:
+    resolution: {integrity: sha512-WEo4D/xOvFW53K5f5QTaTbbiORcm2/pCL9P6qmJnup+17eYfKaEhDeX9PeQkuyEoIxlbGklDuGl8xwuXYMrrXQ==}
+
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -4377,6 +4661,14 @@ packages:
       typescript:
         optional: true
 
+  wasm-dce@1.0.2:
+    resolution: {integrity: sha512-Fq1+nu43ybsjSnBquLrW/cULmKs61qbv9k8ep13QUe0nABBezMoNAA+j6QY66MW0/eoDVDp1rjXDqQ2VKyS/Xg==}
+
+  wasm-loader@1.3.0:
+    resolution: {integrity: sha512-R4s75XH+o8qM+WaRrAU9S2rbAMDzob18/S3V8R9ZoFpZkPWLAohWWlzWAp1ybeTkOuuku/X1zJtxiV0pBYxZww==}
+    peerDependencies:
+      wasm-dce: 1.x
+
   watchpack@2.4.2:
     resolution: {integrity: sha512-TnbFSbcOCcDgjZ4piURLCbJ3nJhznVh9kw6F6iokjiFPl8ONxe9A6nMDVXDiNbrSfLILs6vB07F7wLBrwPYzJw==}
     engines: {node: '>=10.13.0'}
@@ -4386,6 +4678,13 @@ packages:
 
   wcwidth@1.0.1:
     resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==}
+
+  webassembly-floating-point-hex-parser@0.1.2:
+    resolution: {integrity: sha512-TUf1H++8U10+stJbFydnvrpG5Sznz5Rilez/oZlV5zI0C/e4cSxd8rALAJ8VpTvjVWxLmL3SVSJUK6Ap9AoiNg==}
+
+  webassembly-interpreter@0.0.30:
+    resolution: {integrity: sha512-+Jdy2piEvz9T5j751mOE8+rBO12p+nNW6Fg4kJZ+zP1oUfsm+151sbAbM8AFxWTURmWCGP+r8Lxwfv3pzN1bCQ==}
+    hasBin: true
 
   webgl-constants@1.1.1:
     resolution: {integrity: sha512-LkBXKjU5r9vAW7Gcu3T5u+5cvSvh5WwINdr0C+9jpzVB41cjQAP5ePArDtk/WHYdVj0GefCgM73BA7FlIiNtdg==}
@@ -5313,6 +5612,16 @@ snapshots:
       - webpack
       - wslink
 
+  '@cornerstonejs/adapters@2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@cornerstonejs/tools@2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@kitware/vtk.js@29.7.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))':
+    dependencies:
+      '@babel/runtime-corejs2': 7.26.7
+      '@cornerstonejs/core': 2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)
+      '@cornerstonejs/tools': 2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@kitware/vtk.js@29.7.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      buffer: 6.0.3
+      dcmjs: 0.29.13
+      gl-matrix: 3.4.3
+      ndarray: 1.0.19
+
   '@cornerstonejs/calculate-suv@1.1.0': {}
 
   '@cornerstonejs/codec-charls@1.2.3': {}
@@ -5336,6 +5645,17 @@ snapshots:
       - webpack
       - wslink
 
+  '@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)':
+    dependencies:
+      '@kitware/vtk.js': 32.9.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)
+      comlink: 4.4.2
+      gl-matrix: 3.4.3
+    transitivePeerDependencies:
+      - '@babel/preset-env'
+      - autoprefixer
+      - webpack
+      - wslink
+
   '@cornerstonejs/dicom-image-loader@1.86.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)':
     dependencies:
       '@cornerstonejs/codec-charls': 1.2.3
@@ -5352,6 +5672,19 @@ snapshots:
       - webpack
       - wslink
 
+  '@cornerstonejs/dicom-image-loader@2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(dicom-parser@1.8.21)':
+    dependencies:
+      '@cornerstonejs/codec-charls': 1.2.3
+      '@cornerstonejs/codec-libjpeg-turbo-8bit': 1.2.2
+      '@cornerstonejs/codec-openjpeg': 1.2.4
+      '@cornerstonejs/codec-openjph': 2.4.7
+      '@cornerstonejs/core': 2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)
+      comlink: 4.4.2
+      dicom-parser: 1.8.21
+      jpeg-lossless-decoder-js: 2.1.2
+      pako: 2.1.0
+      uuid: 9.0.1
+
   '@cornerstonejs/nifti-volume-loader@1.86.1(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)':
     dependencies:
       '@cornerstonejs/core': 1.86.1(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)
@@ -5361,6 +5694,11 @@ snapshots:
       - autoprefixer
       - webpack
       - wslink
+
+  '@cornerstonejs/nifti-volume-loader@2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))':
+    dependencies:
+      '@cornerstonejs/core': 2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)
+      nifti-reader-js: 0.6.9
 
   '@cornerstonejs/streaming-image-volume-loader@1.86.1(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)':
     dependencies:
@@ -5391,6 +5729,19 @@ snapshots:
       - autoprefixer
       - webpack
       - wslink
+
+  '@cornerstonejs/tools@2.19.16(@cornerstonejs/core@2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@kitware/vtk.js@29.7.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)':
+    dependencies:
+      '@cornerstonejs/core': 2.19.16(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)
+      '@kitware/vtk.js': 29.7.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)
+      '@types/d3-array': 3.2.1
+      '@types/d3-interpolate': 3.0.4
+      '@types/offscreencanvas': 2019.7.3
+      comlink: 4.4.2
+      d3-array: 3.2.4
+      d3-interpolate: 3.0.1
+      gl-matrix: 3.4.3
+      lodash.get: 4.4.2
 
   '@ctrl/tinycolor@3.6.1': {}
 
@@ -5513,6 +5864,31 @@ snapshots:
     transitivePeerDependencies:
       - webpack
 
+  '@kitware/vtk.js@32.9.0(@babel/preset-env@7.26.7(@babel/core@7.26.7))(autoprefixer@10.4.20(postcss@8.5.1))(webpack@5.97.1)(wslink@1.12.4)':
+    dependencies:
+      '@babel/preset-env': 7.26.7(@babel/core@7.26.7)
+      '@babel/runtime': 7.22.11
+      '@types/webxr': 0.5.21
+      autoprefixer: 10.4.20(postcss@8.5.1)
+      commander: 9.2.0
+      d3-scale: 4.0.2
+      fast-deep-equal: 3.1.3
+      fflate: 0.7.3
+      gl-matrix: 3.4.3
+      globalthis: 1.0.3
+      seedrandom: 3.0.5
+      shader-loader: 1.3.1
+      shelljs: 0.8.5
+      spark-md5: 3.0.2
+      stream-browserify: 3.0.0
+      utif: 3.1.0
+      webworker-promise: 0.5.0
+      worker-loader: 3.0.8(webpack@5.97.1)
+      wslink: 1.12.4
+      xmlbuilder2: 3.0.2
+    transitivePeerDependencies:
+      - webpack
+
   '@leichtgewicht/ip-codec@2.0.5': {}
 
   '@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1':
@@ -5620,6 +5996,9 @@ snapshots:
       '@types/estree': 1.0.6
       estree-walker: 2.0.2
       picomatch: 4.0.2
+
+  '@rollup/rollup-linux-x64-gnu@4.13.0':
+    optional: true
 
   '@sideway/address@4.1.5':
     dependencies:
@@ -6474,6 +6853,8 @@ snapshots:
     dependencies:
       core-js: 2.6.12
       regenerator-runtime: 0.11.1
+
+  babylon@7.0.0-beta.47: {}
 
   balanced-match@1.0.2: {}
 
@@ -7781,6 +8162,10 @@ snapshots:
       '@sideway/formula': 3.0.1
       '@sideway/pinpoint': 2.0.0
 
+  jpeg-lossless-decoder-js@2.1.2:
+    optionalDependencies:
+      '@rollup/rollup-linux-x64-gnu': 4.13.0
+
   js-message@1.0.7: {}
 
   js-tokens@4.0.0: {}
@@ -7925,6 +8310,8 @@ snapshots:
       wrap-ansi: 3.0.1
 
   loglevelnext@3.0.1: {}
+
+  long@3.2.0: {}
 
   lower-case@2.0.2:
     dependencies:
@@ -8200,6 +8587,8 @@ snapshots:
       retry: 0.13.1
 
   p-try@2.2.0: {}
+
+  pako@1.0.11: {}
 
   pako@2.1.0: {}
 
@@ -9157,6 +9546,10 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
+  utif@3.1.0:
+    dependencies:
+      pako: 1.0.11
+
   util-deprecate@1.0.2: {}
 
   utila@0.4.0: {}
@@ -9315,6 +9708,21 @@ snapshots:
       '@vue/server-renderer': 3.5.13(vue@3.5.13)
       '@vue/shared': 3.5.13
 
+  wasm-dce@1.0.2:
+    dependencies:
+      '@babel/core': 7.26.7
+      '@babel/traverse': 7.26.7
+      '@babel/types': 7.26.7
+      babylon: 7.0.0-beta.47
+      webassembly-interpreter: 0.0.30
+    transitivePeerDependencies:
+      - supports-color
+
+  wasm-loader@1.3.0(wasm-dce@1.0.2):
+    dependencies:
+      loader-utils: 1.4.2
+      wasm-dce: 1.0.2
+
   watchpack@2.4.2:
     dependencies:
       glob-to-regexp: 0.4.1
@@ -9327,6 +9735,14 @@ snapshots:
   wcwidth@1.0.1:
     dependencies:
       defaults: 1.0.4
+
+  webassembly-floating-point-hex-parser@0.1.2: {}
+
+  webassembly-interpreter@0.0.30:
+    dependencies:
+      '@babel/code-frame': 7.26.2
+      long: 3.2.0
+      webassembly-floating-point-hex-parser: 0.1.2
 
   webgl-constants@1.1.1: {}
 

@@ -15,7 +15,7 @@
 		segmentation,
 		ToolGroupManager,
 		addTool,
-		BrushTool, StackScrollTool
+		BrushTool, StackScrollTool, Enums as csToolsEnums
 	} from "@cornerstonejs/tools";
 	import dcmjs from "dcmjs";
 	
@@ -95,8 +95,6 @@
 		// 加载Volume => 注意：创建是创建，加载是加载，加载时才会去请求Dicom文件
 		volume.load();
 		
-		console.log(volume)
-		
 		// 在视图上设置Volume
 		await setVolumesForViewports(
 				renderingEngine,
@@ -139,7 +137,7 @@
 		
 		// 设置当前激活的工具
 		toolGroup.setToolActive(StackScrollTool.toolName, {
-			bindings: [{mouseButton: cstEnums.MouseBindings.Auxiliary}],
+			bindings: [{mouseButton: cstEnums.MouseBindings.Wheel}],
 		})
 		toolGroup.setToolActive("CircularBrush", {
 			bindings: [
@@ -169,12 +167,15 @@
 			}
 		]);
 		
-		await segmentation.addSegmentationRepresentations(toolGroupId, [
-			{
-				segmentationId: segmentationId,
-				type: cstEnums.SegmentationRepresentations.Labelmap
-			}
-		]);
+		const segmentationRepresentation = {
+			segmentationId,
+			type: csToolsEnums.SegmentationRepresentations.Labelmap,
+		};
+		await segmentation.addLabelmapRepresentationToViewportMap({
+			[viewportId1]: [segmentationRepresentation],
+			[viewportId2]: [segmentationRepresentation],
+			[viewportId3]: [segmentationRepresentation],
+		});
 		
 		return derivedVolume;
 	}
@@ -193,46 +194,65 @@
 			return;
 		}
 		
-		const cacheVolume = cache.getVolume(volumeId);
-		const csImages = cacheVolume.getCornerstoneImages();
+		const seg = segmentation.state.getSegmentation('my_segmentation');
+		const { imageIds } = seg.representationData.Labelmap;
 		
-		console.log(csImages)
 		
-		const activeSegmentationRepresentation =
-				segmentation.activeSegmentation.getActiveSegmentationRepresentation(
-						toolGroupId
-				);
-		
-		const cacheSegmentationVolume = cache.getVolume(
-				activeSegmentationRepresentation.segmentationId
+		const segImages = imageIds.map(imageId => cache.getImage(imageId));
+		const referencedImages = segImages.map(image =>
+				cache.getImage(image.referencedImageId)
 		);
-		console.log(cacheSegmentationVolume)
-		const labelmapData = adaptersSEG.Cornerstone3D.Segmentation.generateLabelMaps2DFrom3D(
-				cacheSegmentationVolume
+		
+		const labelmaps2D = [];
+		
+		let z = 0;
+		for (const segImage of segImages) {
+			const segmentsOnLabelmap = new Set();
+			const pixelData = segImage.getPixelData();
+			const { rows, columns } = segImage;
+			
+			for (let i = 0; i < pixelData.length; i++) {
+				const segment = pixelData[i];
+				if (segment !== 0) {
+					segmentsOnLabelmap.add(segment);
+				}
+			}
+			
+			labelmaps2D[z++] = {
+				segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
+				pixelData,
+				rows,
+				columns
+			};
+		}
+		
+		const allSegmentsOnLabelmap = labelmaps2D.map(
+				labelmap => labelmap.segmentsOnLabelmap
 		);
-		console.log(labelmapData)
 		
+		const labelmap3D = {
+			segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
+			metadata: [],
+			labelmaps2D
+		};
 		
-		labelmapData.metadata = [];
-		labelmapData.segmentsOnLabelmap.forEach((segmentIndex) => {
-			const color = segmentation.config.color.getColorForSegmentIndex(
-					toolGroupId,
-					activeSegmentationRepresentation.segmentationRepresentationUID,
+		labelmap3D.segmentsOnLabelmap.forEach(segmentIndex => {
+			const color = segmentation.config.color.getSegmentIndexColor(
+					viewportId1,
+					'my_segmentation',
 					segmentIndex
 			);
 			
-			const segmentMetadata = generateMockMetadata(segmentIndex, color);
-			labelmapData.metadata[segmentIndex] = segmentMetadata;
+			labelmap3D.metadata[segmentIndex] = generateMockMetadata(segmentIndex, color);
 		});
 		
-		console.log(metaData.get("instance", csImages[0].imageId))
-		// 第二步：将标签信息转换为Dicom Seg数据 - 这个过程是CornerStone3D自己封装处理的
 		const generatedSegmentation =
 				adaptersSEG.Cornerstone3D.Segmentation.generateSegmentation(
-						csImages,
-						labelmapData,
+						referencedImages,
+						labelmap3D,
 						metaData
 				);
+		
 		
 		// 第三步：数据流进行文件下载 - 这一步也是cornerstone3D本身支持的
 		helpers.downloadDICOMData(generatedSegmentation.dataset, "mySEG.nii");
@@ -270,6 +290,18 @@
 		for (const file of files) {
 			await readSegmentation(file);
 		}
+		createSegmentationRepresentation();
+	}
+	
+	function createSegmentationRepresentation() {
+		const segmentationId = 'my_segmentation_import'
+		const segMap = {
+			[viewportId1]: [{ segmentationId: segmentationId }],
+			[viewportId2]: [{ segmentationId: segmentationId }],
+			[viewportId3]: [{ segmentationId: segmentationId }]
+		};
+		
+		segmentation.addLabelmapRepresentationToViewportMap(segMap);
 	}
 	
 	async  function readSegmentation(file){
@@ -279,35 +311,66 @@
 		if (!image) {
 			return;
 		}
-		console.log(imageId)
 		const instance = metaData.get("instance", imageId);
-		console.log(instance)
+		
 		if (instance.Modality !== "SEG") {
 			console.error("This is not segmentation: " + file.name);
 			return;
 		}
 		const arrayBuffer = image.data.byteArray.buffer;
-		loadSegmentation(arrayBuffer);
+		await loadSegmentation(arrayBuffer);
 	}
 	
 	async function loadSegmentation(arrayBuffer){
-		const newSegmentationId = "LOAD_SEG_ID:" + csUtil.uuidv4();
-		const generateToolState =
-				await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
+		const { labelMapImages } =
+				await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
 						imageIds,
 						arrayBuffer,
-						metaData
+						{
+							metadataProvider: metaData
+						}
 				);
 		
-		const derivedVolume = await addSegmentationsToState(newSegmentationId);
-		//
-		const voxelManager = derivedVolume.voxelManager;
-		const derivedVolumeScalarData = voxelManager.getCompleteScalarDataArray();
-		
-		derivedVolumeScalarData.set(
-				new Uint8Array(generateToolState.labelmapBufferArray[0])
-		);
+		await createSegmentation(labelMapImages);
 	}
+	
+	async function createSegmentation(labelMapImages) {
+		const imageIds = labelMapImages?.flat().map(image => image.imageId);
+		
+		segmentation.addSegmentations([
+			{
+				segmentationId:'my_segmentation_import',
+				representation: {
+					type: cstEnums.SegmentationRepresentations.Labelmap,
+					data: {
+						imageIds
+					}
+				}
+			}
+		]);
+	}
+	
+	// V1.0 以toolGroup为组处理Seg
+	// async function loadSegmentation_V1(arrayBuffer){
+	// 	const newSegmentationId = "LOAD_SEG_ID:" + csUtil.uuidv4();
+	// 	const generateToolState =
+	// 			await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
+	// 					imageIds,
+	// 					arrayBuffer,
+	// 					{
+	// 						metadataProvider: metaData
+	// 					}
+	// 			);
+	//
+	// 	const derivedVolume = await addSegmentationsToState(newSegmentationId);
+	// 	//
+	// 	const voxelManager = derivedVolume.voxelManager;
+	// 	const derivedVolumeScalarData = voxelManager.getCompleteScalarDataArray();
+	//
+	// 	derivedVolumeScalarData.set(
+	// 			new Uint8Array(generateToolState.labelmapBufferArray[0])
+	// 	);
+	// }
 	
 	function handFileChange(evt){
 		const files = evt.target.files;

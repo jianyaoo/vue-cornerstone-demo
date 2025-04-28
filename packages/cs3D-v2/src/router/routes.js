@@ -5,7 +5,7 @@ import advancedUsageRoute from "./advancedUsageRoute";
 const routes = [
   { path: "/", redirect: "/basicUsage/stack" },
   basicUsageRoute,
-  // basicToolRoute,
+  basicToolRoute,
   // advancedUsageRoute
 ];
 

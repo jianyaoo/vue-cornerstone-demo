@@ -186,9 +186,10 @@ function addTools() {
 
 function activeTools() {
   const toolGroup = ToolGroupManager.getToolGroup(groupId);
+	// V2.0 StackScrollMouseWheelTool被重命名为StackScrollTool，并且支持绑定键盘及其他键
   toolGroup.setToolActive(StackScrollTool.toolName, {
     bindings: [{
-      mouseButton: cstEnums.MouseBindings.Auxiliary
+      mouseButton: cstEnums.MouseBindings.Wheel
     }]
   });
   toolGroup.setToolActive(PanTool.toolName, {

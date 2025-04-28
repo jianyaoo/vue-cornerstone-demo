@@ -1,20 +1,19 @@
 <script setup>
-	import { addTools, changeTool } from '../../cornerstone/tools/utils'
+	import { addTools, changeTool } from '@/cornerstone/tools/utils'
 	import {
 		createIds,
 		ctVolumeId,
 		preType,
 		renderingEngine_id,
-		toolGroupId,
 		toolGroupIdByStack,
 		toolGroupIdByVolume
-	} from "../../enums/cs";
+	} from "@/enums/cs";
 	import useLoading from "../../hooks/useLoading";
 	import useInitCS from "../../hooks/useInitCS";
 	import {
 		baseSegToolConfig,
 		registerAllTools,
-	} from "../../cornerstone/tools/registerToolList";
+	} from "@/cornerstone/tools/registerToolList";
 	import { volumeLoader } from "@cornerstonejs/core";
 	import { segmentation, Enums as csToolsEnums } from "@cornerstonejs/tools";
 	import destoryCS from "../../cornerstone/helper/destoryCS";
@@ -61,12 +60,25 @@
 			},
 		]);
 		
-		await segmentation.addSegmentationRepresentations(toolGroupIdByVolume, [
-			{
-				segmentationId,
-				type: csToolsEnums.SegmentationRepresentations.Labelmap,
-			},
-		]);
+		// V1.0：seg是与工具组进行绑定的，在新增Seg视图时，是新增到toolGroup中
+		// await segmentation.addSegmentationRepresentations(toolGroupIdByVolume, [
+		// 	{
+		// 		segmentationId,
+		// 		type: csToolsEnums.SegmentationRepresentations.Labelmap,
+		// 	},
+		// ]);
+		
+		// =============================================================
+		// V2.0：Seg是与视图进行绑定的,新增Seg视图时，是新增到viewport中
+		const segmentationRepresentation = {
+			segmentationId,
+			type: csToolsEnums.SegmentationRepresentations.Labelmap,
+		};
+		await segmentation.addLabelmapRepresentationToViewportMap({
+			[volumeVp[0]]: [segmentationRepresentation],
+			[volumeVp[1]]: [segmentationRepresentation],
+			[volumeVp[2]]: [segmentationRepresentation],
+		});
 	}
 	
 	function handleToolChange(toolName) {

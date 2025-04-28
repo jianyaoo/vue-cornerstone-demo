@@ -15,6 +15,6 @@ export default function(renderId, toolId){
     cstDestory();
   }
 
-  cache.purgeCache();
   getRenderingEngine(renderId)?.destroy()
+  cache.purgeCache();
 }

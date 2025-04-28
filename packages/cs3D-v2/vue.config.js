@@ -19,14 +19,8 @@ module.exports = defineConfig({
     module: {
       rules: [
         {
-          test: /\.wasm$/,
-          type: "webassembly/async", // 异步 WebAssembly 类型
-          // 对于同步的 WebAssembly，使用 'webassembly/sync'
-        },
-        {
-          test: /\.wasm$/,
-          use: ['wasm-loader'], //to deal with ERROR in ./node_modules/@icr/polyseg-wasm/dist/ICRPolySeg.wasm 1:0
-          type: 'javascript/auto',
+          test: /\.wasm/,
+          type: 'asset/resource',
         },
         {
           test: /\.m?js$/,

@@ -7,11 +7,11 @@ import {
 } from "@cornerstonejs/core";
 
 import {
-  Enums as cstEnums,
-  segmentation,
-  ToolGroupManager,
-  addTool,
-  BrushTool
+	Enums as cstEnums,
+	segmentation,
+	ToolGroupManager,
+	addTool,
+	BrushTool, Enums as csToolsEnums
 } from "@cornerstonejs/tools";
 
 import initCornerstone from "../../cornerstone/helper/initCornerstone";
@@ -32,6 +32,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   destoryCS(renderingEngineId, toolGroupId);
+	segmentation.state.removeAllSegmentations();
+	segmentation.state.removeAllSegmentationRepresentations();
 });
 
 async function init() {
@@ -137,7 +139,7 @@ async function addSegmentationsToState() {
   await volumeLoader.createAndCacheDerivedLabelmapVolume(volumeId, {
     volumeId: derivedVolumeId
   });
-  
+	
   segmentation.addSegmentations([
     {
       segmentationId: segmentationId,
@@ -150,12 +152,25 @@ async function addSegmentationsToState() {
     }
   ]);
   
-  await segmentation.addSegmentationRepresentations(viewportId1, [
-    {
-      segmentationId: segmentationId,
-      type: cstEnums.SegmentationRepresentations.Labelmap
-    }
-  ]);
+	// V1.0：seg是与工具组进行绑定的，在新增Seg视图时，是新增到toolGroup中
+  // await segmentation.addSegmentationRepresentations(viewportId1, [
+  //   {
+  //     segmentationId: segmentationId,
+  //     type: cstEnums.SegmentationRepresentations.Labelmap
+  //   }
+  // ]);
+	
+	// =============================================================
+	// V2.0：Seg是与视图进行绑定的,新增Seg视图时，是新增到viewport中
+	const segmentationRepresentation = {
+		segmentationId,
+		type: csToolsEnums.SegmentationRepresentations.Labelmap,
+	};
+	await segmentation.addLabelmapRepresentationToViewportMap({
+		[viewportId1]: [segmentationRepresentation],
+		[viewportId2]: [segmentationRepresentation],
+		[viewportId3]: [segmentationRepresentation],
+	});
 }
 </script>
 

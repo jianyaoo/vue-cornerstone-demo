@@ -1,11 +1,17 @@
 <script setup>
+	import {
+		volumeLoader,
+		RenderingEngine,
+		Enums as csEnums,
+		setVolumesForViewports,
+		eventTarget,
+		imageLoader
+	} from "@cornerstonejs/core";
 import {
-  volumeLoader,
-  RenderingEngine,
-  Enums as csEnums,
-  setVolumesForViewports, eventTarget
-} from "@cornerstonejs/core";
-import { cornerstoneNiftiImageVolumeLoader, Enums as niftiEnum } from "@cornerstonejs/nifti-volume-loader";
+	cornerstoneNiftiImageLoader,
+	createNiftiImageIdsAndCacheMetadata,
+	Enums as niftiEnum,
+} from '@cornerstonejs/nifti-volume-loader';
 import initCornerstone from "../../cornerstone/helper/initCornerstone";
 import destoryCS from "../../cornerstone/helper/destoryCS";
 
@@ -26,24 +32,33 @@ eventTarget.addEventListener(niftiEnum.Events.NIFTI_VOLUME_LOADED, () => {
 
 async function init() {
   await initCornerstone();
-  
+	
+	// 1.0版本
   // step1: 注册一个nifti格式的加载器
-  volumeLoader.registerVolumeLoader(
-    "nifti",
-    cornerstoneNiftiImageVolumeLoader
-  );
+  // volumeLoader.registerVolumeLoader(
+  //   "nifti",
+  //   cornerstoneNiftiImageVolumeLoader
+  // );
+	// ==========================================================
+	// 2.0版本
+	// 在2.0版本中主要基于image进行渲染，由注册volume更新为注册imageLoader
+	imageLoader.registerImageLoader('nifti', cornerstoneNiftiImageLoader);
   
   // step2: 声明volumeId，格式为 'nifti:'+真实的请求路径
   // 在定义volumeId时使用 nifti 前缀，便于识别使用的加载器种类
   const niftiURL =
     "https://ohif-assets.s3.us-east-2.amazonaws.com/nifti/MRHead.nii.gz";
-  const volumeId = "nifti:" + niftiURL;
-  
-  await volumeLoader.createAndCacheVolume(volumeId);
-  
+	// 1.0版本：由于注册的是volume，需要对volumeID进行处理;在2.0中不需要
+  // const volumeId = "nifti:" + niftiURL;
+	   const volumeId = 'niftiVolume';
+	// ==========================================================
+  // 2.0版本：自动对nifti进行处理，生成 以 nifti:为前缀的imageId
+	const imageIds = await createNiftiImageIdsAndCacheMetadata({ url: niftiURL });
+	const volume = await volumeLoader.createAndCacheVolume(volumeId, {
+		imageIds,
+	});
+	
   const renderingEngine = new RenderingEngine(renderingEngineId);
-  
-  
   // 在渲染引擎中创建并加载视图，使视图与HTML元素绑定
   const viewportId1 = "CT_AXIAL";
   const viewportId2 = "CT_SAGITTAL";
@@ -75,7 +90,8 @@ async function init() {
     },
   ];
   renderingEngine.setViewports(viewportInputArray);
-  
+	
+	
   // 在视图上设置Volume
   await setVolumesForViewports(
     renderingEngine,
@@ -86,7 +102,9 @@ async function init() {
     ],
     [viewportId1, viewportId2, viewportId3]
   );
-  
+	
+	await volume.load();
+	
   // 渲染图像
   renderingEngine.renderViewports([viewportId1, viewportId2, viewportId3]);
 }

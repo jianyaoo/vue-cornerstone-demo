@@ -111,8 +111,14 @@ function addTools() {
 function handleChange(type, value) {
   const viewport = getRenderingEngine(renderingEngineId).getViewport(viewportId);
 	
+	// 1.0版本：rotation被作为viewport的属性进行设置
+	// 	viewport.setProperties({
+	// 		[type]: value
+	// 	});
+	
+	// 2.0 版本：rotation不是视图的属性，而是视图的一种表现，通过setViewPresentation进行设置
 	if (type === 'rotation') {
-		viewport.setCamera({ rotation: 10 });
+		viewport.setViewPresentation({ rotation: value});
   } else {
 		viewport.setProperties({
 			[type]: value

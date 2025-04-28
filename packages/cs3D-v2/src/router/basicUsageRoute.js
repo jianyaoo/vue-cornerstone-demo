@@ -15,6 +15,11 @@ export default {
       component: () => import("../views/basicUsage/BaseVolume.vue"),
     },
     {
+      path: "localFile",
+      name: "加载本地dicom",
+      component: () => import("../views/basicUsage/LocalFile.vue"),
+    },
+    {
       path: "niftiFile",
       name: "渲染nifti文件",
       component: () => import("../views/basicUsage/BaseNiftyFile.vue"),
@@ -23,11 +28,6 @@ export default {
       path: "basicPET",
       name: "渲染PET模式",
       component: () => import("../views/basicUsage/BasicPET.vue"),
-    },
-    {
-      path: "localFile",
-      name: "加载本地dicom",
-      component: () => import("../views/basicUsage/LocalFile.vue"),
     },
     {
       path: "load3DVolume",

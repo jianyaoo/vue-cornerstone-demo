@@ -3,7 +3,10 @@
 		volumeLoader,
 		RenderingEngine,
 		Enums as csEnums,
-		setVolumesForViewports, eventTarget, cache, metaData
+		setVolumesForViewports,
+		eventTarget,
+		cache,
+		metaData
 	} from "@cornerstonejs/core";
 	import { cornerstoneNiftiImageVolumeLoader, Enums as niftiEnum } from "@cornerstonejs/nifti-volume-loader";
 	import initCornerstone from "../../cornerstone/helper/initCornerstone";
@@ -129,7 +132,7 @@
 		
 		// 设置当前激活的工具
 		toolGroup.setToolActive(StackScrollTool.toolName, {
-			bindings: [{mouseButton: cstEnums.MouseBindings.Auxiliary}],
+			bindings: [{mouseButton: cstEnums.MouseBindings.Wheel}],
 		})
 		toolGroup.setToolActive("CircularBrush", {
 			bindings: [

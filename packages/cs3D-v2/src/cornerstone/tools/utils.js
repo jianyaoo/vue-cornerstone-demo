@@ -46,7 +46,7 @@ export function activeDefaultTools(type = 'stack') {
 	return () => {
 		const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
 		toolGroup.setToolActive(StackScrollTool.toolName, {
-			bindings: [{mouseButton: cstEnums.MouseBindings.Auxiliary}],
+			bindings: [{mouseButton: cstEnums.MouseBindings.Wheel}],
 		})
 
 		if (type === 'volume') {

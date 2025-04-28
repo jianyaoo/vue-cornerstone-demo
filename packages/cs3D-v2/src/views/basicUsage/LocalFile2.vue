@@ -198,7 +198,7 @@ function activeTools() {
   const toolGroup = ToolGroupManager.getToolGroup(groupId);
   toolGroup.setToolActive(StackScrollTool.toolName, {
     bindings: [{
-      mouseButton: cstEnums.MouseBindings.Auxiliary
+      mouseButton: cstEnums.MouseBindings.Wheel
     }]
   });
   toolGroup.setToolActive(PanTool.toolName, {

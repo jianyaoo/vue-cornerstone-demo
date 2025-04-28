@@ -100,9 +100,6 @@ async function init() {
 
   const imageIds = await getTestImageId();
 
-  // 全局注册工具
-  addTools();
-
   // 注册同步器
   createSynchronizer();
 
@@ -172,6 +169,9 @@ async function init() {
   // step5-2：添加stack至视图
   const stackViewport = renderingEngine.getViewport(viewportId4);
   stackViewport.setStack(imageIds);
+	
+	// 全局注册工具
+	addTools();
 
   // 激活默认激动的工具
   activeDefaultTools();
@@ -213,7 +213,7 @@ function activeDefaultTools() {
     bindings: [{mouseButton: cstEnums.MouseBindings.Primary}],
   });
   toolGroup.setToolActive(StackScrollTool.toolName, {
-    bindings: [{mouseButton: cstEnums.MouseBindings.Auxiliary}],
+    bindings: [{mouseButton: cstEnums.MouseBindings.Wheel}],
   })
 }
 

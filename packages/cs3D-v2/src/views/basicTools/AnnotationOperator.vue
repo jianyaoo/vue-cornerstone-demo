@@ -95,8 +95,8 @@
 		locking: [{
 			text: '初始化注释的locked属性',
 			action: () => {
-				const a1 = annotation.state.getAnnotations(checkedToolName.value, document.querySelector(`#${volumeDom[0]}`))?.[0];
-				annotation.locking.checkAndDefineIsLockedProperty(a1);
+				const a1 = annotation.state.getAnnotations(checkedToolName.value, document.querySelector(`#${volumeDom[0]}`))?.[0].annotationUID;
+				annotation.locking.checkAndSetAnnotationLocked(a1);
 				result.value = a1;
 			}
 		}, {
@@ -113,7 +113,7 @@
 			text: '设置第一个注释的锁定状态',
 			action: () => {
 				const a1 = annotation.state.getAnnotations(checkedToolName.value, document.querySelector(`#${volumeDom[0]}`))?.[0];
-				annotation.locking.setAnnotationLocked(a1, true);
+				annotation.locking.setAnnotationLocked(a1.annotationUID, true);
 				nextTick(() => {
 					result.value = a1;
 				})
@@ -122,7 +122,7 @@
 			text: '取消第一个注释的锁定状态',
 			action: () => {
 				const a1 = annotation.state.getAnnotations(checkedToolName.value, document.querySelector(`#${volumeDom[0]}`))?.[0];
-				annotation.locking.setAnnotationLocked(a1, false);
+				annotation.locking.setAnnotationLocked(a1.annotationUID, false);
 				nextTick(() => {
 					result.value = a1;
 				})
@@ -137,7 +137,7 @@
 			text: '判断第一个注释是否被锁定',
 			action: () => {
 				const a1 = annotation.state.getAnnotations(checkedToolName.value, document.querySelector(`#${volumeDom[0]}`))?.[0];
-				result.value = annotation.locking.isAnnotationLocked(a1);
+				result.value = annotation.locking.isAnnotationLocked(a1.annotationUID);
 			}
 		}],
 		visibility: [{

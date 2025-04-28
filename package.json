@@ -1,5 +1,6 @@
 {
   "name": "vue-cornerstone-demo",
+  "description": "Cornerstone.js Monorepo Root",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -8,11 +9,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
-    "dcmjs": "^0.30.0",
-    "dicom-parser": "^1.8.21",
-    "dicomweb-client": "^0.10.4",
     "element-plus": "^2.7.7",
-    "element-ui": "^2.15.14",
     "vue": "^3.0.0",
     "vue-json-pretty": "^2.4.0",
     "vue-router": "^4.0.0"

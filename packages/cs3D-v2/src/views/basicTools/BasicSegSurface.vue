@@ -11,7 +11,7 @@
 		segmentation,
 		ToolGroupManager,
 		addTool,
-		BrushTool
+		BrushTool, Enums as csToolsEnums
 	} from "@cornerstonejs/tools";
 	
 	import initCornerstone from "../../cornerstone/helper/initCornerstone";
@@ -34,6 +34,8 @@
 	onBeforeUnmount(() => {
 		destoryCS(renderingEngineId, toolGroupId);
 		destoryCS(renderingEngineId, toolGroupId3D);
+		segmentation.state.removeAllSegmentations();
+		segmentation.state.removeAllSegmentationRepresentations();
 	});
 	
 	async function init() {
@@ -101,7 +103,7 @@
 				volumeActor,
 				CONSTANTS.VIEWPORT_PRESETS.find((preset) => preset.name === 'CT-Bone')
 		);
-		volumeActor.setVisibility(false);
+		volumeActor.setVisibility(true);
 		
 		
 		// 向状态管理中新增分割器
@@ -162,24 +164,44 @@
 			}
 		]);
 		
-		await segmentation.addSegmentationRepresentations(toolGroupId, [
-			{
-				segmentationId: segmentationId,
-				type: cstEnums.SegmentationRepresentations.Labelmap
-			}
-		]);
+		// V1.0版本
+		// await segmentation.addSegmentationRepresentations(toolGroupId, [
+		// 	{
+		// 		segmentationId: segmentationId,
+		// 		type: cstEnums.SegmentationRepresentations.Labelmap
+		// 	}
+		// ]);
+		//
+		// await segmentation.addSegmentationRepresentations(toolGroupId3D, [
+		// 	{
+		// 		segmentationId: segmentationId,
+		// 		type: cstEnums.SegmentationRepresentations.Surface,
+		// 		options: {
+		// 			polySeg: {
+		// 				enabled: true,
+		// 			},
+		// 		},
+		// 	}
+		// ]);
 		
-		await segmentation.addSegmentationRepresentations(toolGroupId3D, [
-			{
-				segmentationId: segmentationId,
-				type: cstEnums.SegmentationRepresentations.Surface,
-				options: {
-					polySeg: {
-						enabled: true,
-					},
-				},
-			}
-		]);
+		// =============================================
+		// V2.0版本
+		const segmentationRepresentation = {
+			segmentationId,
+			type: csToolsEnums.SegmentationRepresentations.Labelmap,
+		};
+		await segmentation.addLabelmapRepresentationToViewportMap({
+			[viewportId1]: [segmentationRepresentation],
+			[viewportId2]: [segmentationRepresentation],
+		});
+		
+		const segmentationRepresentation3D = {
+			segmentationId,
+			type: csToolsEnums.SegmentationRepresentations.Surface,
+		};
+		await segmentation.addLabelmapRepresentationToViewportMap({
+			[viewportId3]: [segmentationRepresentation3D],
+		});
 	}
 </script>
 

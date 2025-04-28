@@ -130,8 +130,8 @@ async function init() {
 }
 
 function getValue(volume, worldPos) {
-  const { dimensions, scalarData, imageData } = volume;
-  
+	// V1.0：使用 scalarData 获取体素数据
+  const { dimensions, imageData, voxelManager } = volume;
   const index = imageData.worldToIndex(worldPos);
   
   index[0] = Math.floor(index[0]);
@@ -145,8 +145,8 @@ function getValue(volume, worldPos) {
   const yMultiple = dimensions[0];
   const zMultiple = dimensions[0] * dimensions[1];
   
-  const value =
-    scalarData[index[2] * zMultiple + index[1] * yMultiple + index[0]];
+	// V2.0：使用voxelManager对体素数据进行管理
+  const value = voxelManager.getAtIndex(index[2] * zMultiple + index[1] * yMultiple + index[0])
   
   return value;
 }

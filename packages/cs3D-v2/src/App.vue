@@ -9,13 +9,12 @@
 <template>
   <el-container class="page-container">
     <el-header class="page-header">
-      <h1>cornerstone3D在线演示（Vue3版本）</h1>
+      <h1>cornerstone3D在线演示（Vue3版本 + Cornerstone2.x版本）</h1>
     </el-header>
 		
     <el-container>
       <el-aside width="300px">
         <el-menu
-          default-active="0-1"
           class="el-menu-vertical-demo"
           :collapse="isCollapse"
         >

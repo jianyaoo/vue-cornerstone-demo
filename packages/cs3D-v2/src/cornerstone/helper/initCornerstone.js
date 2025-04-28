@@ -1,7 +1,4 @@
-import {
-  Enums as csEnums,
-  init as csRenderInit,
-} from "@cornerstonejs/core";
+import { init as csRenderInit, } from "@cornerstonejs/core";
 import { init as csToolsInit } from "@cornerstonejs/tools";
 import initProviders from "./initProviders";
 import initCornerstoneDICOMImageLoader from "./initCornerstoneDicomImageLoader";
@@ -21,8 +18,5 @@ export default async function initCornerstone() {
   await csRenderInit();
 
   // 初始化 - CornerStone/tool
-  csToolsInit();
-
-  // 配置项 - 是否使用SharedArray
-  setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
+  await csToolsInit();
 }

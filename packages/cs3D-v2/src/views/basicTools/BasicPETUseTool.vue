@@ -173,7 +173,7 @@
 <!--      toolGroup.setToolActive(StackScrollTool.toolName, {-->
 <!--        bindings: [-->
 <!--          {-->
-<!--            mouseButton: cstEnums.MouseBindings.Auxiliary,-->
+<!--            mouseButton: cstEnums.MouseBindings.Wheel,-->
 <!--          },-->
 <!--        ],-->
 <!--      });-->

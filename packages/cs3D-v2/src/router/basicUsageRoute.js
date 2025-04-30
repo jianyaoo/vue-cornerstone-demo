@@ -15,6 +15,11 @@ export default {
       component: () => import("../views/basicUsage/BaseVolume.vue"),
     },
     {
+      path: "baseWadourl",
+      name: "渲染wadouri格式",
+      component: () => import("../views/basicUsage/BasicWadourl.vue"),
+    },
+    {
       path: "localFile",
       name: "加载本地dicom",
       component: () => import("../views/basicUsage/LocalFile.vue"),

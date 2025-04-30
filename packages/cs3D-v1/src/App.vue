@@ -9,7 +9,7 @@
 <template>
   <el-container class="page-container">
     <el-header class="page-header">
-      <h1>cornerstone3D在线演示（Vue3版本）</h1>
+      <h1>cornerstone3D在线演示（Vue3版本 + cornerstone3DV1.x 版本）</h1>
     </el-header>
 		
     <el-container>
